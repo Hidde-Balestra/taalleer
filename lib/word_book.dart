@@ -588,7 +588,6 @@ const List<(String, String, String)> kWordEntries = [
   ('herida', 'wond', 'wound'),
   ('medicina', 'medicijn', 'medicine'),
   ('pastilla', 'pil', 'pill'),
-  ('vacuna', 'vaccin', 'vaccine'),
   ('cita', 'afspraak', 'appointment'),
   ('consulta', 'spreekuur', 'consultation'),
   ('urgencias', 'spoedeisende hulp', 'emergency room'),

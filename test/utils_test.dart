@@ -108,31 +108,49 @@ void main() {
   });
 
   group('buildPractice / buildQuiz', () {
+    final weekWords = wordsForWeek(1);
+
     test('oefensessie heeft 10 unieke woorden', () {
-      final qs = buildPractice(Lang.nl, random: Random(1));
+      final qs = buildPractice(weekWords, Lang.nl, random: Random(1));
       expect(qs, hasLength(10));
       expect(qs.map((q) => q.word.id).toSet(), hasLength(10));
     });
 
+    test('oefensessie gebruikt alleen woorden van de opgegeven week', () {
+      final qs = buildPractice(weekWords, Lang.nl, random: Random(1));
+      final weekIds = weekWords.map((w) => w.id).toSet();
+      for (final q in qs) {
+        expect(weekIds, contains(q.word.id));
+      }
+    });
+
     test('oefensessie met brontaal NL gebruikt alleen NL-vraagtypen', () {
-      final qs = buildPractice(Lang.nl, random: Random(2));
+      final qs = buildPractice(weekWords, Lang.nl, random: Random(2));
       for (final q in qs) {
         expect(q.type, isIn([QuestionType.nlEs, QuestionType.esNl]));
       }
     });
 
     test('oefensessie met brontaal EN gebruikt alleen EN-vraagtypen', () {
-      final qs = buildPractice(Lang.en, random: Random(3));
+      final qs = buildPractice(weekWords, Lang.en, random: Random(3));
       for (final q in qs) {
         expect(q.type, isIn([QuestionType.enEs, QuestionType.esEn]));
       }
     });
 
     test('weektoets wisselt vraagrichting af', () {
-      final qs = buildQuiz(Lang.nl, random: Random(4));
+      final qs = buildQuiz(weekWords, Lang.nl, random: Random(4));
       expect(qs, hasLength(10));
       for (var i = 0; i < qs.length; i++) {
         expect(qs[i].type, i.isEven ? QuestionType.nlEs : QuestionType.esNl);
+      }
+    });
+
+    test('weektoets gebruikt alleen woorden van de opgegeven week', () {
+      final qs = buildQuiz(weekWords, Lang.nl, random: Random(5));
+      final weekIds = weekWords.map((w) => w.id).toSet();
+      for (final q in qs) {
+        expect(weekIds, contains(q.word.id));
       }
     });
   });
@@ -173,8 +191,76 @@ void main() {
     });
   });
 
-  test('woordenlijst bevat 20 woorden met unieke ids', () {
-    expect(kWords, hasLength(20));
-    expect(kWords.map((w) => w.id).toSet(), hasLength(20));
+  group('woordenboek en weekrotatie', () {
+    test('woordenboek bevat minimaal 1000 woorden met unieke ids', () {
+      expect(kWordBook.length, greaterThanOrEqualTo(1000));
+      expect(kWordBook.map((w) => w.id).toSet(), hasLength(kWordBook.length));
+    });
+
+    test('woordenboeklengte is een veelvoud van het weekvenster', () {
+      expect(kWordBook.length % kWordsPerWeek, 0);
+    });
+
+    test('geen dubbele Spaanse lemma\'s in het woordenboek', () {
+      expect(kWordBook.map((w) => w.es).toSet(), hasLength(kWordBook.length));
+    });
+
+    test('elk woord heeft vertalingen en een uitspraak', () {
+      for (final w in kWordBook) {
+        expect(w.es, isNotEmpty);
+        expect(w.nl, isNotEmpty, reason: 'nl ontbreekt bij ${w.es}');
+        expect(w.en, isNotEmpty, reason: 'en ontbreekt bij ${w.es}');
+        expect(
+          w.pronunciation,
+          isNotEmpty,
+          reason: 'uitspraak ontbreekt bij ${w.es}',
+        );
+      }
+    });
+
+    test('elke week heeft precies 20 woorden', () {
+      for (final week in [1, 2, 7, 26, 52, 53]) {
+        expect(wordsForWeek(week), hasLength(kWordsPerWeek));
+      }
+    });
+
+    test('opeenvolgende weken hebben verschillende woorden', () {
+      final week1 = wordsForWeek(1).map((w) => w.id).toSet();
+      final week2 = wordsForWeek(2).map((w) => w.id).toSet();
+      expect(week1.intersection(week2), isEmpty);
+    });
+
+    test(
+      'rotatie is deterministisch: dezelfde week geeft dezelfde woorden',
+      () {
+        expect(
+          wordsForWeek(29).map((w) => w.id).toList(),
+          wordsForWeek(29).map((w) => w.id).toList(),
+        );
+      },
+    );
+
+    test('het hele woordenboek komt aan bod voordat de rotatie herhaalt', () {
+      final weeksPerCycle = kWordBook.length ~/ kWordsPerWeek;
+      final seen = <int>{};
+      for (var week = 1; week <= weeksPerCycle; week++) {
+        seen.addAll(wordsForWeek(week).map((w) => w.id));
+      }
+      expect(seen, hasLength(kWordBook.length));
+    });
+
+    test('na een volledige cyclus begint de rotatie opnieuw', () {
+      final weeksPerCycle = kWordBook.length ~/ kWordsPerWeek;
+      expect(
+        wordsForWeek(1).map((w) => w.id).toList(),
+        wordsForWeek(1 + weeksPerCycle).map((w) => w.id).toList(),
+      );
+    });
+
+    test('wordById vindt woorden uit het hele boek', () {
+      expect(wordById(kWordBook.first.id)!.es, kWordBook.first.es);
+      expect(wordById(kWordBook.last.id)!.es, kWordBook.last.es);
+      expect(wordById(-1), isNull);
+    });
   });
 }

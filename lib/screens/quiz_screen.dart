@@ -11,6 +11,7 @@ class QuizScreen extends StatefulWidget {
   final bool dyslexia;
   final Lang sourceLang;
   final int weekNumber;
+  final List<Word> words;
   final ValueChanged<QuizResult> onFinish;
 
   const QuizScreen({
@@ -19,6 +20,7 @@ class QuizScreen extends StatefulWidget {
     required this.dyslexia,
     required this.sourceLang,
     required this.weekNumber,
+    required this.words,
     required this.onFinish,
   });
 
@@ -27,7 +29,10 @@ class QuizScreen extends StatefulWidget {
 }
 
 class _QuizScreenState extends State<QuizScreen> {
-  late final List<Question> _questions = buildQuiz(widget.sourceLang);
+  late final List<Question> _questions = buildQuiz(
+    widget.words,
+    widget.sourceLang,
+  );
   final _controller = TextEditingController();
   final _focusNode = FocusNode();
 

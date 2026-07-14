@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'app_state.dart';
+import 'data.dart';
 import 'i18n.dart';
 import 'models.dart';
 import 'screens/history_screen.dart';
@@ -13,8 +14,10 @@ import 'screens/vocabulary_screen.dart';
 import 'theme.dart';
 import 'utils.dart';
 
-void main() {
-  runApp(TaalLeerApp(appState: AppState()));
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final appState = await AppState.load();
+  runApp(TaalLeerApp(appState: appState));
 }
 
 class TaalLeerApp extends StatelessWidget {
@@ -75,19 +78,20 @@ class _HomeShellState extends State<HomeShell> {
   // net als daar staat hij hier voor de demo altijd aan.
   bool get _quizAvailable => true; // isWeekend(DateTime.now())
 
-  void _openPractice(Strings t, AppSettings settings) {
+  void _openPractice(Strings t, AppSettings settings, List<Word> words) {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => PracticeScreen(
           t: t,
           dyslexia: settings.dyslexiaMode,
           sourceLang: settings.sourceLang,
+          words: words,
         ),
       ),
     );
   }
 
-  void _openQuiz(Strings t, AppSettings settings) {
+  void _openQuiz(Strings t, AppSettings settings, List<Word> words) {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => QuizScreen(
@@ -95,6 +99,7 @@ class _HomeShellState extends State<HomeShell> {
           dyslexia: settings.dyslexiaMode,
           sourceLang: settings.sourceLang,
           weekNumber: currentWeekNumber(),
+          words: words,
           onFinish: (result) {
             widget.appState.addResult(result);
             Navigator.of(context).pushReplacement(
@@ -114,6 +119,7 @@ class _HomeShellState extends State<HomeShell> {
     final settings = widget.appState.settings;
     final t = Strings.of(settings.language);
     final weekNumber = currentWeekNumber();
+    final weekWords = wordsForWeek(weekNumber);
 
     final tabs = [
       HomeScreen(
@@ -121,12 +127,13 @@ class _HomeShellState extends State<HomeShell> {
         lang: settings.language,
         weekNumber: weekNumber,
         streak: widget.appState.streak,
+        wordCount: weekWords.length,
         history: widget.appState.history,
         quizAvailable: _quizAvailable,
-        onPractice: () => _openPractice(t, settings),
-        onQuiz: () => _openQuiz(t, settings),
+        onPractice: () => _openPractice(t, settings, weekWords),
+        onQuiz: () => _openQuiz(t, settings, weekWords),
       ),
-      VocabularyScreen(t: t, weekNumber: weekNumber),
+      VocabularyScreen(t: t, weekNumber: weekNumber, words: weekWords),
       HistoryScreen(t: t, history: widget.appState.history),
       SettingsScreen(
         t: t,

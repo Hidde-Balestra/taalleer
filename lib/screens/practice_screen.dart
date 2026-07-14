@@ -10,12 +10,14 @@ class PracticeScreen extends StatefulWidget {
   final Strings t;
   final bool dyslexia;
   final Lang sourceLang;
+  final List<Word> words;
 
   const PracticeScreen({
     super.key,
     required this.t,
     required this.dyslexia,
     required this.sourceLang,
+    required this.words,
   });
 
   @override
@@ -23,7 +25,10 @@ class PracticeScreen extends StatefulWidget {
 }
 
 class _PracticeScreenState extends State<PracticeScreen> {
-  late final List<Question> _questions = buildPractice(widget.sourceLang);
+  late final List<Question> _questions = buildPractice(
+    widget.words,
+    widget.sourceLang,
+  );
   final _controller = TextEditingController();
   final _focusNode = FocusNode();
 

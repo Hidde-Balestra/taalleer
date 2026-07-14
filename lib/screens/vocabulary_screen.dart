@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../data.dart';
 import '../i18n.dart';
 import '../models.dart';
 import '../theme.dart';
@@ -9,11 +8,13 @@ import '../widgets.dart';
 class VocabularyScreen extends StatefulWidget {
   final Strings t;
   final int weekNumber;
+  final List<Word> words;
 
   const VocabularyScreen({
     super.key,
     required this.t,
     required this.weekNumber,
+    required this.words,
   });
 
   @override
@@ -29,7 +30,7 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
     final palette = AppPalette.of(context);
     final t = widget.t;
     final query = _search.toLowerCase();
-    final filtered = kWords
+    final filtered = widget.words
         .where(
           (w) =>
               w.es.toLowerCase().contains(query) ||
@@ -101,7 +102,7 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
             itemBuilder: (context, i) => _WordCard(
               t: t,
               word: filtered[i],
-              index: kWords.indexOf(filtered[i]) + 1,
+              index: widget.words.indexOf(filtered[i]) + 1,
               expanded: _expandedId == filtered[i].id,
               onTap: () => setState(
                 () => _expandedId = _expandedId == filtered[i].id
@@ -213,30 +214,32 @@ class _WordCard extends StatelessWidget {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 8),
-                        _DetailRow(
-                          label: t.vocabExample.toUpperCase(),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                word.exampleEs,
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  fontStyle: FontStyle.italic,
+                        if (word.exampleEs.isNotEmpty) ...[
+                          const SizedBox(height: 8),
+                          _DetailRow(
+                            label: t.vocabExample.toUpperCase(),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  word.exampleEs,
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontStyle: FontStyle.italic,
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                word.exampleNl,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: palette.muted,
+                                const SizedBox(height: 2),
+                                Text(
+                                  word.exampleNl,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: palette.muted,
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
+                        ],
                       ],
                     ),
                   )

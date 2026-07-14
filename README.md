@@ -4,8 +4,10 @@ Een Flutter-app om Spaanse woordjes te leren, gebaseerd op het [Figma Make proto
 
 ## Functies
 
-- **Home** — weekoverzicht met streak, aantal geleerde woorden en het laatste cijfer
-- **Woordenlijst** — 20 woorden per week met uitspraak en voorbeeldzinnen, doorzoekbaar
+- **Woordenboek met weekrotatie** — een Spaans woordenboek van 1000 woorden (thematisch geordend: getallen, tijd, familie, lichaam, huis, eten, dieren, natuur, stad, reizen, kleding, kleuren, school, beroepen, technologie, gezondheid, sport, kunst, geld, gevoelens, bijvoeglijke naamwoorden, werkwoorden en kleine woorden); elke week schuift het venster 20 woorden op, en na 50 weken begint de rotatie opnieuw
+- **Automatische uitspraak** — Spaans is fonetisch regelmatig; de uitspraakhint (bijv. `casa` → `KAH-sah`) wordt uit de spelling afgeleid, inclusief klemtoonregels en accenten
+- **Home** — weekoverzicht met streak, aantal woorden van deze week en het laatste cijfer
+- **Woordenlijst** — de 20 woorden van deze week met uitspraak en voorbeeldzinnen, doorzoekbaar
 - **Oefenen** — 10 vragen met directe feedback en uitspraakhint
 - **Weektoets** — 10 vragen zonder hints, met cijfer (0–10), geslaagd/onvoldoende en foutenoverzicht
 - **Resultaten** — historie van alle weektoetsen
@@ -15,7 +17,7 @@ Een Flutter-app om Spaanse woordjes te leren, gebaseerd op het [Figma Make proto
   - Weergave: licht / donker / systeem
   - **Dyslexie-modus**: kleine typefouten worden geaccepteerd (Levenshtein-afstand op basis van woordlengte) en de tekst krijgt ruimere letterafstand
 
-De app werkt volledig offline en gebruikt geen externe services.
+Alle data (instellingen en toetshistorie) wordt lokaal op het apparaat opgeslagen via `shared_preferences`. De app werkt volledig offline; er verlaat geen data het apparaat.
 
 ## Ontwikkelen
 
@@ -46,12 +48,15 @@ git push origin v1.0.0
 ```
 lib/
 ├── main.dart            # App-shell, thema-switching, tabnavigatie
-├── models.dart          # Word, QuizResult, Question, AppSettings
-├── data.dart            # Woordenlijst + voorbeeldhistorie
+├── models.dart          # Word, QuizResult, Question, AppSettings (+ JSON)
+├── word_book.dart       # Woordenboek: 1000 lemma's (es, nl, en)
+├── data.dart            # Weekrotatie over het woordenboek
+├── pronounce.dart       # Automatische uitspraak (lettergrepen + klemtoon)
 ├── i18n.dart            # NL/EN vertalingen + datumnotatie
 ├── utils.dart           # Levenshtein, cijferberekening, vragenbouwers
 ├── theme.dart           # Licht/donker thema, dyslexie-typografie
 ├── app_state.dart       # Instellingen + toetshistorie (ChangeNotifier)
+├── storage.dart         # Lokale opslag op het apparaat (shared_preferences)
 ├── widgets.dart         # Herbruikbare UI (kaarten, knoppen, cijfercirkel)
 └── screens/             # De zeven schermen
 ```

@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-import 'data.dart';
 import 'models.dart';
 
 /// Levenshtein-afstand tussen twee strings.
@@ -81,25 +80,32 @@ String shownWordOf(Question q) {
   }
 }
 
-/// Oefensessie: 10 willekeurige woorden, willekeurige richting.
-List<Question> buildPractice(Lang sourceLang, {Random? random}) {
+/// Oefensessie: 10 willekeurige woorden uit [words], willekeurige richting.
+List<Question> buildPractice(
+  List<Word> words,
+  Lang sourceLang, {
+  Random? random,
+}) {
   final rng = random ?? Random();
   final types = sourceLang == Lang.nl
       ? [QuestionType.nlEs, QuestionType.esNl]
       : [QuestionType.enEs, QuestionType.esEn];
-  final words = [...kWords]..shuffle(rng);
-  return words
+  final shuffled = [...words]..shuffle(rng);
+  return shuffled
       .take(10)
       .map((w) => Question(word: w, type: types[rng.nextInt(types.length)]))
       .toList();
 }
 
-/// Weektoets: 10 willekeurige woorden, afwisselende richting.
-List<Question> buildQuiz(Lang sourceLang, {Random? random}) {
+/// Weektoets: 10 willekeurige woorden uit [words], afwisselende richting.
+List<Question> buildQuiz(List<Word> words, Lang sourceLang, {Random? random}) {
   final rng = random ?? Random();
   final types = sourceLang == Lang.nl
       ? [QuestionType.nlEs, QuestionType.esNl]
       : [QuestionType.enEs, QuestionType.esEn];
-  final words = [...kWords]..shuffle(rng);
-  return List.generate(10, (i) => Question(word: words[i], type: types[i % 2]));
+  final shuffled = [...words]..shuffle(rng);
+  return List.generate(
+    10,
+    (i) => Question(word: shuffled[i], type: types[i % 2]),
+  );
 }

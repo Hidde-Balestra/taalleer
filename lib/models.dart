@@ -21,8 +21,8 @@ class Word {
     required this.nl,
     required this.en,
     required this.pronunciation,
-    required this.exampleEs,
-    required this.exampleNl,
+    this.exampleEs = '',
+    this.exampleNl = '',
   });
 }
 
@@ -52,6 +52,22 @@ class AppSettings {
       sourceLang: sourceLang ?? this.sourceLang,
     );
   }
+
+  Map<String, dynamic> toJson() => {
+    'language': language.name,
+    'darkMode': darkMode.name,
+    'dyslexiaMode': dyslexiaMode,
+    'sourceLang': sourceLang.name,
+  };
+
+  factory AppSettings.fromJson(Map<String, dynamic> json) => AppSettings(
+    language: Lang.values.asNameMap()[json['language']] ?? Lang.nl,
+    darkMode:
+        DarkModeSetting.values.asNameMap()[json['darkMode']] ??
+        DarkModeSetting.system,
+    dyslexiaMode: json['dyslexiaMode'] as bool? ?? false,
+    sourceLang: Lang.values.asNameMap()[json['sourceLang']] ?? Lang.nl,
+  );
 }
 
 class QuizResult {
@@ -74,6 +90,28 @@ class QuizResult {
     required this.total,
     required this.wrongWordIds,
   });
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'weekNumber': weekNumber,
+    'year': year,
+    'date': date,
+    'grade': grade,
+    'correct': correct,
+    'total': total,
+    'wrongWordIds': wrongWordIds,
+  };
+
+  factory QuizResult.fromJson(Map<String, dynamic> json) => QuizResult(
+    id: json['id'] as int,
+    weekNumber: json['weekNumber'] as int,
+    year: json['year'] as int,
+    date: json['date'] as String,
+    grade: (json['grade'] as num).toDouble(),
+    correct: json['correct'] as int,
+    total: json['total'] as int,
+    wrongWordIds: (json['wrongWordIds'] as List).cast<int>(),
+  );
 }
 
 class Question {

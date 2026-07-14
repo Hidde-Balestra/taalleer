@@ -11,6 +11,7 @@ class HomeScreen extends StatelessWidget {
   final Lang lang;
   final int weekNumber;
   final int streak;
+  final int wordCount;
   final List<QuizResult> history;
   final bool quizAvailable;
   final VoidCallback onPractice;
@@ -22,6 +23,7 @@ class HomeScreen extends StatelessWidget {
     required this.lang,
     required this.weekNumber,
     required this.streak,
+    required this.wordCount,
     required this.history,
     required this.quizAvailable,
     required this.onPractice,
@@ -36,7 +38,13 @@ class HomeScreen extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
       children: [
-        _Header(t: t, lang: lang, weekNumber: weekNumber, streak: streak),
+        _Header(
+          t: t,
+          lang: lang,
+          weekNumber: weekNumber,
+          streak: streak,
+          wordCount: wordCount,
+        ),
         const SizedBox(height: 16),
         _GradientActionButton(
           onTap: onPractice,
@@ -201,12 +209,14 @@ class _Header extends StatelessWidget {
   final Lang lang;
   final int weekNumber;
   final int streak;
+  final int wordCount;
 
   const _Header({
     required this.t,
     required this.lang,
     required this.weekNumber,
     required this.streak,
+    required this.wordCount,
   });
 
   @override
@@ -253,7 +263,7 @@ class _Header extends StatelessWidget {
             children: [
               _StatChip(label: t.homeWeek, value: '$weekNumber'),
               const SizedBox(width: 8),
-              _StatChip(label: t.homeWordsLearned, value: '20'),
+              _StatChip(label: t.homeWordsLearned, value: '$wordCount'),
               const SizedBox(width: 8),
               _StatChip(
                 label: '🔥 ${t.homeStreak}',

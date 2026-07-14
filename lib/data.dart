@@ -1,239 +1,38 @@
 import 'models.dart';
+import 'pronounce.dart';
+import 'word_book.dart';
 
-/// Woorden van deze week (20 stuks), overgenomen uit het prototype.
-const List<Word> kWords = [
-  Word(
-    id: 1,
-    es: 'biblioteca',
-    nl: 'bibliotheek',
-    en: 'library',
-    pronunciation: 'bee-blee-oh-TEH-kah',
-    exampleEs: 'Voy a la biblioteca todos los días.',
-    exampleNl: 'Ik ga elke dag naar de bibliotheek.',
-  ),
-  Word(
-    id: 2,
-    es: 'hablar',
-    nl: 'spreken',
-    en: 'to speak',
-    pronunciation: 'ah-BLAR',
-    exampleEs: 'Me gusta hablar en español.',
-    exampleNl: 'Ik spreek graag Spaans.',
-  ),
-  Word(
-    id: 3,
-    es: 'universidad',
-    nl: 'universiteit',
-    en: 'university',
-    pronunciation: 'oo-nee-behr-see-DAHD',
-    exampleEs: 'Estudio en la universidad.',
-    exampleNl: 'Ik studeer aan de universiteit.',
-  ),
-  Word(
-    id: 4,
-    es: 'hermoso',
-    nl: 'prachtig',
-    en: 'beautiful',
-    pronunciation: 'ehr-MOH-soh',
-    exampleEs: 'El jardín es muy hermoso.',
-    exampleNl: 'De tuin is erg prachtig.',
-  ),
-  Word(
-    id: 5,
-    es: 'caminar',
-    nl: 'wandelen',
-    en: 'to walk',
-    pronunciation: 'kah-mee-NAR',
-    exampleEs: 'Me gusta caminar por el parque.',
-    exampleNl: 'Ik wandel graag door het park.',
-  ),
-  Word(
-    id: 6,
-    es: 'ciudad',
-    nl: 'stad',
-    en: 'city',
-    pronunciation: 'syoo-DAHD',
-    exampleEs: 'Vivo en una ciudad grande.',
-    exampleNl: 'Ik woon in een grote stad.',
-  ),
-  Word(
-    id: 7,
-    es: 'aprender',
-    nl: 'leren',
-    en: 'to learn',
-    pronunciation: 'ah-prehn-DEHR',
-    exampleEs: 'Quiero aprender español rápido.',
-    exampleNl: 'Ik wil snel Spaans leren.',
-  ),
-  Word(
-    id: 8,
-    es: 'trabajo',
-    nl: 'werk',
-    en: 'work',
-    pronunciation: 'trah-BAH-hoh',
-    exampleEs: 'Mi trabajo es muy interesante.',
-    exampleNl: 'Mijn werk is erg interessant.',
-  ),
-  Word(
-    id: 9,
-    es: 'familia',
-    nl: 'familie',
-    en: 'family',
-    pronunciation: 'fah-MEE-lyah',
-    exampleEs: 'Mi familia es muy importante para mí.',
-    exampleNl: 'Mijn familie is erg belangrijk voor mij.',
-  ),
-  Word(
-    id: 10,
-    es: 'comer',
-    nl: 'eten',
-    en: 'to eat',
-    pronunciation: 'koh-MEHR',
-    exampleEs: '¿Quieres comer conmigo?',
-    exampleNl: 'Wil je met mij eten?',
-  ),
-  Word(
-    id: 11,
-    es: 'tiempo',
-    nl: 'tijd',
-    en: 'time',
-    pronunciation: 'TYEHM-poh',
-    exampleEs: 'No tengo tiempo libre hoy.',
-    exampleNl: 'Ik heb vandaag geen vrije tijd.',
-  ),
-  Word(
-    id: 12,
-    es: 'amigo',
-    nl: 'vriend',
-    en: 'friend',
-    pronunciation: 'ah-MEE-goh',
-    exampleEs: 'Mi mejor amigo se llama Carlos.',
-    exampleNl: 'Mijn beste vriend heet Carlos.',
-  ),
-  Word(
-    id: 13,
-    es: 'grande',
-    nl: 'groot',
-    en: 'big',
-    pronunciation: 'GRAHN-deh',
-    exampleEs: 'Tengo un perro muy grande.',
-    exampleNl: 'Ik heb een hele grote hond.',
-  ),
-  Word(
-    id: 14,
-    es: 'pequeño',
-    nl: 'klein',
-    en: 'small',
-    pronunciation: 'peh-KEH-nyoh',
-    exampleEs: 'Mi apartamento es pequeño pero cómodo.',
-    exampleNl: 'Mijn appartement is klein maar comfortabel.',
-  ),
-  Word(
-    id: 15,
-    es: 'escribir',
-    nl: 'schrijven',
-    en: 'to write',
-    pronunciation: 'ehs-kree-BEER',
-    exampleEs: 'Me gusta escribir cartas a mano.',
-    exampleNl: 'Ik schrijf graag brieven met de hand.',
-  ),
-  Word(
-    id: 16,
-    es: 'música',
-    nl: 'muziek',
-    en: 'music',
-    pronunciation: 'MOO-see-kah',
-    exampleEs: 'Escucho música mientras trabajo.',
-    exampleNl: 'Ik luister naar muziek terwijl ik werk.',
-  ),
-  Word(
-    id: 17,
-    es: 'leer',
-    nl: 'lezen',
-    en: 'to read',
-    pronunciation: 'leh-EHR',
-    exampleEs: 'Me gusta leer libros antes de dormir.',
-    exampleNl: 'Ik lees graag boeken voor het slapengaan.',
-  ),
-  Word(
-    id: 18,
-    es: 'noche',
-    nl: 'nacht',
-    en: 'night',
-    pronunciation: 'NOH-cheh',
-    exampleEs: 'Las estrellas brillan de noche.',
-    exampleNl: 'De sterren schijnen in de nacht.',
-  ),
-  Word(
-    id: 19,
-    es: 'dormir',
-    nl: 'slapen',
-    en: 'to sleep',
-    pronunciation: 'dohr-MEER',
-    exampleEs: 'Necesito dormir ocho horas.',
-    exampleNl: 'Ik moet acht uur slapen.',
-  ),
-  Word(
-    id: 20,
-    es: 'feliz',
-    nl: 'gelukkig',
-    en: 'happy',
-    pronunciation: 'feh-LEES',
-    exampleEs: 'Estoy muy feliz hoy.',
-    exampleNl: 'Ik ben vandaag erg gelukkig.',
-  ),
-];
+/// Aantal woorden dat per week wordt geleerd.
+const int kWordsPerWeek = 20;
 
-/// Voorbeeldhistorie, overgenomen uit het prototype.
-const List<QuizResult> kMockHistory = [
-  QuizResult(
-    id: 1,
-    weekNumber: 28,
-    year: 2026,
-    date: '12 jul 2026',
-    grade: 8.0,
-    correct: 8,
-    total: 10,
-    wrongWordIds: [3, 14],
-  ),
-  QuizResult(
-    id: 2,
-    weekNumber: 27,
-    year: 2026,
-    date: '5 jul 2026',
-    grade: 9.0,
-    correct: 9,
-    total: 10,
-    wrongWordIds: [7],
-  ),
-  QuizResult(
-    id: 3,
-    weekNumber: 26,
-    year: 2026,
-    date: '28 jun 2026',
-    grade: 7.0,
-    correct: 7,
-    total: 10,
-    wrongWordIds: [1, 11, 15],
-  ),
-  QuizResult(
-    id: 4,
-    weekNumber: 25,
-    year: 2026,
-    date: '21 jun 2026',
-    grade: 10.0,
-    correct: 10,
-    total: 10,
-    wrongWordIds: [],
-  ),
-  QuizResult(
-    id: 5,
-    weekNumber: 24,
-    year: 2026,
-    date: '14 jun 2026',
-    grade: 6.0,
-    correct: 6,
-    total: 10,
-    wrongWordIds: [2, 8, 13, 16],
-  ),
-];
+/// Het volledige Spaanse woordenboek (zie `word_book.dart`), met per woord
+/// een automatisch afgeleide uitspraak. Elke week worden hieruit
+/// [kWordsPerWeek] woorden gekozen op basis van het weeknummer; na het einde
+/// van het boek begint de rotatie opnieuw.
+final List<Word> kWordBook = List.unmodifiable([
+  for (var i = 0; i < kWordEntries.length; i++)
+    Word(
+      id: i + 1,
+      es: kWordEntries[i].$1,
+      nl: kWordEntries[i].$2,
+      en: kWordEntries[i].$3,
+      pronunciation: pronounceEs(kWordEntries[i].$1),
+    ),
+]);
+
+/// De woorden van een bepaalde week: een venster van [kWordsPerWeek] woorden
+/// dat elke week een stuk opschuift en aan het einde van het boek weer
+/// vooraan begint.
+List<Word> wordsForWeek(int weekNumber) {
+  final start = ((weekNumber - 1) * kWordsPerWeek) % kWordBook.length;
+  return List.generate(
+    kWordsPerWeek,
+    (i) => kWordBook[(start + i) % kWordBook.length],
+  );
+}
+
+/// Zoekt een woord op id in het hele woordenboek.
+Word? wordById(int id) {
+  if (id < 1 || id > kWordBook.length) return null;
+  return kWordBook[id - 1];
+}

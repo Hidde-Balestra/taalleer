@@ -16,7 +16,7 @@ class QuizResultScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final palette = AppPalette.of(context);
     final passed = result.grade >= 5.5;
-    final wrongWords = kWords
+    final wrongWords = kWordBook
         .where((w) => result.wrongWordIds.contains(w.id))
         .toList();
     final chipColor = passed ? AppColors.green : AppColors.red;

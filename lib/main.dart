@@ -7,6 +7,7 @@ import 'models.dart';
 import 'screens/conjugation_quiz_screen.dart';
 import 'screens/history_screen.dart';
 import 'screens/home_screen.dart';
+import 'screens/past_words_screen.dart';
 import 'screens/practice_screen.dart';
 import 'screens/quiz_result_screen.dart';
 import 'screens/quiz_screen.dart';
@@ -117,6 +118,18 @@ class _HomeShellState extends State<HomeShell> {
     );
   }
 
+  void _openPastWords(Strings t, AppSettings settings) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => PastWordsScreen(
+          t: t,
+          lang: settings.language,
+          weekSeeds: widget.appState.pastWeekSeeds,
+        ),
+      ),
+    );
+  }
+
   ValueChanged<QuizResult> _finishQuiz(Strings t) => (result) {
     widget.appState.addResult(result);
     Navigator.of(context).pushReplacement(
@@ -150,7 +163,13 @@ class _HomeShellState extends State<HomeShell> {
         onQuiz: () => _openQuiz(t, settings, weekWords),
         onConjQuiz: () => _openConjQuiz(t, settings),
       ),
-      VocabularyScreen(t: t, weekNumber: weekNumber, words: weekWords),
+      VocabularyScreen(
+        t: t,
+        lang: settings.language,
+        weekNumber: weekNumber,
+        words: weekWords,
+        onOpenPast: () => _openPastWords(t, settings),
+      ),
       HistoryScreen(
         t: t,
         history: widget.appState.history,

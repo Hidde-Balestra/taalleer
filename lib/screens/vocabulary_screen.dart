@@ -8,14 +8,18 @@ import '../widgets.dart';
 
 class VocabularyScreen extends StatefulWidget {
   final Strings t;
+  final Lang lang;
   final int weekNumber;
   final List<Word> words;
+  final VoidCallback onOpenPast;
 
   const VocabularyScreen({
     super.key,
     required this.t,
+    required this.lang,
     required this.weekNumber,
     required this.words,
+    required this.onOpenPast,
   });
 
   @override
@@ -56,9 +60,37 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  PillBadge(text: '${t.vocabWeek} ${widget.weekNumber}'),
+                  Row(
+                    children: [
+                      PillBadge(text: '${t.vocabWeek} ${widget.weekNumber}'),
+                      const SizedBox(width: 8),
+                      // Naar het overzicht van eerdere weken.
+                      Material(
+                        color: palette.card,
+                        borderRadius: BorderRadius.circular(12),
+                        child: InkWell(
+                          onTap: widget.onOpenPast,
+                          borderRadius: BorderRadius.circular(12),
+                          child: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: palette.border),
+                            ),
+                            child: Icon(
+                              Icons.history,
+                              size: 16,
+                              color: palette.foreground,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
+              const SizedBox(height: 12),
+              WeekResetBanner(t: t, lang: widget.lang),
               const SizedBox(height: 12),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12),

@@ -49,7 +49,9 @@ class HomeScreen extends StatelessWidget {
           streak: streak,
           wordCount: wordCount,
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 12),
+        WeekResetBanner(t: t, lang: lang),
+        const SizedBox(height: 12),
         _GradientActionButton(
           onTap: onPractice,
           gradient: const LinearGradient(

@@ -189,6 +189,38 @@ void main() {
     });
   });
 
+  group('Eerdere weken', () {
+    var week = 300;
+    int nowWeek() => week;
+    setUp(() => week = 300);
+
+    test('een nieuwe gebruiker heeft nog geen eerdere weken', () async {
+      final state = await AppState.load(nowWeek: nowWeek);
+      expect(state.pastWeekSeeds, isEmpty);
+    });
+
+    test('na een paar weken zijn de vorige weken beschikbaar', () async {
+      // Eerste gebruik legt de startweek vast.
+      await AppState.load(nowWeek: nowWeek);
+      await Future<void>.delayed(Duration.zero);
+
+      week = 303; // drie weken later
+      final state = await AppState.load(nowWeek: nowWeek);
+      // Weken 300, 301, 302 zijn geweest; 303 is de huidige week.
+      expect(state.pastWeekSeeds, [302, 301, 300]);
+    });
+
+    test('de startweek blijft bewaard na een herstart', () async {
+      await AppState.load(nowWeek: nowWeek);
+      await Future<void>.delayed(Duration.zero);
+
+      week = 305;
+      final reloaded = await AppState.load(nowWeek: nowWeek);
+      expect(reloaded.pastWeekSeeds.last, 300);
+      expect(reloaded.pastWeekSeeds, hasLength(5));
+    });
+  });
+
   group('Pauze', () {
     var week = 200;
     int nowWeek() => week;

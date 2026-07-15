@@ -326,6 +326,35 @@ void main() {
       expect(seen.length, greaterThan(kWordBook.length ~/ 2));
     });
 
+    test('weekStartDate geeft de maandag van die week', () {
+      final start = weekStartDate(currentWeekSeed(DateTime(2026, 7, 15)));
+      expect(start.weekday, DateTime.monday);
+      // 15 juli 2026 is een woensdag → die week begon maandag 13 juli.
+      expect(start, DateTime(2026, 7, 13));
+    });
+
+    test('nextWordReset is de eerstvolgende maandag', () {
+      final reset = nextWordReset(DateTime(2026, 7, 15)); // woensdag
+      expect(reset.weekday, DateTime.monday);
+      expect(reset, DateTime(2026, 7, 20));
+    });
+
+    test('daysUntilWordReset telt de dagen tot die maandag (1..7)', () {
+      expect(daysUntilWordReset(DateTime(2026, 7, 15)), 5); // wo → ma
+      expect(daysUntilWordReset(DateTime(2026, 7, 19)), 1); // zo → ma
+      expect(daysUntilWordReset(DateTime(2026, 7, 13)), 7); // ma → ma
+    });
+
+    test('bij de reset horen nieuwe woorden', () {
+      final thisWeek = wordsForWeek(
+        currentWeekSeed(DateTime(2026, 7, 15)),
+      ).map((w) => w.id).toList();
+      final nextWeek = wordsForWeek(
+        currentWeekSeed(DateTime(2026, 7, 20)),
+      ).map((w) => w.id).toList();
+      expect(thisWeek, isNot(equals(nextWeek)));
+    });
+
     test('currentWeekSeed loopt per week op en herhaalt niet per jaar', () {
       final w1 = currentWeekSeed(DateTime(2026, 7, 15));
       final w2 = currentWeekSeed(DateTime(2026, 7, 22)); // 7 dagen later

@@ -31,13 +31,31 @@ class AppState extends ChangeNotifier {
     int Function()? nowWeek,
   }) async {
     final s = storage ?? AppStorage();
-    return AppState(
+    final state = AppState(
       storage: s,
       nowWeek: nowWeek,
       settings: await s.loadSettings(),
       history: await s.loadHistory(),
       streakState: await s.loadStreak(),
     );
+    state._ensureFirstWeek();
+    return state;
+  }
+
+  /// Legt bij het eerste gebruik vast in welke week de gebruiker begon.
+  void _ensureFirstWeek() {
+    if (_streakState.firstWeek != null) return;
+    _streakState = _streakState.copyWith(firstWeek: _nowWeek());
+    _storage.saveStreak(_streakState);
+  }
+
+  /// De weken die de gebruiker al heeft gehad (nieuwste eerst), zonder de
+  /// huidige week. Leeg voor een gebruiker die pas deze week begonnen is.
+  List<int> get pastWeekSeeds {
+    final first = _streakState.firstWeek;
+    if (first == null) return const [];
+    final current = _nowWeek();
+    return [for (var s = current - 1; s >= first; s--) s];
   }
 
   AppSettings get settings => _settings;

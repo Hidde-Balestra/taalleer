@@ -1,7 +1,59 @@
 import 'package:flutter/material.dart';
 
+import 'data.dart';
+import 'i18n.dart';
+import 'models.dart';
 import 'theme.dart';
 import 'utils.dart';
+
+/// Laat zien wanneer de woorden en de toets van deze week resetten.
+class WeekResetBanner extends StatelessWidget {
+  final Strings t;
+  final Lang lang;
+
+  const WeekResetBanner({super.key, required this.t, required this.lang});
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = AppPalette.of(context);
+    final days = daysUntilWordReset();
+    final date = nextWordReset();
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: AppColors.indigo.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.indigo.withValues(alpha: 0.2)),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.autorenew, size: 16, color: AppColors.indigo),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '${t.resetTitle} · ${t.resetWhen(days)}',
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.indigo,
+                  ),
+                ),
+                Text(
+                  formatDateLong(date, lang),
+                  style: TextStyle(fontSize: 11, color: palette.muted),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
 
 /// Afgeronde kaart met rand, zoals de `Card` in het prototype.
 class AppCard extends StatelessWidget {

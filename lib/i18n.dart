@@ -11,6 +11,10 @@ class Strings {
   final String homeQuizWeekend, homeLastGrade, homeNoResult;
   final String homeGreeting, homeSubGreeting;
   final String homeQuizDone, homePaused, homePausedSub;
+  // Reset van de week
+  final String resetTitle, resetTomorrow, resetInDays;
+  // Eerdere woorden
+  final String pastTitle, pastSubtitle, pastEmpty, pastWords, pastOpen;
   // Vervoegingstoets
   final String conjTitle, conjInstruction;
   // Woordenlijst
@@ -73,6 +77,14 @@ class Strings {
     required this.homeQuizDone,
     required this.homePaused,
     required this.homePausedSub,
+    required this.resetTitle,
+    required this.resetTomorrow,
+    required this.resetInDays,
+    required this.pastTitle,
+    required this.pastSubtitle,
+    required this.pastEmpty,
+    required this.pastWords,
+    required this.pastOpen,
     required this.conjTitle,
     required this.conjInstruction,
     required this.vocabTitle,
@@ -156,6 +168,14 @@ class Strings {
     homeQuizDone: 'Deze week al afgerond ✓',
     homePaused: 'Streak gepauzeerd',
     homePausedSub: 'Schakel de pauze uit om toetsen te maken',
+    resetTitle: 'Nieuwe woorden en toets',
+    resetTomorrow: 'morgen',
+    resetInDays: 'over {d} dagen',
+    pastTitle: 'Eerdere woorden',
+    pastSubtitle: 'Alle woorden die je eerder hebt gehad, per week',
+    pastEmpty: 'Je bent deze week begonnen — er zijn nog geen eerdere weken.',
+    pastWords: 'woorden',
+    pastOpen: 'Eerdere weken',
     conjTitle: 'Vervoegingstoets',
     conjInstruction: 'Vervoeg in de tegenwoordige tijd',
     vocabTitle: 'Woordenlijst',
@@ -239,6 +259,14 @@ class Strings {
     homeQuizDone: 'Already done this week ✓',
     homePaused: 'Streak paused',
     homePausedSub: 'Turn off pause to take quizzes',
+    resetTitle: 'New words and quiz',
+    resetTomorrow: 'tomorrow',
+    resetInDays: 'in {d} days',
+    pastTitle: 'Previous words',
+    pastSubtitle: 'All the words you had before, by week',
+    pastEmpty: 'You started this week — there are no previous weeks yet.',
+    pastWords: 'words',
+    pastOpen: 'Previous weeks',
     conjTitle: 'Conjugation Quiz',
     conjInstruction: 'Conjugate in the present tense',
     vocabTitle: 'Word List',
@@ -298,6 +326,10 @@ class Strings {
     settingsPauseActiveNote:
         'Active: you cannot take quizzes and your streak is frozen until you turn off pause.',
   );
+
+  /// "morgen" of "over N dagen".
+  String resetWhen(int days) =>
+      days <= 1 ? resetTomorrow : resetInDays.replaceFirst('{d}', '$days');
 
   /// Vraaglabel op basis van vraagtype.
   String questionLabel(QuestionType type) {

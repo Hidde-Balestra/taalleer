@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:taalleer/app_state.dart';
 import 'package:taalleer/data.dart';
+import 'package:taalleer/i18n.dart';
 import 'package:taalleer/main.dart';
 import 'package:taalleer/models.dart';
 import 'package:taalleer/screens/settings_screen.dart';
@@ -279,6 +280,60 @@ void main() {
       for (final id in state.history.first.wrongWordIds) {
         expect(wordById(id)!.isVerb, isTrue);
       }
+    });
+  });
+
+  group('Weekreset', () {
+    testWidgets('home toont wanneer de woorden en toets resetten', (
+      tester,
+    ) async {
+      await pumpApp(tester);
+      expect(find.textContaining('Nieuwe woorden en toets'), findsOneWidget);
+      // De resetdatum (eerstvolgende maandag) staat eronder.
+      expect(
+        find.text(formatDateLong(nextWordReset(), Lang.nl)),
+        findsOneWidget,
+      );
+    });
+  });
+
+  group('Eerdere woorden', () {
+    testWidgets('scherm is bereikbaar vanuit de woordenlijst', (tester) async {
+      await pumpApp(tester);
+      await tester.tap(find.text('Woorden'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byIcon(Icons.history));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Eerdere woorden'), findsOneWidget);
+      // Een verse gebruiker begint deze week en heeft nog geen eerdere weken.
+      expect(find.textContaining('geen eerdere weken'), findsOneWidget);
+    });
+
+    testWidgets('toont eerdere weken met hun woorden', (tester) async {
+      // Een gebruiker die drie weken geleden begon.
+      final startWeek = currentWeekSeed();
+      final later = AppState(
+        nowWeek: () => startWeek + 3,
+        streakState: StreakState(firstWeek: startWeek),
+      );
+
+      await pumpApp(tester, state: later);
+      await tester.tap(find.text('Woorden'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byIcon(Icons.history));
+      await tester.pumpAndSettle();
+
+      // Drie eerdere weken, elk met 20 woorden.
+      expect(find.textContaining('20 woorden'), findsNWidgets(3));
+
+      // Uitklappen toont de woorden van die week.
+      final seed = later.pastWeekSeeds.first;
+      final firstWord = wordsForWeek(seed).first;
+      await tester.tap(find.textContaining('20 woorden').first);
+      await tester.pumpAndSettle();
+      expect(find.textContaining(firstWord.es), findsWidgets);
     });
   });
 

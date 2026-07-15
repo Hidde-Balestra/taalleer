@@ -14,6 +14,8 @@ Een Flutter-app om Spaanse woordjes te leren, gebaseerd op het [Figma Make proto
 - **Vervoegingstoets** — 10 werkwoorden in een willekeurige persoon vervoegen (tegenwoordige tijd)
 - **Wekelijkse streak** — één afgeronde toets (woorden óf vervoegingen) per week houdt de streak in stand; mis je een week, dan vervalt hij
 - **Streak pauzeren** — via een toggle in de instellingen; tijdens de pauze kun je geen toetsen maken en staat de streak stil (kan niet omhoog en niet gereset worden) tot je de pauze weer uitschakelt
+- **Duidelijke weekreset** — op het home- en woordenscherm staat wanneer de woorden en de toets resetten (elke maandag), met het aantal dagen en de datum
+- **Eerdere woorden** — een apart scherm (via het klok-icoon in de woordenlijst) met alle woorden die je eerder hebt gehad, gegroepeerd per week
 - **Resultaten** — historie van alle afgeronde toetsen
 - **Instellingen**
   - App-taal: Nederlands / Engels
@@ -72,7 +74,7 @@ lib/
 ├── main.dart            # App-shell, thema-switching, tabnavigatie
 ├── models.dart          # Word, QuizResult, Question, AppSettings (+ JSON)
 ├── word_book.dart       # Woordenboek: 1000 lemma's (es, nl, en)
-├── data.dart            # Weekrotatie over het woordenboek
+├── data.dart            # Weekselectie + weekreset-datums
 ├── pronounce.dart       # Automatische uitspraak (lettergrepen + klemtoon)
 ├── grammar.dart         # Vervoeging (o.t.t.) + lidwoord (el/la)
 ├── i18n.dart            # NL/EN vertalingen + datumnotatie

@@ -50,14 +50,37 @@ List<Word> wordsForWeek(int seed) {
   return [for (final i in picked) kWordBook[i]];
 }
 
+/// Vast beginpunt van de weekteller: een maandag. In UTC, zodat het
+/// overschakelen op zomer-/wintertijd de dagentelling niet verschuift.
+final DateTime _weekEpoch = DateTime.utc(2020, 1, 6);
+
+/// De kalenderdatum van [d] als UTC-middernacht (voor dag-rekenwerk zonder
+/// zomertijd-effecten).
+DateTime _dateOnlyUtc(DateTime d) => DateTime.utc(d.year, d.month, d.day);
+
 /// Een niet-herhalende weekteller sinds een vast beginpunt (maandag), zodat
 /// [wordsForWeek] elke kalenderweek een nieuwe willekeurige trekking geeft en
 /// niet elk jaar in herhaling valt.
-int currentWeekSeed([DateTime? now]) {
+int currentWeekSeed([DateTime? now]) =>
+    _dateOnlyUtc(now ?? DateTime.now()).difference(_weekEpoch).inDays ~/ 7;
+
+/// De maandag waarop een bepaalde week (seed) begint, als lokale datum.
+DateTime weekStartDate(int seed) {
+  final d = _weekEpoch.add(Duration(days: seed * 7));
+  return DateTime(d.year, d.month, d.day);
+}
+
+/// De datum (maandag) waarop de woorden en de toets van deze week resetten:
+/// het begin van de eerstvolgende week.
+DateTime nextWordReset([DateTime? now]) =>
+    weekStartDate(currentWeekSeed(now) + 1);
+
+/// Aantal hele dagen tot de volgende reset (1..7).
+int daysUntilWordReset([DateTime? now]) {
   final today = now ?? DateTime.now();
-  final date = DateTime(today.year, today.month, today.day);
-  final epoch = DateTime(2020, 1, 6); // een maandag
-  return date.difference(epoch).inDays ~/ 7;
+  return _dateOnlyUtc(
+    nextWordReset(today),
+  ).difference(_dateOnlyUtc(today)).inDays;
 }
 
 /// Zoekt een woord op id in het hele woordenboek.

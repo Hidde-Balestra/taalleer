@@ -160,12 +160,17 @@ class StreakState {
   final int pauseOffset;
   final int? pauseSince;
 
+  /// De echte weekteller waarin de app voor het eerst is gebruikt; bepaalt
+  /// vanaf welke week er "eerdere woorden" te tonen zijn.
+  final int? firstWeek;
+
   const StreakState({
     this.streak = 0,
     this.lastQuizWeek,
     this.paused = false,
     this.pauseOffset = 0,
     this.pauseSince,
+    this.firstWeek,
   });
 
   StreakState copyWith({
@@ -176,6 +181,7 @@ class StreakState {
     int? pauseOffset,
     int? pauseSince,
     bool clearPauseSince = false,
+    int? firstWeek,
   }) {
     return StreakState(
       streak: streak ?? this.streak,
@@ -185,6 +191,7 @@ class StreakState {
       paused: paused ?? this.paused,
       pauseOffset: pauseOffset ?? this.pauseOffset,
       pauseSince: clearPauseSince ? null : (pauseSince ?? this.pauseSince),
+      firstWeek: firstWeek ?? this.firstWeek,
     );
   }
 
@@ -194,6 +201,7 @@ class StreakState {
     'paused': paused,
     'pauseOffset': pauseOffset,
     'pauseSince': pauseSince,
+    'firstWeek': firstWeek,
   };
 
   factory StreakState.fromJson(Map<String, dynamic> json) => StreakState(
@@ -202,5 +210,6 @@ class StreakState {
     paused: json['paused'] as bool? ?? false,
     pauseOffset: json['pauseOffset'] as int? ?? 0,
     pauseSince: json['pauseSince'] as int?,
+    firstWeek: json['firstWeek'] as int?,
   );
 }

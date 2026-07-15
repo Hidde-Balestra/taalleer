@@ -5,7 +5,6 @@ import 'package:taalleer/app_state.dart';
 import 'package:taalleer/data.dart';
 import 'package:taalleer/main.dart';
 import 'package:taalleer/models.dart';
-import 'package:taalleer/utils.dart';
 
 void main() {
   setUp(() {
@@ -58,7 +57,7 @@ void main() {
   });
 
   group('Woordenlijst', () {
-    final weekWords = wordsForWeek(currentWeekNumber());
+    final weekWords = wordsForWeek(currentWeekSeed());
 
     testWidgets('toont de woorden van deze week', (tester) async {
       await pumpApp(tester);
@@ -229,7 +228,7 @@ void main() {
 
         // Alleen woorden van deze week zaten in de toets.
         final weekIds = wordsForWeek(
-          currentWeekNumber(),
+          currentWeekSeed(),
         ).map((w) => w.id).toSet();
         for (final id in state.history.first.wrongWordIds) {
           expect(weekIds, contains(id));

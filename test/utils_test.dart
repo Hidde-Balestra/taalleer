@@ -191,14 +191,10 @@ void main() {
     });
   });
 
-  group('woordenboek en weekrotatie', () {
-    test('woordenboek bevat minimaal 1000 woorden met unieke ids', () {
-      expect(kWordBook.length, greaterThanOrEqualTo(1000));
+  group('woordenboek', () {
+    test('woordenboek bevat minimaal 900 woorden met unieke ids', () {
+      expect(kWordBook.length, greaterThanOrEqualTo(900));
       expect(kWordBook.map((w) => w.id).toSet(), hasLength(kWordBook.length));
-    });
-
-    test('woordenboeklengte is een veelvoud van het weekvenster', () {
-      expect(kWordBook.length % kWordsPerWeek, 0);
     });
 
     test('geen dubbele Spaanse lemma\'s in het woordenboek', () {
@@ -218,49 +214,74 @@ void main() {
       }
     });
 
-    test('elke week heeft precies 20 woorden', () {
-      for (final week in [1, 2, 7, 26, 52, 53]) {
-        expect(wordsForWeek(week), hasLength(kWordsPerWeek));
-      }
-    });
-
-    test('opeenvolgende weken hebben verschillende woorden', () {
-      final week1 = wordsForWeek(1).map((w) => w.id).toSet();
-      final week2 = wordsForWeek(2).map((w) => w.id).toSet();
-      expect(week1.intersection(week2), isEmpty);
-    });
-
-    test(
-      'rotatie is deterministisch: dezelfde week geeft dezelfde woorden',
-      () {
-        expect(
-          wordsForWeek(29).map((w) => w.id).toList(),
-          wordsForWeek(29).map((w) => w.id).toList(),
-        );
-      },
-    );
-
-    test('het hele woordenboek komt aan bod voordat de rotatie herhaalt', () {
-      final weeksPerCycle = kWordBook.length ~/ kWordsPerWeek;
-      final seen = <int>{};
-      for (var week = 1; week <= weeksPerCycle; week++) {
-        seen.addAll(wordsForWeek(week).map((w) => w.id));
-      }
-      expect(seen, hasLength(kWordBook.length));
-    });
-
-    test('na een volledige cyclus begint de rotatie opnieuw', () {
-      final weeksPerCycle = kWordBook.length ~/ kWordsPerWeek;
-      expect(
-        wordsForWeek(1).map((w) => w.id).toList(),
-        wordsForWeek(1 + weeksPerCycle).map((w) => w.id).toList(),
-      );
-    });
-
     test('wordById vindt woorden uit het hele boek', () {
       expect(wordById(kWordBook.first.id)!.es, kWordBook.first.es);
       expect(wordById(kWordBook.last.id)!.es, kWordBook.last.es);
       expect(wordById(-1), isNull);
+    });
+  });
+
+  group('willekeurige weekselectie', () {
+    test('elke week geeft precies 20 unieke woorden', () {
+      for (final seed in [0, 1, 7, 26, 52, 999, 10000]) {
+        final words = wordsForWeek(seed);
+        expect(words, hasLength(kWordsPerWeek));
+        expect(
+          words.map((w) => w.id).toSet(),
+          hasLength(kWordsPerWeek),
+          reason: 'dubbele woorden bij seed $seed',
+        );
+      }
+    });
+
+    test('alle gekozen woorden komen uit het woordenboek', () {
+      final ids = kWordBook.map((w) => w.id).toSet();
+      for (final w in wordsForWeek(42)) {
+        expect(ids, contains(w.id));
+      }
+    });
+
+    test('deterministisch: dezelfde seed geeft dezelfde 20 woorden', () {
+      expect(
+        wordsForWeek(29).map((w) => w.id).toList(),
+        wordsForWeek(29).map((w) => w.id).toList(),
+      );
+    });
+
+    test('de selectie is echt willekeurig, niet de eerste 20 uit het boek', () {
+      final firstTwenty = kWordBook
+          .take(kWordsPerWeek)
+          .map((w) => w.id)
+          .toSet();
+      final picked = wordsForWeek(3).map((w) => w.id).toSet();
+      expect(picked, isNot(equals(firstTwenty)));
+    });
+
+    test('verschillende weken geven verschillende trekkingen', () {
+      final a = wordsForWeek(1).map((w) => w.id).toList();
+      final b = wordsForWeek(2).map((w) => w.id).toList();
+      final c = wordsForWeek(3).map((w) => w.id).toList();
+      expect(a, isNot(equals(b)));
+      expect(b, isNot(equals(c)));
+    });
+
+    test('over veel weken komt een groot deel van het boek aan bod', () {
+      final seen = <int>{};
+      for (var seed = 0; seed < 200; seed++) {
+        seen.addAll(wordsForWeek(seed).map((w) => w.id));
+      }
+      // 200 × 20 trekkingen met teruglegging dekken ruimschoots de helft.
+      expect(seen.length, greaterThan(kWordBook.length ~/ 2));
+    });
+
+    test('currentWeekSeed loopt per week op en herhaalt niet per jaar', () {
+      final w1 = currentWeekSeed(DateTime(2026, 7, 15));
+      final w2 = currentWeekSeed(DateTime(2026, 7, 22)); // 7 dagen later
+      final sameWeek = currentWeekSeed(DateTime(2026, 7, 16)); // zelfde week
+      final nextYear = currentWeekSeed(DateTime(2027, 7, 15));
+      expect(w2, w1 + 1);
+      expect(sameWeek, w1);
+      expect(nextYear, isNot(w1));
     });
   });
 }

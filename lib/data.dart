@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'models.dart';
 import 'pronounce.dart';
 import 'word_book.dart';
@@ -7,8 +9,7 @@ const int kWordsPerWeek = 20;
 
 /// Het volledige Spaanse woordenboek (zie `word_book.dart`), met per woord
 /// een automatisch afgeleide uitspraak. Elke week worden hieruit
-/// [kWordsPerWeek] woorden gekozen op basis van het weeknummer; na het einde
-/// van het boek begint de rotatie opnieuw.
+/// [kWordsPerWeek] woorden willekeurig gekozen (zie [wordsForWeek]).
 final List<Word> kWordBook = List.unmodifiable([
   for (var i = 0; i < kWordEntries.length; i++)
     Word(
@@ -20,15 +21,32 @@ final List<Word> kWordBook = List.unmodifiable([
     ),
 ]);
 
-/// De woorden van een bepaalde week: een venster van [kWordsPerWeek] woorden
-/// dat elke week een stuk opschuift en aan het einde van het boek weer
-/// vooraan begint.
-List<Word> wordsForWeek(int weekNumber) {
-  final start = ((weekNumber - 1) * kWordsPerWeek) % kWordBook.length;
-  return List.generate(
-    kWordsPerWeek,
-    (i) => kWordBook[(start + i) % kWordBook.length],
-  );
+/// De woorden van een week: [kWordsPerWeek] willekeurige woorden uit het
+/// hele woordenboek.
+///
+/// De keuze is willekeurig maar *deterministisch* per [seed]: dezelfde seed
+/// levert altijd exact dezelfde 20 woorden op. Dat is essentieel — de
+/// woordenlijst, de oefening en de toets binnen één week moeten dezelfde
+/// woorden tonen, en de in de historie opgeslagen fout-woord-id's moeten
+/// bij een later bezoek nog kloppen.
+///
+/// Gebruik [currentWeekSeed] voor de seed in de app, zodat elke kalenderweek
+/// (jaaroverschrijdend) een nieuwe, niet-herhalende trekking krijgt.
+List<Word> wordsForWeek(int seed) {
+  final order = List<int>.generate(kWordBook.length, (i) => i)
+    ..shuffle(Random(seed));
+  final picked = order.take(kWordsPerWeek).toList()..sort();
+  return [for (final i in picked) kWordBook[i]];
+}
+
+/// Een niet-herhalende weekteller sinds een vast beginpunt (maandag), zodat
+/// [wordsForWeek] elke kalenderweek een nieuwe willekeurige trekking geeft en
+/// niet elk jaar in herhaling valt.
+int currentWeekSeed([DateTime? now]) {
+  final today = now ?? DateTime.now();
+  final date = DateTime(today.year, today.month, today.day);
+  final epoch = DateTime(2020, 1, 6); // een maandag
+  return date.difference(epoch).inDays ~/ 7;
 }
 
 /// Zoekt een woord op id in het hele woordenboek.

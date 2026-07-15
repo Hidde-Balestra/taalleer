@@ -119,7 +119,9 @@ class _HomeShellState extends State<HomeShell> {
     final settings = widget.appState.settings;
     final t = Strings.of(settings.language);
     final weekNumber = currentWeekNumber();
-    final weekWords = wordsForWeek(weekNumber);
+    // De 20 woorden van deze week worden willekeurig getrokken, maar
+    // deterministisch per kalenderweek (niet-herhalend over de jaren heen).
+    final weekWords = wordsForWeek(currentWeekSeed());
 
     final tabs = [
       HomeScreen(

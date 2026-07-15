@@ -4,7 +4,7 @@ Een Flutter-app om Spaanse woordjes te leren, gebaseerd op het [Figma Make proto
 
 ## Functies
 
-- **Woordenboek met weekrotatie** — een Spaans woordenboek van 1000 woorden (thematisch geordend: getallen, tijd, familie, lichaam, huis, eten, dieren, natuur, stad, reizen, kleding, kleuren, school, beroepen, technologie, gezondheid, sport, kunst, geld, gevoelens, bijvoeglijke naamwoorden, werkwoorden en kleine woorden); elke week schuift het venster 20 woorden op, en na 50 weken begint de rotatie opnieuw
+- **Willekeurige woorden per week** — een Spaans woordenboek van ~1000 woorden (thematisch geordend: getallen, tijd, familie, lichaam, huis, eten, dieren, natuur, stad, reizen, kleding, kleuren, school, beroepen, technologie, gezondheid, sport, kunst, geld, gevoelens, bijvoeglijke naamwoorden, werkwoorden en kleine woorden). Elke week worden hieruit **20 willekeurige woorden** getrokken. De trekking is deterministisch per kalenderweek (jaaroverschrijdend, dus niet-herhalend): binnen één week tonen de woordenlijst, oefening en toets dezelfde woorden. Het boek kan onbeperkt groeien (zie [Woordenboek uitbreiden](#woordenboek-uitbreiden-richting-10000-woorden))
 - **Automatische uitspraak** — Spaans is fonetisch regelmatig; de uitspraakhint (bijv. `casa` → `KAH-sah`) wordt uit de spelling afgeleid, inclusief klemtoonregels en accenten
 - **Home** — weekoverzicht met streak, aantal woorden van deze week en het laatste cijfer
 - **Woordenlijst** — de 20 woorden van deze week met uitspraak en voorbeeldzinnen, doorzoekbaar
@@ -32,6 +32,24 @@ flutter run
 flutter analyze
 flutter test
 ```
+
+## Woordenboek uitbreiden (richting 10.000+ woorden)
+
+Het woordenboek staat in [lib/word_book.dart](lib/word_book.dart) en de willekeurige weektrekking werkt met **elke omvang** — 1000, 10.000 of meer woorden. Hoe groter het boek, hoe meer verschillende woorden je in de loop van de weken tegenkomt. Nieuwe woorden toevoegen gaat met de import-tool:
+
+```bash
+# Valideren (duplicaten, lege velden) + statistieken
+dart run tool/import_words.dart --check
+
+# Batch importeren uit een CSV (formaat: spaans;nederlands;engels)
+dart run tool/import_words.dart nieuwe_woorden.csv
+dart format lib/word_book.dart
+flutter test
+```
+
+De tool slaat duplicaten automatisch over en breidt het boek uit met de nieuwe woorden. De uitspraak wordt automatisch gegenereerd, dus een nieuw woord heeft alleen de drie vertalingen nodig.
+
+Bronnen om naar 10.000+ te groeien: frequentielijsten en open woordenboekdata (bijv. FreeDict of Wiktionary-exports) omzetten naar het CSV-formaat, of het boek in batches laten aanvullen en reviewen. De tests bewaken automatisch dat er geen duplicaten of lege velden in het boek terechtkomen.
 
 ## CI/CD
 

@@ -9,8 +9,14 @@ import '../widgets.dart';
 class HistoryScreen extends StatelessWidget {
   final Strings t;
   final List<QuizResult> history;
+  final int streak;
 
-  const HistoryScreen({super.key, required this.t, required this.history});
+  const HistoryScreen({
+    super.key,
+    required this.t,
+    required this.history,
+    required this.streak,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +47,7 @@ class HistoryScreen extends StatelessWidget {
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    '${history.length} ${history.length == 1 ? "week" : t.homeWeeks}',
+                    '$streak ${streak == 1 ? "week" : t.homeWeeks}',
                     style: const TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,

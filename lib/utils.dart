@@ -109,3 +109,20 @@ List<Question> buildQuiz(List<Word> words, Lang sourceLang, {Random? random}) {
     (i) => Question(word: shuffled[i], type: types[i % 2]),
   );
 }
+
+/// Vervoegingstoets: 10 werkwoorden uit [verbs], elk in een willekeurige
+/// persoon. Wederkerende werkwoorden (met voornaamwoord in de vorm) worden
+/// overgeslagen om het antwoord eenduidig te houden.
+List<ConjugationQuestion> buildConjugationQuiz(
+  List<Word> verbs, {
+  Random? random,
+}) {
+  final rng = random ?? Random();
+  final pool =
+      verbs.where((w) => w.isVerb && !w.present.first.contains(' ')).toList()
+        ..shuffle(rng);
+  return [
+    for (final w in pool.take(10))
+      ConjugationQuestion(word: w, person: rng.nextInt(6)),
+  ];
+}

@@ -1,36 +1,76 @@
 import 'package:flutter/foundation.dart';
 
+import 'data.dart';
 import 'models.dart';
 import 'storage.dart';
 
-/// Centrale app-state: instellingen en toetshistorie.
+/// Centrale app-state: instellingen, toetshistorie en de wekelijkse streak.
 /// Alle wijzigingen worden direct lokaal op het apparaat opgeslagen.
 class AppState extends ChangeNotifier {
   final AppStorage _storage;
+  final int Function() _nowWeek;
   AppSettings _settings;
   final List<QuizResult> _history;
+  StreakState _streakState;
 
   AppState({
     AppStorage? storage,
+    int Function()? nowWeek,
     AppSettings settings = const AppSettings(),
     List<QuizResult> history = const [],
+    StreakState streakState = const StreakState(),
   }) : _storage = storage ?? AppStorage(),
+       _nowWeek = nowWeek ?? currentWeekSeed,
        _settings = settings,
-       _history = [...history];
+       _history = [...history],
+       _streakState = streakState;
 
-  /// Laadt de opgeslagen instellingen en historie van het apparaat.
-  static Future<AppState> load({AppStorage? storage}) async {
+  /// Laadt de opgeslagen staat van het apparaat.
+  static Future<AppState> load({
+    AppStorage? storage,
+    int Function()? nowWeek,
+  }) async {
     final s = storage ?? AppStorage();
     return AppState(
       storage: s,
+      nowWeek: nowWeek,
       settings: await s.loadSettings(),
       history: await s.loadHistory(),
+      streakState: await s.loadStreak(),
     );
   }
 
   AppSettings get settings => _settings;
   List<QuizResult> get history => List.unmodifiable(_history);
-  int get streak => _history.length;
+
+  /// De "effectieve" week: de echte weekteller minus de tijd die in pauze is
+  /// doorgebracht, zodat pauzes de streak niet breken.
+  int _effectiveWeek() {
+    final real = _nowWeek();
+    var offset = _streakState.pauseOffset;
+    final since = _streakState.pauseSince;
+    if (_streakState.paused && since != null) offset += real - since;
+    return real - offset;
+  }
+
+  /// De huidige streak in weken. Als er een hele week is gemist (zonder
+  /// pauze), is de streak verlopen en is dit 0.
+  int get streak {
+    final last = _streakState.lastQuizWeek;
+    if (last == null) return 0;
+    return _effectiveWeek() <= last + 1 ? _streakState.streak : 0;
+  }
+
+  bool get paused => _streakState.paused;
+
+  /// Mogen er toetsen gemaakt worden? Niet tijdens pauze.
+  bool get quizAllowed => !_streakState.paused;
+
+  /// Is deze week al een toets afgerond?
+  bool get quizDoneThisWeek {
+    final last = _streakState.lastQuizWeek;
+    return last != null && last == _effectiveWeek();
+  }
 
   void updateSettings(AppSettings settings) {
     _settings = settings;
@@ -38,9 +78,50 @@ class AppState extends ChangeNotifier {
     _storage.saveSettings(settings);
   }
 
+  /// Zet de streak-pauze aan of uit. Tijdens pauze staat de streak stil.
+  void setPaused(bool value) {
+    if (value == _streakState.paused) return;
+    if (value) {
+      _streakState = _streakState.copyWith(
+        paused: true,
+        pauseSince: _nowWeek(),
+      );
+    } else {
+      final since = _streakState.pauseSince ?? _nowWeek();
+      _streakState = _streakState.copyWith(
+        paused: false,
+        pauseOffset: _streakState.pauseOffset + (_nowWeek() - since),
+        clearPauseSince: true,
+      );
+    }
+    notifyListeners();
+    _storage.saveStreak(_streakState);
+  }
+
+  /// Verwerkt een afgeronde toets: bewaart het resultaat en werkt de streak
+  /// bij. Tijdens pauze gebeurt er niets (toetsen zijn dan geblokkeerd).
   void addResult(QuizResult result) {
+    if (_streakState.paused) return;
     _history.insert(0, result);
+    _updateStreakForCompletion();
     notifyListeners();
     _storage.saveHistory(_history);
+    _storage.saveStreak(_streakState);
+  }
+
+  void _updateStreakForCompletion() {
+    final w = _effectiveWeek();
+    final last = _streakState.lastQuizWeek;
+    final int newStreak;
+    if (last == null) {
+      newStreak = 1;
+    } else if (w == last) {
+      newStreak = _streakState.streak; // deze week al gedaan
+    } else if (w == last + 1) {
+      newStreak = _streakState.streak + 1; // opvolgende week
+    } else {
+      newStreak = 1; // een week gemist
+    }
+    _streakState = _streakState.copyWith(streak: newStreak, lastQuizWeek: w);
   }
 }

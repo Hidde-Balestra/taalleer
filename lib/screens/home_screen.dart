@@ -13,9 +13,11 @@ class HomeScreen extends StatelessWidget {
   final int streak;
   final int wordCount;
   final List<QuizResult> history;
-  final bool quizAvailable;
+  final bool paused;
+  final bool quizDoneThisWeek;
   final VoidCallback onPractice;
   final VoidCallback onQuiz;
+  final VoidCallback onConjQuiz;
 
   const HomeScreen({
     super.key,
@@ -25,9 +27,11 @@ class HomeScreen extends StatelessWidget {
     required this.streak,
     required this.wordCount,
     required this.history,
-    required this.quizAvailable,
+    required this.paused,
+    required this.quizDoneThisWeek,
     required this.onPractice,
     required this.onQuiz,
+    required this.onConjQuiz,
   });
 
   @override
@@ -60,7 +64,49 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
-        if (quizAvailable)
+        if (paused)
+          Opacity(
+            opacity: 0.7,
+            child: AppCard(
+              child: Row(
+                children: [
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: palette.border,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(
+                      Icons.pause_circle_outline,
+                      size: 20,
+                      color: palette.muted,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          t.homePaused,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14,
+                          ),
+                        ),
+                        Text(
+                          t.homePausedSub,
+                          style: TextStyle(fontSize: 12, color: palette.muted),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          )
+        else ...[
           _GradientActionButton(
             onTap: onQuiz,
             gradient: const LinearGradient(
@@ -73,47 +119,43 @@ class HomeScreen extends StatelessWidget {
               color: Colors.white,
               size: 20,
             ),
-          )
-        else
-          Opacity(
-            opacity: 0.6,
-            child: AppCard(
-              child: Row(
-                children: [
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: palette.border,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Icon(
-                      Icons.lock_outline,
-                      size: 18,
-                      color: palette.muted,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        t.homeQuiz,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 14,
-                        ),
-                      ),
-                      Text(
-                        t.homeQuizWeekend,
-                        style: TextStyle(fontSize: 12, color: palette.muted),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+          ),
+          const SizedBox(height: 12),
+          _GradientActionButton(
+            onTap: onConjQuiz,
+            gradient: const LinearGradient(
+              colors: [AppColors.primary, AppColors.indigo],
+            ),
+            title: t.homeConjQuiz,
+            subtitle: t.homeConjSub,
+            trailing: const Icon(
+              Icons.spellcheck,
+              color: Colors.white,
+              size: 20,
             ),
           ),
+          if (quizDoneThisWeek) ...[
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                const Icon(
+                  Icons.check_circle,
+                  size: 16,
+                  color: AppColors.green,
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  t.homeQuizDone,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.green,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ],
         const SizedBox(height: 16),
         AppCard(
           child: Column(

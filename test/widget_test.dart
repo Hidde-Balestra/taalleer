@@ -5,6 +5,7 @@ import 'package:taalleer/app_state.dart';
 import 'package:taalleer/data.dart';
 import 'package:taalleer/main.dart';
 import 'package:taalleer/models.dart';
+import 'package:taalleer/screens/settings_screen.dart';
 
 void main() {
   setUp(() {
@@ -23,7 +24,8 @@ void main() {
       await pumpApp(tester);
       expect(find.text('Welkom terug! 👋'), findsOneWidget);
       expect(find.text('Oefenen'), findsOneWidget);
-      expect(find.text('Toets starten'), findsOneWidget);
+      expect(find.text('Woordentoets'), findsOneWidget);
+      expect(find.text('Vervoegingstoets'), findsOneWidget);
       expect(find.text('Laatste cijfer'), findsOneWidget);
     });
 
@@ -207,7 +209,7 @@ void main() {
       (tester) async {
         final state = await pumpApp(tester);
 
-        await tester.tap(find.text('Toets starten'));
+        await tester.tap(find.text('Woordentoets'));
         await tester.pumpAndSettle();
         expect(find.text('Weektoets'), findsOneWidget);
         expect(find.text('Geen hints beschikbaar'), findsOneWidget);
@@ -249,7 +251,67 @@ void main() {
         await tester.tap(find.text('Terug naar huis'));
         await tester.pumpAndSettle();
         expect(find.text('Welkom terug! 👋'), findsOneWidget);
+
+        // Deze week is nu een toets afgerond → indicator zichtbaar.
+        expect(find.text('Deze week al afgerond ✓'), findsOneWidget);
       },
     );
+  });
+
+  group('Vervoegingstoets', () {
+    testWidgets('werkwoord vervoegen en resultaat opslaan', (tester) async {
+      final state = await pumpApp(tester);
+
+      await tester.tap(find.text('Vervoegingstoets'));
+      await tester.pumpAndSettle();
+      expect(find.text('Vervoeg in de tegenwoordige tijd'), findsOneWidget);
+
+      for (var i = 0; i < 10; i++) {
+        await tester.enterText(find.byType(TextField), 'fout');
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Bevestigen →'));
+        await tester.pumpAndSettle();
+      }
+
+      expect(find.text('0.0'), findsOneWidget);
+      expect(state.history, hasLength(1));
+      // De foute woorden zijn werkwoorden.
+      for (final id in state.history.first.wrongWordIds) {
+        expect(wordById(id)!.isVerb, isTrue);
+      }
+    });
+  });
+
+  group('Pauze', () {
+    testWidgets('pauze verbergt de toetsknoppen op het home-scherm', (
+      tester,
+    ) async {
+      await pumpApp(tester);
+      await tester.tap(find.text('Instellingen'));
+      await tester.pumpAndSettle();
+
+      // Scroll de pauze-kaart in beeld en zet de pauze aan (de laatste
+      // switch; dyslexie is de eerste).
+      await tester.scrollUntilVisible(
+        find.text('Streak pauzeren'),
+        200,
+        scrollable: find.descendant(
+          of: find.byType(SettingsScreen),
+          matching: find.byType(Scrollable),
+        ),
+      );
+      await tester.tap(find.byType(Switch).last);
+      await tester.pumpAndSettle();
+
+      // Bevestigingsnotitie verschijnt op het instellingen-scherm.
+      expect(find.textContaining('je kunt geen toetsen maken'), findsOneWidget);
+
+      await tester.tap(find.text('Huis'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Streak gepauzeerd'), findsOneWidget);
+      expect(find.text('Woordentoets'), findsNothing);
+      expect(find.text('Vervoegingstoets'), findsNothing);
+    });
   });
 }

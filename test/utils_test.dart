@@ -155,6 +155,27 @@ void main() {
     });
   });
 
+  group('buildConjugationQuiz', () {
+    test('10 werkwoorden, elk met geldige persoon en antwoord', () {
+      final qs = buildConjugationQuiz(kWordBook, random: Random(7));
+      expect(qs, hasLength(10));
+      for (final q in qs) {
+        expect(q.word.isVerb, isTrue);
+        expect(q.person, inInclusiveRange(0, 5));
+        expect(q.answer, q.word.present[q.person]);
+        // Wederkerende vormen (met spatie) worden uitgesloten.
+        expect(q.answer.contains(' '), isFalse);
+      }
+    });
+
+    test('kiest geen niet-werkwoorden', () {
+      final qs = buildConjugationQuiz(kWordBook, random: Random(8));
+      for (final q in qs) {
+        expect(q.word.present, isNotEmpty);
+      }
+    });
+  });
+
   group('correctAnswerOf / shownWordOf', () {
     const word = Word(
       id: 1,

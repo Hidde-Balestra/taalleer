@@ -10,8 +10,11 @@ Een Flutter-app om Spaanse woordjes te leren, gebaseerd op het [Figma Make proto
 - **Home** — weekoverzicht met streak, aantal woorden van deze week en het laatste cijfer
 - **Woordenlijst** — de 20 woorden van deze week met uitspraak en voorbeeldzinnen, doorzoekbaar
 - **Oefenen** — 10 vragen met directe feedback en uitspraakhint
-- **Weektoets** — 10 vragen zonder hints, met cijfer (0–10), geslaagd/onvoldoende en foutenoverzicht
-- **Resultaten** — historie van alle weektoetsen
+- **Woordentoets** — 10 vertaalvragen zonder hints, met cijfer (0–10), geslaagd/onvoldoende en foutenoverzicht
+- **Vervoegingstoets** — 10 werkwoorden in een willekeurige persoon vervoegen (tegenwoordige tijd)
+- **Wekelijkse streak** — één afgeronde toets (woorden óf vervoegingen) per week houdt de streak in stand; mis je een week, dan vervalt hij
+- **Streak pauzeren** — via een toggle in de instellingen; tijdens de pauze kun je geen toetsen maken en staat de streak stil (kan niet omhoog en niet gereset worden) tot je de pauze weer uitschakelt
+- **Resultaten** — historie van alle afgeronde toetsen
 - **Instellingen**
   - App-taal: Nederlands / Engels
   - Brontaal: Nederlands / Engels (bepaalt de vraagrichting)

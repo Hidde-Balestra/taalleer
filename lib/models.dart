@@ -132,3 +132,75 @@ class Question {
 
   const Question({required this.word, required this.type});
 }
+
+/// Een vraag in de vervoegingstoets: vervoeg [word] voor persoon [person]
+/// (0..5, zie `kPronouns`).
+class ConjugationQuestion {
+  final Word word;
+  final int person;
+
+  const ConjugationQuestion({required this.word, required this.person});
+
+  /// Het verwachte antwoord (de vervoegde vorm).
+  String get answer => word.present[person];
+}
+
+/// De wekelijkse streak-staat. De streak blijft in stand zolang er per week
+/// minstens één toets is afgerond. Met [paused] wordt de streak bevroren:
+/// er kunnen dan geen toetsen worden gemaakt en de streak kan niet omhoog of
+/// gereset worden.
+///
+/// [lastQuizWeek], [pauseSince] en [pauseOffset] worden uitgedrukt in
+/// "effectieve" weken (zie `AppState`): de echte weekteller minus de tijd die
+/// in pauze is doorgebracht.
+class StreakState {
+  final int streak;
+  final int? lastQuizWeek;
+  final bool paused;
+  final int pauseOffset;
+  final int? pauseSince;
+
+  const StreakState({
+    this.streak = 0,
+    this.lastQuizWeek,
+    this.paused = false,
+    this.pauseOffset = 0,
+    this.pauseSince,
+  });
+
+  StreakState copyWith({
+    int? streak,
+    int? lastQuizWeek,
+    bool clearLastQuizWeek = false,
+    bool? paused,
+    int? pauseOffset,
+    int? pauseSince,
+    bool clearPauseSince = false,
+  }) {
+    return StreakState(
+      streak: streak ?? this.streak,
+      lastQuizWeek: clearLastQuizWeek
+          ? null
+          : (lastQuizWeek ?? this.lastQuizWeek),
+      paused: paused ?? this.paused,
+      pauseOffset: pauseOffset ?? this.pauseOffset,
+      pauseSince: clearPauseSince ? null : (pauseSince ?? this.pauseSince),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    'streak': streak,
+    'lastQuizWeek': lastQuizWeek,
+    'paused': paused,
+    'pauseOffset': pauseOffset,
+    'pauseSince': pauseSince,
+  };
+
+  factory StreakState.fromJson(Map<String, dynamic> json) => StreakState(
+    streak: json['streak'] as int? ?? 0,
+    lastQuizWeek: json['lastQuizWeek'] as int?,
+    paused: json['paused'] as bool? ?? false,
+    pauseOffset: json['pauseOffset'] as int? ?? 0,
+    pauseSince: json['pauseSince'] as int?,
+  );
+}

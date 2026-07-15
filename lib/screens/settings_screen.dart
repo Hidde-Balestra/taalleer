@@ -9,12 +9,16 @@ class SettingsScreen extends StatelessWidget {
   final Strings t;
   final AppSettings settings;
   final ValueChanged<AppSettings> onChanged;
+  final bool paused;
+  final ValueChanged<bool> onPausedChanged;
 
   const SettingsScreen({
     super.key,
     required this.t,
     required this.settings,
     required this.onChanged,
+    required this.paused,
+    required this.onPausedChanged,
   });
 
   @override
@@ -162,6 +166,70 @@ class SettingsScreen extends StatelessWidget {
                           style: const TextStyle(
                             fontSize: 12,
                             color: AppColors.amber,
+                          ),
+                        ),
+                      )
+                    : const SizedBox(width: double.infinity),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+
+        // Streak pauzeren
+        AppCard(
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  const Icon(
+                    Icons.pause_circle_outline,
+                    size: 16,
+                    color: AppColors.primary,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          t.settingsPause,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        Text(
+                          t.settingsPauseDesc,
+                          style: TextStyle(fontSize: 12, color: palette.muted),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Switch(
+                    value: paused,
+                    activeTrackColor: AppColors.primary,
+                    onChanged: onPausedChanged,
+                  ),
+                ],
+              ),
+              AnimatedSize(
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.easeOut,
+                child: paused
+                    ? Container(
+                        width: double.infinity,
+                        margin: const EdgeInsets.only(top: 12),
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: AppColors.primary.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          t.settingsPauseActiveNote,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: AppColors.primary,
                           ),
                         ),
                       )

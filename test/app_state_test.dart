@@ -114,4 +114,136 @@ void main() {
       expect(() => state.history.add(result), throwsUnsupportedError);
     });
   });
+
+  group('Wekelijkse streak', () {
+    // Een instelbare weekteller voor deterministische tests.
+    var week = 100;
+    int nowWeek() => week;
+
+    setUp(() => week = 100);
+
+    QuizResult resultFor(int id) => QuizResult(
+      id: id,
+      weekNumber: 1,
+      year: 2026,
+      date: 'x',
+      grade: 8,
+      correct: 8,
+      total: 10,
+      wrongWordIds: const [],
+    );
+
+    test('eerste toets zet streak op 1', () async {
+      final state = await AppState.load(nowWeek: nowWeek);
+      state.addResult(resultFor(1));
+      expect(state.streak, 1);
+      expect(state.quizDoneThisWeek, isTrue);
+    });
+
+    test('opvolgende weken laten de streak oplopen', () async {
+      final state = await AppState.load(nowWeek: nowWeek);
+      state.addResult(resultFor(1));
+      week = 101;
+      state.addResult(resultFor(2));
+      week = 102;
+      state.addResult(resultFor(3));
+      expect(state.streak, 3);
+    });
+
+    test(
+      'één toets per week is genoeg (tweede toets telt niet extra)',
+      () async {
+        final state = await AppState.load(nowWeek: nowWeek);
+        state.addResult(resultFor(1));
+        state.addResult(resultFor(2)); // zelfde week
+        expect(state.streak, 1);
+        expect(state.history, hasLength(2));
+      },
+    );
+
+    test('een gemiste week verlaagt de streak naar 0', () async {
+      final state = await AppState.load(nowWeek: nowWeek);
+      state.addResult(resultFor(1));
+      expect(state.streak, 1);
+      week = 103; // twee weken later, niets gedaan
+      expect(state.streak, 0);
+    });
+
+    test('na een gemiste week begint de streak weer bij 1', () async {
+      final state = await AppState.load(nowWeek: nowWeek);
+      state.addResult(resultFor(1));
+      week = 104;
+      state.addResult(resultFor(2));
+      expect(state.streak, 1);
+    });
+
+    test('streak overleeft een herstart van de app', () async {
+      final state = await AppState.load(nowWeek: nowWeek);
+      state.addResult(resultFor(1));
+      week = 101;
+      state.addResult(resultFor(2));
+      await Future<void>.delayed(Duration.zero);
+
+      final reloaded = await AppState.load(nowWeek: nowWeek);
+      expect(reloaded.streak, 2);
+    });
+  });
+
+  group('Pauze', () {
+    var week = 200;
+    int nowWeek() => week;
+    setUp(() => week = 200);
+
+    QuizResult resultFor(int id) => QuizResult(
+      id: id,
+      weekNumber: 1,
+      year: 2026,
+      date: 'x',
+      grade: 8,
+      correct: 8,
+      total: 10,
+      wrongWordIds: const [],
+    );
+
+    test('tijdens pauze zijn toetsen geblokkeerd', () async {
+      final state = await AppState.load(nowWeek: nowWeek);
+      state.addResult(resultFor(1));
+      state.setPaused(true);
+      expect(state.quizAllowed, isFalse);
+
+      state.addResult(resultFor(2)); // moet genegeerd worden
+      expect(state.history, hasLength(1));
+    });
+
+    test(
+      'pauze bevriest de streak: geen verval bij verstrijken van weken',
+      () async {
+        final state = await AppState.load(nowWeek: nowWeek);
+        state.addResult(resultFor(1));
+        expect(state.streak, 1);
+        state.setPaused(true);
+
+        week = 210; // tien weken verder, maar gepauzeerd
+        expect(state.streak, 1); // niet gereset
+      },
+    );
+
+    test(
+      'na de pauze hervat de streak zonder de pauzeweken te tellen',
+      () async {
+        final state = await AppState.load(nowWeek: nowWeek);
+        state.addResult(resultFor(1)); // effectieve week 200, streak 1
+        state.setPaused(true);
+        week = 210;
+        state.setPaused(false); // 10 weken pauze worden weggerekend
+
+        // Nog steeds dezelfde effectieve week als de laatste toets.
+        expect(state.streak, 1);
+
+        week = 211; // één échte week verder → één effectieve week verder
+        state.addResult(resultFor(2));
+        expect(state.streak, 2);
+      },
+    );
+  });
 }

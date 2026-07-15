@@ -7,8 +7,12 @@ class Strings {
   // Home
   final String homeWeek, homeWordsLearned, homeStreak, homeWeeks;
   final String homePractice, homePracticeSub, homeQuiz, homeQuizSub;
+  final String homeConjQuiz, homeConjSub;
   final String homeQuizWeekend, homeLastGrade, homeNoResult;
   final String homeGreeting, homeSubGreeting;
+  final String homeQuizDone, homePaused, homePausedSub;
+  // Vervoegingstoets
+  final String conjTitle, conjInstruction;
   // Woordenlijst
   final String vocabTitle,
       vocabWeek,
@@ -44,6 +48,7 @@ class Strings {
       settingsDutch,
       settingsEnglish,
       settingsVersion;
+  final String settingsPause, settingsPauseDesc, settingsPauseActiveNote;
 
   const Strings({
     required this.navHome,
@@ -58,11 +63,18 @@ class Strings {
     required this.homePracticeSub,
     required this.homeQuiz,
     required this.homeQuizSub,
+    required this.homeConjQuiz,
+    required this.homeConjSub,
     required this.homeQuizWeekend,
     required this.homeLastGrade,
     required this.homeNoResult,
     required this.homeGreeting,
     required this.homeSubGreeting,
+    required this.homeQuizDone,
+    required this.homePaused,
+    required this.homePausedSub,
+    required this.conjTitle,
+    required this.conjInstruction,
     required this.vocabTitle,
     required this.vocabWeek,
     required this.vocabSearch,
@@ -114,6 +126,9 @@ class Strings {
     required this.settingsDutch,
     required this.settingsEnglish,
     required this.settingsVersion,
+    required this.settingsPause,
+    required this.settingsPauseDesc,
+    required this.settingsPauseActiveNote,
   });
 
   static Strings of(Lang lang) => lang == Lang.nl ? nl : en;
@@ -129,13 +144,20 @@ class Strings {
     homeWeeks: 'weken',
     homePractice: 'Oefenen',
     homePracticeSub: 'Oefen de 20 woorden van deze week',
-    homeQuiz: 'Toets starten',
-    homeQuizSub: '10 vragen · weektoets',
+    homeQuiz: 'Woordentoets',
+    homeQuizSub: '10 vragen · vertalen',
+    homeConjQuiz: 'Vervoegingstoets',
+    homeConjSub: '10 werkwoorden vervoegen',
     homeQuizWeekend: 'Beschikbaar in het weekend',
     homeLastGrade: 'Laatste cijfer',
     homeNoResult: 'Nog geen toets gemaakt',
     homeGreeting: 'Welkom terug! 👋',
     homeSubGreeting: 'Blijf oefenen, je bent goed bezig.',
+    homeQuizDone: 'Deze week al afgerond ✓',
+    homePaused: 'Streak gepauzeerd',
+    homePausedSub: 'Schakel de pauze uit om toetsen te maken',
+    conjTitle: 'Vervoegingstoets',
+    conjInstruction: 'Vervoeg in de tegenwoordige tijd',
     vocabTitle: 'Woordenlijst',
     vocabWeek: 'Week',
     vocabSearch: 'Zoeken…',
@@ -188,6 +210,10 @@ class Strings {
     settingsDutch: 'Nederlands',
     settingsEnglish: 'Engels',
     settingsVersion: 'TaalLeer v1.0',
+    settingsPause: 'Streak pauzeren',
+    settingsPauseDesc: 'Geen toetsen; je streak blijft bevroren staan',
+    settingsPauseActiveNote:
+        'Actief: je kunt geen toetsen maken en je streak staat stil totdat je de pauze uitschakelt.',
   );
 
   static const en = Strings(
@@ -201,13 +227,20 @@ class Strings {
     homeWeeks: 'weeks',
     homePractice: 'Practice',
     homePracticeSub: 'Practice the 20 words of this week',
-    homeQuiz: 'Start Quiz',
-    homeQuizSub: '10 questions · weekly quiz',
+    homeQuiz: 'Vocabulary Quiz',
+    homeQuizSub: '10 questions · translation',
+    homeConjQuiz: 'Conjugation Quiz',
+    homeConjSub: '10 verbs to conjugate',
     homeQuizWeekend: 'Available on weekends',
     homeLastGrade: 'Last grade',
     homeNoResult: 'No quiz taken yet',
     homeGreeting: 'Welcome back! 👋',
     homeSubGreeting: 'Keep practicing, you are doing great.',
+    homeQuizDone: 'Already done this week ✓',
+    homePaused: 'Streak paused',
+    homePausedSub: 'Turn off pause to take quizzes',
+    conjTitle: 'Conjugation Quiz',
+    conjInstruction: 'Conjugate in the present tense',
     vocabTitle: 'Word List',
     vocabWeek: 'Week',
     vocabSearch: 'Search…',
@@ -260,6 +293,10 @@ class Strings {
     settingsDutch: 'Dutch',
     settingsEnglish: 'English',
     settingsVersion: 'TaalLeer v1.0',
+    settingsPause: 'Pause streak',
+    settingsPauseDesc: 'No quizzes; your streak stays frozen',
+    settingsPauseActiveNote:
+        'Active: you cannot take quizzes and your streak is frozen until you turn off pause.',
   );
 
   /// Vraaglabel op basis van vraagtype.

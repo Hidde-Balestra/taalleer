@@ -4,6 +4,7 @@ import 'app_state.dart';
 import 'data.dart';
 import 'i18n.dart';
 import 'models.dart';
+import 'screens/conjugation_quiz_screen.dart';
 import 'screens/history_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/practice_screen.dart';
@@ -74,10 +75,6 @@ class HomeShell extends StatefulWidget {
 class _HomeShellState extends State<HomeShell> {
   int _tab = 0;
 
-  // In het prototype is de toets alleen in het weekend beschikbaar;
-  // net als daar staat hij hier voor de demo altijd aan.
-  bool get _quizAvailable => true; // isWeekend(DateTime.now())
-
   void _openPractice(Strings t, AppSettings settings, List<Word> words) {
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -100,18 +97,34 @@ class _HomeShellState extends State<HomeShell> {
           sourceLang: settings.sourceLang,
           weekNumber: currentWeekNumber(),
           words: words,
-          onFinish: (result) {
-            widget.appState.addResult(result);
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(
-                builder: (_) => QuizResultScreen(t: t, result: result),
-              ),
-            );
-          },
+          onFinish: _finishQuiz(t),
         ),
       ),
     );
   }
+
+  void _openConjQuiz(Strings t, AppSettings settings) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => ConjugationQuizScreen(
+          t: t,
+          dyslexia: settings.dyslexiaMode,
+          weekNumber: currentWeekNumber(),
+          verbs: kWordBook,
+          onFinish: _finishQuiz(t),
+        ),
+      ),
+    );
+  }
+
+  ValueChanged<QuizResult> _finishQuiz(Strings t) => (result) {
+    widget.appState.addResult(result);
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (_) => QuizResultScreen(t: t, result: result),
+      ),
+    );
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -131,16 +144,24 @@ class _HomeShellState extends State<HomeShell> {
         streak: widget.appState.streak,
         wordCount: weekWords.length,
         history: widget.appState.history,
-        quizAvailable: _quizAvailable,
+        paused: widget.appState.paused,
+        quizDoneThisWeek: widget.appState.quizDoneThisWeek,
         onPractice: () => _openPractice(t, settings, weekWords),
         onQuiz: () => _openQuiz(t, settings, weekWords),
+        onConjQuiz: () => _openConjQuiz(t, settings),
       ),
       VocabularyScreen(t: t, weekNumber: weekNumber, words: weekWords),
-      HistoryScreen(t: t, history: widget.appState.history),
+      HistoryScreen(
+        t: t,
+        history: widget.appState.history,
+        streak: widget.appState.streak,
+      ),
       SettingsScreen(
         t: t,
         settings: settings,
         onChanged: widget.appState.updateSettings,
+        paused: widget.appState.paused,
+        onPausedChanged: widget.appState.setPaused,
       ),
     ];
 

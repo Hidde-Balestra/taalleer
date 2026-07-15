@@ -9,6 +9,7 @@ import 'models.dart';
 class AppStorage {
   static const settingsKey = 'taalleer.settings';
   static const historyKey = 'taalleer.history';
+  static const streakKey = 'taalleer.streak';
 
   Future<AppSettings> loadSettings() async {
     final prefs = await SharedPreferences.getInstance();
@@ -45,5 +46,21 @@ class AppStorage {
       historyKey,
       jsonEncode(history.map((r) => r.toJson()).toList()),
     );
+  }
+
+  Future<StreakState> loadStreak() async {
+    final prefs = await SharedPreferences.getInstance();
+    final raw = prefs.getString(streakKey);
+    if (raw == null) return const StreakState();
+    try {
+      return StreakState.fromJson(jsonDecode(raw) as Map<String, dynamic>);
+    } on FormatException {
+      return const StreakState();
+    }
+  }
+
+  Future<void> saveStreak(StreakState streak) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(streakKey, jsonEncode(streak.toJson()));
   }
 }

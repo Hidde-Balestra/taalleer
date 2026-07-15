@@ -48,7 +48,7 @@ void writeWordBook(List<(String, String, String)> entries) {
 /// Spaans fonetisch regelmatig is — net als in een fysiek woordenboek staat
 /// hier per woord alleen het lemma met de vertalingen.
 ///
-/// Uitbreiden kan met: dart run tool/import_words.dart <bestand.csv>
+/// Uitbreiden kan met: `dart run tool/import_words.dart bestand.csv`
 library;
 
 const List<(String, String, String)> kWordEntries = [

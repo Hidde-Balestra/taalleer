@@ -14,7 +14,9 @@ class Strings {
       vocabWeek,
       vocabSearch,
       vocabPronunciation,
-      vocabExample;
+      vocabExample,
+      vocabConjugation,
+      vocabArticle;
   // Oefenen
   final String practiceTitle, practiceToEs, practiceToNl, practiceToEn;
   final String practicePlaceholder, practiceCheck, practiceNext;
@@ -66,6 +68,8 @@ class Strings {
     required this.vocabSearch,
     required this.vocabPronunciation,
     required this.vocabExample,
+    required this.vocabConjugation,
+    required this.vocabArticle,
     required this.practiceTitle,
     required this.practiceToEs,
     required this.practiceToNl,
@@ -137,6 +141,8 @@ class Strings {
     vocabSearch: 'Zoeken…',
     vocabPronunciation: 'Uitspraak',
     vocabExample: 'Voorbeeld',
+    vocabConjugation: 'Tegenwoordige tijd',
+    vocabArticle: 'Lidwoord',
     practiceTitle: 'Oefenen',
     practiceToEs: 'Vertaal naar het Spaans',
     practiceToNl: 'Vertaal naar het Nederlands',
@@ -207,6 +213,8 @@ class Strings {
     vocabSearch: 'Search…',
     vocabPronunciation: 'Pronunciation',
     vocabExample: 'Example',
+    vocabConjugation: 'Present tense',
+    vocabArticle: 'Article',
     practiceTitle: 'Practice',
     practiceToEs: 'Translate to Spanish',
     practiceToNl: 'Translate to Dutch',

@@ -6,6 +6,7 @@ Een Flutter-app om Spaanse woordjes te leren, gebaseerd op het [Figma Make proto
 
 - **Willekeurige woorden per week** — een Spaans woordenboek van ~1500 woorden (thematisch geordend: getallen, tijd, familie, lichaam, huis, eten, dieren, natuur, stad, reizen, kleding, kleuren, school, beroepen, technologie, gezondheid, sport, kunst, geld, gevoelens, bijvoeglijke naamwoorden, werkwoorden en kleine woorden). Elke week worden hieruit **20 willekeurige woorden** getrokken. De trekking is deterministisch per kalenderweek (jaaroverschrijdend, dus niet-herhalend): binnen één week tonen de woordenlijst, oefening en toets dezelfde woorden. Het boek kan onbeperkt groeien (zie [Woordenboek uitbreiden](#woordenboek-uitbreiden-richting-10000-woorden))
 - **Automatische uitspraak** — Spaans is fonetisch regelmatig; de uitspraakhint (bijv. `casa` → `KAH-sah`) wordt uit de spelling afgeleid, inclusief klemtoonregels en accenten
+- **Grammatica per woord** — in de woordenlijst toont elk zelfstandig naamwoord zijn lidwoord (**el**/**la**) en elk werkwoord de volledige tegenwoordige tijd (presente de indicativo). Beide worden automatisch afgeleid (`grammar.dart`): regelmatige vervoegingen via vaste uitgangen, onregelmatige/stamwisselende werkwoorden via tabellen, en het geslacht via uitgangsregels met een uitzonderingenlijst
 - **Home** — weekoverzicht met streak, aantal woorden van deze week en het laatste cijfer
 - **Woordenlijst** — de 20 woorden van deze week met uitspraak en voorbeeldzinnen, doorzoekbaar
 - **Oefenen** — 10 vragen met directe feedback en uitspraakhint
@@ -70,6 +71,7 @@ lib/
 ├── word_book.dart       # Woordenboek: 1000 lemma's (es, nl, en)
 ├── data.dart            # Weekrotatie over het woordenboek
 ├── pronounce.dart       # Automatische uitspraak (lettergrepen + klemtoon)
+├── grammar.dart         # Vervoeging (o.t.t.) + lidwoord (el/la)
 ├── i18n.dart            # NL/EN vertalingen + datumnotatie
 ├── utils.dart           # Levenshtein, cijferberekening, vragenbouwers
 ├── theme.dart           # Licht/donker thema, dyslexie-typografie

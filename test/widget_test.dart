@@ -64,9 +64,10 @@ void main() {
       await tester.tap(find.text('Woorden'));
       await tester.pumpAndSettle();
 
-      // De eerste woorden van deze week staan bovenaan de lijst.
-      expect(find.text(weekWords[0].es), findsWidgets);
-      expect(find.text(weekWords[1].es), findsWidgets);
+      // De eerste woorden van deze week staan bovenaan de lijst. De kop kan
+      // een lidwoord bevatten ("la casa"), dus zoeken we op deeltekst.
+      expect(find.textContaining(weekWords[0].es), findsWidgets);
+      expect(find.textContaining(weekWords[1].es), findsWidgets);
     });
 
     testWidgets('zoeken filtert de lijst', (tester) async {
@@ -86,13 +87,13 @@ void main() {
       await tester.tap(find.text('Woorden'));
       await tester.pumpAndSettle();
 
-      expect(find.text(other.es), findsWidgets);
+      expect(find.textContaining(other.es), findsWidgets);
 
       await tester.enterText(find.byType(TextField), target.es);
       await tester.pumpAndSettle();
 
-      expect(find.text(target.es), findsWidgets);
-      expect(find.text(other.es), findsNothing);
+      expect(find.textContaining(target.es), findsWidgets);
+      expect(find.textContaining(other.es), findsNothing);
     });
 
     testWidgets('woord uitklappen toont de uitspraak', (tester) async {
@@ -106,7 +107,7 @@ void main() {
       await tester.tap(find.text('Woorden'));
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text(target.es));
+      await tester.tap(find.textContaining(target.es).first);
       await tester.pumpAndSettle();
 
       expect(find.text(target.pronunciation), findsOneWidget);

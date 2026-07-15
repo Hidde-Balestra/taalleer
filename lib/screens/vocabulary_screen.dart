@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../grammar.dart';
 import '../i18n.dart';
 import '../models.dart';
 import '../theme.dart';
@@ -150,8 +151,20 @@ class _WordCard extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          word.es,
+                        Text.rich(
+                          TextSpan(
+                            children: [
+                              if (word.article.isNotEmpty)
+                                TextSpan(
+                                  text: '${word.article} ',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    color: palette.muted,
+                                  ),
+                                ),
+                              TextSpan(text: word.es),
+                            ],
+                          ),
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
@@ -214,6 +227,13 @@ class _WordCard extends StatelessWidget {
                             ),
                           ),
                         ),
+                        if (word.isVerb) ...[
+                          const SizedBox(height: 8),
+                          _DetailRow(
+                            label: t.vocabConjugation.toUpperCase(),
+                            child: _ConjugationTable(forms: word.present),
+                          ),
+                        ],
                         if (word.exampleEs.isNotEmpty) ...[
                           const SizedBox(height: 8),
                           _DetailRow(
@@ -279,6 +299,49 @@ class _DetailRow extends StatelessWidget {
           ),
         ),
         Expanded(child: child),
+      ],
+    );
+  }
+}
+
+/// Toont de zes persoonsvormen van de tegenwoordige tijd naast hun voornaamwoord.
+class _ConjugationTable extends StatelessWidget {
+  final List<String> forms;
+
+  const _ConjugationTable({required this.forms});
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = AppPalette.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        for (var i = 0; i < forms.length && i < kPronouns.length; i++)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 2),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.baseline,
+              textBaseline: TextBaseline.alphabetic,
+              children: [
+                SizedBox(
+                  width: 84,
+                  child: Text(
+                    kPronouns[i],
+                    style: TextStyle(fontSize: 12, color: palette.muted),
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    forms[i],
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
       ],
     );
   }

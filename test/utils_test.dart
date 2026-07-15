@@ -219,6 +219,37 @@ void main() {
       expect(wordById(kWordBook.last.id)!.es, kWordBook.last.es);
       expect(wordById(-1), isNull);
     });
+
+    test('elk werkwoord heeft 6 vervoegingen', () {
+      final verbs = kWordBook.where((w) => w.isVerb).toList();
+      expect(verbs.length, greaterThan(200));
+      for (final w in verbs) {
+        expect(
+          w.present,
+          hasLength(6),
+          reason: 'onvolledige vervoeging bij ${w.es}',
+        );
+        expect(
+          w.article,
+          isEmpty,
+          reason: '${w.es} is werkwoord, geen lidwoord',
+        );
+      }
+    });
+
+    test('woorden zijn nooit tegelijk werkwoord én zelfstandig naamwoord', () {
+      for (final w in kWordBook) {
+        expect(w.isVerb && w.isNoun, isFalse, reason: w.es);
+      }
+    });
+
+    test('zelfstandige naamwoorden krijgen el of la', () {
+      for (final w in kWordBook) {
+        if (w.isNoun) {
+          expect(['el', 'la'], contains(w.article), reason: w.es);
+        }
+      }
+    });
   });
 
   group('willekeurige weekselectie', () {

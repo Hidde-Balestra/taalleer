@@ -15,6 +15,13 @@ class Word {
   final String exampleEs;
   final String exampleNl;
 
+  /// Lidwoord van een zelfstandig naamwoord: 'el', 'la' of '' (geen).
+  final String article;
+
+  /// Tegenwoordige tijd (presente de indicativo) van een werkwoord: de 6
+  /// persoonsvormen, of leeg als het geen werkwoord is.
+  final List<String> present;
+
   const Word({
     required this.id,
     required this.es,
@@ -23,7 +30,12 @@ class Word {
     required this.pronunciation,
     this.exampleEs = '',
     this.exampleNl = '',
+    this.article = '',
+    this.present = const [],
   });
+
+  bool get isNoun => article.isNotEmpty;
+  bool get isVerb => present.isNotEmpty;
 }
 
 class AppSettings {

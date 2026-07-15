@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'grammar.dart';
 import 'models.dart';
 import 'pronounce.dart';
 import 'word_book.dart';
@@ -12,14 +13,24 @@ const int kWordsPerWeek = 20;
 /// [kWordsPerWeek] woorden willekeurig gekozen (zie [wordsForWeek]).
 final List<Word> kWordBook = List.unmodifiable([
   for (var i = 0; i < kWordEntries.length; i++)
-    Word(
-      id: i + 1,
-      es: kWordEntries[i].$1,
-      nl: kWordEntries[i].$2,
-      en: kWordEntries[i].$3,
-      pronunciation: pronounceEs(kWordEntries[i].$1),
-    ),
+    _buildWord(i + 1, kWordEntries[i]),
 ]);
+
+/// Bouwt een [Word] met automatisch afgeleide uitspraak, en — waar van
+/// toepassing — het lidwoord (el/la) of de tegenwoordige tijd.
+Word _buildWord(int id, (String, String, String) entry) {
+  final (es, nl, en) = entry;
+  final verb = isVerbEntry(es, en);
+  return Word(
+    id: id,
+    es: es,
+    nl: nl,
+    en: en,
+    pronunciation: pronounceEs(es),
+    present: verb ? (presentTense(es) ?? const []) : const [],
+    article: (verb || kNonNouns.contains(es)) ? '' : articleFor(es),
+  );
+}
 
 /// De woorden van een week: [kWordsPerWeek] willekeurige woorden uit het
 /// hele woordenboek.

@@ -38,24 +38,17 @@ jobs:
       - name: Tests
         run: flutter test
 
-      - name: Release-APK bouwen (per ABI)
-        run: flutter build apk --release --split-per-abi
-
       - name: Universele release-APK bouwen
         run: flutter build apk --release
 
-      - name: APK's hernoemen met versienummer
+      - name: APK hernoemen met versienummer
         run: |
           mkdir -p dist
-          for f in build/app/outputs/flutter-apk/app-*-release.apk; do
-            abi=$(basename "$f" | sed 's/app-\(.*\)-release.apk/\1/')
-            cp "$f" "dist/taalleer-${GITHUB_REF_NAME}-${abi}.apk"
-          done
           cp build/app/outputs/flutter-apk/app-release.apk "dist/taalleer-${GITHUB_REF_NAME}-universal.apk"
           ls -la dist/
 
-      - name: GitHub Release aanmaken met APK's
+      - name: GitHub Release aanmaken met APK
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/*.apk
+          files: dist/taalleer-${{ github.ref_name }}-universal.apk
           generate_release_notes: true

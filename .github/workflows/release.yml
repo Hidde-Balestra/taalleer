@@ -38,8 +38,39 @@ jobs:
       - name: Tests
         run: flutter test
 
+      # De release-keystore staat als secret in de repo. Zonder deze stap
+      # zou Gradle terugvallen op de debug-sleutel, die per runner verschilt —
+      # dan kan een nieuwe APK een geïnstalleerde app niet updaten.
+      - name: Release-keystore herstellen
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          if [ -z "$KEYSTORE_BASE64" ]; then
+            echo "::error::ANDROID_KEYSTORE_BASE64 ontbreekt; de APK zou met een debug-sleutel worden ondertekend."
+            exit 1
+          fi
+          echo "$KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/release.jks"
+          cat > android/key.properties <<EOF
+          storePassword=$KEYSTORE_PASSWORD
+          keyPassword=$KEY_PASSWORD
+          keyAlias=$KEY_ALIAS
+          storeFile=$RUNNER_TEMP/release.jks
+          EOF
+
       - name: Universele release-APK bouwen
         run: flutter build apk --release
+
+      - name: Handtekening controleren
+        run: |
+          APKSIGNER=$(find "$ANDROID_HOME/build-tools" -name apksigner | sort -r | head -n1)
+          "$APKSIGNER" verify --print-certs build/app/outputs/flutter-apk/app-release.apk | tee certs.txt
+          if grep -q "CN=Android Debug" certs.txt; then
+            echo "::error::De APK is met de debug-sleutel ondertekend."
+            exit 1
+          fi
 
       - name: APK hernoemen met versienummer
         run: |
@@ -52,3 +83,7 @@ jobs:
         with:
           files: dist/taalleer-${{ github.ref_name }}-universal.apk
           generate_release_notes: true
+
+      - name: Sleutelbestanden opruimen
+        if: always()
+        run: rm -f android/key.properties "$RUNNER_TEMP/release.jks"

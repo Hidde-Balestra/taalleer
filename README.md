@@ -60,12 +60,31 @@ Bronnen om naar 10.000+ te groeien: frequentielijsten en open woordenboekdata (b
 ## CI/CD
 
 - **CI** ([.github/workflows/ci.yml](.github/workflows/ci.yml)) — draait bij elke push/PR naar `main`: formattering, analyzer, tests en een debug-APK smoke build.
-- **Release** ([.github/workflows/release.yml](.github/workflows/release.yml)) — bij het pushen van een tag `v*` worden release-APK's gebouwd (per ABI + universeel) en als GitHub Release gepubliceerd:
+- **Release** ([.github/workflows/release.yml](.github/workflows/release.yml)) — bij het pushen van een tag `v*` wordt de universele release-APK gebouwd, ondertekend en als GitHub Release gepubliceerd:
 
 ```bash
 git tag v1.0.0
 git push origin v1.0.0
 ```
+
+### Ondertekening
+
+Release-APK's worden ondertekend met een vaste release-keystore. Dat is nodig omdat Android een update weigert (*"App niet geïnstalleerd"*) zodra de handtekening verschilt van de geïnstalleerde versie — en de debug-sleutel wordt op elke CI-runner opnieuw aangemaakt.
+
+De sleutelgegevens staan in `android/key.properties` (staat in `.gitignore`, dus nooit in git):
+
+```properties
+storePassword=…
+keyPassword=…
+keyAlias=taalleer
+storeFile=/pad/naar/taalleer-release.jks
+```
+
+Ontbreekt dat bestand, dan valt de release-build terug op de debug-sleutel — prima om lokaal te testen, maar zo'n APK kan een echte release niet updaten.
+
+In CI komt de keystore uit repo-secrets: `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS` en `ANDROID_KEY_PASSWORD`. De workflow controleert na het bouwen dat de APK **niet** met een debug-sleutel is ondertekend.
+
+> **Bewaar de keystore en het wachtwoord goed.** Raak je ze kwijt, dan kun je bestaande installaties nooit meer updaten — gebruikers moeten de app dan verwijderen en opnieuw installeren.
 
 ## Projectstructuur
 

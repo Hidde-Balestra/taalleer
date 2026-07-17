@@ -52,11 +52,17 @@ jobs:
             echo "::error::ANDROID_KEYSTORE_BASE64 ontbreekt; de APK zou met een debug-sleutel worden ondertekend."
             exit 1
           fi
-          echo "$KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/release.jks"
+          # tr verwijdert eventuele CR/newlines uit het secret; base64 --decode
+          # weigert die anders.
+          printf '%s' "$KEYSTORE_BASE64" | tr -d '\r\n' | base64 --decode > "$RUNNER_TEMP/release.jks"
+          if [ ! -s "$RUNNER_TEMP/release.jks" ]; then
+            echo "::error::De keystore kon niet gedecodeerd worden."
+            exit 1
+          fi
           cat > android/key.properties <<EOF
-          storePassword=$KEYSTORE_PASSWORD
-          keyPassword=$KEY_PASSWORD
-          keyAlias=$KEY_ALIAS
+          storePassword=$(printf '%s' "$KEYSTORE_PASSWORD" | tr -d '\r\n')
+          keyPassword=$(printf '%s' "$KEY_PASSWORD" | tr -d '\r\n')
+          keyAlias=$(printf '%s' "$KEY_ALIAS" | tr -d '\r\n')
           storeFile=$RUNNER_TEMP/release.jks
           EOF
 

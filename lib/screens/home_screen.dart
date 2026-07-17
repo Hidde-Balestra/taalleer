@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../data.dart';
 import '../i18n.dart';
 import '../models.dart';
 import '../theme.dart';
@@ -108,6 +109,46 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
           )
+        else if (quizDoneThisWeek)
+          // Eén toets per week: na afronden pas weer bij de reset.
+          AppCard(
+            child: Row(
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: AppColors.green.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(
+                    Icons.check_circle,
+                    size: 20,
+                    color: AppColors.green,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        t.homeQuizDone,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                        ),
+                      ),
+                      Text(
+                        '${t.homeQuizNext} ${t.resetWhen(daysUntilWordReset())}',
+                        style: TextStyle(fontSize: 12, color: palette.muted),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          )
         else ...[
           _GradientActionButton(
             onTap: onQuiz,
@@ -136,27 +177,11 @@ class HomeScreen extends StatelessWidget {
               size: 20,
             ),
           ),
-          if (quizDoneThisWeek) ...[
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                const Icon(
-                  Icons.check_circle,
-                  size: 16,
-                  color: AppColors.green,
-                ),
-                const SizedBox(width: 6),
-                Text(
-                  t.homeQuizDone,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.green,
-                  ),
-                ),
-              ],
-            ),
-          ],
+          const SizedBox(height: 8),
+          Text(
+            t.homeQuizOnce,
+            style: TextStyle(fontSize: 11, color: palette.muted),
+          ),
         ],
         const SizedBox(height: 16),
         AppCard(

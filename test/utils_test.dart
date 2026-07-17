@@ -55,6 +55,39 @@ void main() {
       expect(isAcceptable('etn', 'eten', dyslexia: true), isTrue);
       expect(isAcceptable('en', 'eten', dyslexia: true), isFalse);
     });
+
+    test('verduidelijking tussen haakjes hoeft niet meegetypt te worden', () {
+      // estar → "zijn (toestand)": alleen "zijn" is ook goed.
+      expect(isAcceptable('zijn', 'zijn (toestand)', dyslexia: false), isTrue);
+      expect(
+        isAcceptable('zijn (toestand)', 'zijn (toestand)', dyslexia: false),
+        isTrue,
+      );
+      expect(isAcceptable('to be', 'to be (state)', dyslexia: false), isTrue);
+      expect(isAcceptable('man', 'man (echtgenoot)', dyslexia: false), isTrue);
+    });
+
+    test('een fout antwoord blijft fout, ook met haakjes in het origineel', () {
+      expect(
+        isAcceptable('lopen', 'zijn (toestand)', dyslexia: false),
+        isFalse,
+      );
+    });
+
+    test('haakjes-variant werkt samen met dyslexie-modus', () {
+      // "zin" mist één letter t.o.v. "zijn": binnen de tolerantie.
+      expect(isAcceptable('zin', 'zijn (toestand)', dyslexia: true), isTrue);
+    });
+  });
+
+  group('answerVariants', () {
+    test('geeft de volledige en de ingekorte vorm', () {
+      expect(answerVariants('zijn (toestand)'), ['zijn (toestand)', 'zijn']);
+    });
+
+    test('zonder haakjes is er maar één variant', () {
+      expect(answerVariants('hablar'), ['hablar']);
+    });
   });
 
   group('calcGrade', () {

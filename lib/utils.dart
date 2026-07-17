@@ -21,9 +21,29 @@ int levenshtein(String a, String b) {
   return dp[m][n];
 }
 
+/// De antwoorden die goed gerekend worden voor [correct].
+///
+/// Verduidelijkingen tussen haakjes staan er alleen om betekenissen uit
+/// elkaar te houden ("zijn (toestand)" bij *estar* naast "zijn" bij *ser*).
+/// Zowel mét als zónder die toevoeging is goed.
+List<String> answerVariants(String correct) {
+  final full = correct.trim();
+  final withoutBrackets = full
+      .replaceAll(RegExp(r'\([^)]*\)'), ' ')
+      .replaceAll(RegExp(r'\s+'), ' ')
+      .trim();
+  return {full, if (withoutBrackets.isNotEmpty) withoutBrackets}.toList();
+}
+
 /// Is het antwoord goed? In dyslexie-modus worden kleine typefouten
 /// geaccepteerd op basis van woordlengte (1 fout per 5 tekens, minimaal 1).
 bool isAcceptable(String input, String correct, {required bool dyslexia}) {
+  return answerVariants(
+    correct,
+  ).any((variant) => _matches(input, variant, dyslexia));
+}
+
+bool _matches(String input, String correct, bool dyslexia) {
   final a = input.trim().toLowerCase();
   final b = correct.trim().toLowerCase();
   if (a == b) return true;

@@ -11,6 +11,7 @@ class Strings {
   final String homeQuizWeekend, homeLastGrade, homeNoResult;
   final String homeGreeting, homeSubGreeting;
   final String homeQuizDone, homePaused, homePausedSub;
+  final String homeQuizNext, homeQuizOnce;
   // Reset van de week
   final String resetTitle, resetTomorrow, resetInDays;
   // Eerdere woorden
@@ -77,6 +78,8 @@ class Strings {
     required this.homeQuizDone,
     required this.homePaused,
     required this.homePausedSub,
+    required this.homeQuizNext,
+    required this.homeQuizOnce,
     required this.resetTitle,
     required this.resetTomorrow,
     required this.resetInDays,
@@ -165,9 +168,11 @@ class Strings {
     homeNoResult: 'Nog geen toets gemaakt',
     homeGreeting: 'Welkom terug! 👋',
     homeSubGreeting: 'Blijf oefenen, je bent goed bezig.',
-    homeQuizDone: 'Deze week al afgerond ✓',
+    homeQuizDone: 'Toets van deze week afgerond ✓',
     homePaused: 'Streak gepauzeerd',
     homePausedSub: 'Schakel de pauze uit om toetsen te maken',
+    homeQuizNext: 'Volgende toets',
+    homeQuizOnce: 'Je maakt één toets per week — kies er één.',
     resetTitle: 'Nieuwe woorden en toets',
     resetTomorrow: 'morgen',
     resetInDays: 'over {d} dagen',
@@ -256,9 +261,11 @@ class Strings {
     homeNoResult: 'No quiz taken yet',
     homeGreeting: 'Welcome back! 👋',
     homeSubGreeting: 'Keep practicing, you are doing great.',
-    homeQuizDone: 'Already done this week ✓',
+    homeQuizDone: 'This week\'s quiz completed ✓',
     homePaused: 'Streak paused',
     homePausedSub: 'Turn off pause to take quizzes',
+    homeQuizNext: 'Next quiz',
+    homeQuizOnce: 'You take one quiz per week — pick one.',
     resetTitle: 'New words and quiz',
     resetTomorrow: 'tomorrow',
     resetInDays: 'in {d} days',

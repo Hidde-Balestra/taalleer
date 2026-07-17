@@ -85,8 +85,11 @@ void main() {
     test(
       'meerdere resultaten worden in volgorde (nieuwste eerst) bewaard',
       () async {
-        final state = await AppState.load();
+        // Eén toets per week, dus de tweede toets valt een week later.
+        var week = 400;
+        final state = await AppState.load(nowWeek: () => week);
         state.addResult(result);
+        week = 401;
         state.addResult(
           const QuizResult(
             id: 100,
@@ -102,7 +105,7 @@ void main() {
 
         await Future<void>.delayed(Duration.zero);
 
-        final reloaded = await AppState.load();
+        final reloaded = await AppState.load(nowWeek: () => week);
         expect(reloaded.history, hasLength(2));
         expect(reloaded.history.first.id, 100);
         expect(reloaded.history.last.id, 99);
@@ -150,14 +153,33 @@ void main() {
       expect(state.streak, 3);
     });
 
+    test('per week is maar één toets toegestaan', () async {
+      final state = await AppState.load(nowWeek: nowWeek);
+      expect(state.quizAllowed, isTrue);
+
+      state.addResult(resultFor(1));
+      expect(state.quizAllowed, isFalse); // op slot tot de reset
+      expect(state.quizDoneThisWeek, isTrue);
+
+      state.addResult(resultFor(2)); // wordt genegeerd
+      expect(state.history, hasLength(1));
+      expect(state.streak, 1);
+    });
+
     test(
-      'één toets per week is genoeg (tweede toets telt niet extra)',
+      'na de wekelijkse reset mag er weer een toets gemaakt worden',
       () async {
         final state = await AppState.load(nowWeek: nowWeek);
         state.addResult(resultFor(1));
-        state.addResult(resultFor(2)); // zelfde week
-        expect(state.streak, 1);
+        expect(state.quizAllowed, isFalse);
+
+        week = 101; // nieuwe week
+        expect(state.quizAllowed, isTrue);
+        expect(state.quizDoneThisWeek, isFalse);
+
+        state.addResult(resultFor(2));
         expect(state.history, hasLength(2));
+        expect(state.streak, 2);
       },
     );
 

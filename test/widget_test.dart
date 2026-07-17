@@ -6,6 +6,7 @@ import 'package:taalleer/data.dart';
 import 'package:taalleer/i18n.dart';
 import 'package:taalleer/main.dart';
 import 'package:taalleer/models.dart';
+import 'package:taalleer/screens/home_screen.dart';
 import 'package:taalleer/screens/settings_screen.dart';
 
 void main() {
@@ -20,6 +21,19 @@ void main() {
     return appState;
   }
 
+  /// Scrollt het home-scherm tot [target] in beeld is (de lijst is langer dan
+  /// het testvenster).
+  Future<void> scrollHome(WidgetTester tester, Finder target) async {
+    await tester.scrollUntilVisible(
+      target,
+      150,
+      scrollable: find.descendant(
+        of: find.byType(HomeScreen),
+        matching: find.byType(Scrollable),
+      ),
+    );
+  }
+
   group('Navigatie', () {
     testWidgets('home-scherm toont begroeting en actieknoppen', (tester) async {
       await pumpApp(tester);
@@ -27,6 +41,8 @@ void main() {
       expect(find.text('Oefenen'), findsOneWidget);
       expect(find.text('Woordentoets'), findsOneWidget);
       expect(find.text('Vervoegingstoets'), findsOneWidget);
+
+      await scrollHome(tester, find.text('Laatste cijfer'));
       expect(find.text('Laatste cijfer'), findsOneWidget);
     });
 
@@ -34,6 +50,7 @@ void main() {
       tester,
     ) async {
       await pumpApp(tester);
+      await scrollHome(tester, find.text('Nog geen toets gemaakt'));
       expect(find.text('Nog geen toets gemaakt'), findsOneWidget);
 
       await tester.tap(find.text('Resultaten'));
@@ -253,8 +270,11 @@ void main() {
         await tester.pumpAndSettle();
         expect(find.text('Welkom terug! 👋'), findsOneWidget);
 
-        // Deze week is nu een toets afgerond → indicator zichtbaar.
-        expect(find.text('Deze week al afgerond ✓'), findsOneWidget);
+        // Deze week is nu een toets afgerond: de knoppen zijn op slot tot
+        // de wekelijkse reset (één toets per week).
+        expect(find.text('Toets van deze week afgerond ✓'), findsOneWidget);
+        expect(find.text('Woordentoets'), findsNothing);
+        expect(find.text('Vervoegingstoets'), findsNothing);
       },
     );
   });

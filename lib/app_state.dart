@@ -81,14 +81,16 @@ class AppState extends ChangeNotifier {
 
   bool get paused => _streakState.paused;
 
-  /// Mogen er toetsen gemaakt worden? Niet tijdens pauze.
-  bool get quizAllowed => !_streakState.paused;
-
   /// Is deze week al een toets afgerond?
   bool get quizDoneThisWeek {
     final last = _streakState.lastQuizWeek;
     return last != null && last == _effectiveWeek();
   }
+
+  /// Mag er nu een toets gemaakt worden? Niet tijdens pauze, en hoogstens
+  /// één keer per week: na een afgeronde toets is de volgende pas bij de
+  /// wekelijkse reset weer beschikbaar.
+  bool get quizAllowed => !_streakState.paused && !quizDoneThisWeek;
 
   void updateSettings(AppSettings settings) {
     _settings = settings;
@@ -117,9 +119,10 @@ class AppState extends ChangeNotifier {
   }
 
   /// Verwerkt een afgeronde toets: bewaart het resultaat en werkt de streak
-  /// bij. Tijdens pauze gebeurt er niets (toetsen zijn dan geblokkeerd).
+  /// bij. Wordt genegeerd tijdens pauze en als er deze week al een toets is
+  /// gemaakt (één toets per week).
   void addResult(QuizResult result) {
-    if (_streakState.paused) return;
+    if (!quizAllowed) return;
     _history.insert(0, result);
     _updateStreakForCompletion();
     notifyListeners();

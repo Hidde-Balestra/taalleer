@@ -46,9 +46,12 @@
             <data android:mimeType="text/plain"/>
         </intent>
         <!-- Nodig om op Android 11+ een tekst-naar-spraak-engine te kunnen
-             vinden (package-visibility), zie flutter_tts. -->
+             vinden (package-visibility), zie flutter_tts. Dit is de actie
+             die TTS-engines (RHVoice, eSpeak NG, ...) zelf declareren; zonder
+             deze <queries>-regel "ziet" onze app die engines niet, ook al
+             staan ze systeembreed gewoon actief. -->
         <intent>
-            <action android:name="android.speech.tts.TextToSpeech"/>
+            <action android:name="android.intent.action.TTS_SERVICE"/>
         </intent>
     </queries>
 </manifest>

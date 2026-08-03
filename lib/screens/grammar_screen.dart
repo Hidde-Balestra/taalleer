@@ -204,6 +204,7 @@ class _GrammarCategoryScreenState extends State<GrammarCategoryScreen> {
                 itemCount: rules.length,
                 separatorBuilder: (_, _) => const SizedBox(height: 8),
                 itemBuilder: (context, i) => _RuleCard(
+                  t: widget.t,
                   nl: widget.nl,
                   course: widget.course,
                   rule: rules[i],
@@ -221,6 +222,7 @@ class _GrammarCategoryScreenState extends State<GrammarCategoryScreen> {
 }
 
 class _RuleCard extends StatelessWidget {
+  final Strings t;
   final bool nl;
   final LanguageCourse course;
   final GrammarRule rule;
@@ -228,6 +230,7 @@ class _RuleCard extends StatelessWidget {
   final VoidCallback onTap;
 
   const _RuleCard({
+    required this.t,
     required this.nl,
     required this.course,
     required this.rule,
@@ -311,6 +314,17 @@ class _RuleCard extends StatelessWidget {
                                             fontWeight: FontWeight.w600,
                                           ),
                                         ),
+                                        // Tekstuele uitspraak: blijft
+                                        // bruikbaar op toestellen zonder
+                                        // (werkende) spraak-engine.
+                                        Text(
+                                          course.pronounce(example.$1),
+                                          style: TextStyle(
+                                            fontSize: 11,
+                                            fontFamily: 'monospace',
+                                            color: palette.muted,
+                                          ),
+                                        ),
                                         Text(
                                           nl ? example.$2 : example.$3,
                                           style: TextStyle(
@@ -322,6 +336,7 @@ class _RuleCard extends StatelessWidget {
                                     ),
                                   ),
                                   SpeakButton(
+                                    t: t,
                                     text: example.$1,
                                     locale: course.ttsLocale,
                                     size: 14,

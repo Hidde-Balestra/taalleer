@@ -58,6 +58,8 @@ class Strings {
   final String settingsSourceLang, settingsDutch, settingsEnglish;
   final String settingsCourse;
   final String settingsPause, settingsPauseDesc, settingsPauseActiveNote;
+  // Uitspraak
+  final String ttsUnavailable;
   // Updates
   final String updatesTitle,
       updatesCurrentVersion,
@@ -163,6 +165,7 @@ class Strings {
     required this.settingsPause,
     required this.settingsPauseDesc,
     required this.settingsPauseActiveNote,
+    required this.ttsUnavailable,
     required this.updatesTitle,
     required this.updatesCurrentVersion,
     required this.updatesChecking,
@@ -272,6 +275,11 @@ class Strings {
     settingsPauseDesc: 'Geen toetsen; je streak blijft bevroren staan',
     settingsPauseActiveNote:
         'Actief: je kunt geen toetsen maken en je streak staat stil totdat je de pauze uitschakelt.',
+    ttsUnavailable:
+        'Geen tekst-naar-spraak beschikbaar op dit toestel. Installeer een '
+        'open-source spraak-engine zoals eSpeak NG (via F-Droid, zonder '
+        'Google Play) en kies die bij Instellingen > Toegankelijkheid > '
+        'Tekst-naar-spraak.',
     updatesTitle: 'Updates',
     updatesCurrentVersion: 'Versie {v}',
     updatesChecking: 'Bezig met controleren…',
@@ -379,6 +387,11 @@ class Strings {
     settingsPauseDesc: 'No quizzes; your streak stays frozen',
     settingsPauseActiveNote:
         'Active: you cannot take quizzes and your streak is frozen until you turn off pause.',
+    ttsUnavailable:
+        'Text-to-speech isn\'t available on this device. Install an '
+        'open-source speech engine such as eSpeak NG (via F-Droid, no '
+        'Google Play needed) and select it under Settings > Accessibility > '
+        'Text-to-speech output.',
     updatesTitle: 'Updates',
     updatesCurrentVersion: 'Version {v}',
     updatesChecking: 'Checking for updates…',

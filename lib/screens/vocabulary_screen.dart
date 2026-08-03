@@ -212,6 +212,7 @@ class _WordCard extends StatelessWidget {
                               ),
                             ),
                             SpeakButton(
+                              t: t,
                               text: word.target,
                               locale: course.ttsLocale,
                             ),

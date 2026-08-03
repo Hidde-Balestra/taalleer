@@ -184,6 +184,7 @@ class _ConjugationQuizScreenState extends State<ConjugationQuizScreen> {
                             ),
                           ),
                           SpeakButton(
+                            t: t,
                             text: q.word.target,
                             locale: widget.course.ttsLocale,
                             size: 14,

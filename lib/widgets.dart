@@ -418,18 +418,30 @@ class _LogoPainter extends CustomPainter {
 }
 
 /// Klein rond knopje dat [text] hardop laat uitspreken in [locale]
-/// (bijv. `es-ES`) via `speechService`.
+/// (bijv. `es-ES`) via `speechService`. Ontbreekt er een spraak-engine op
+/// het toestel (bv. GrapheneOS zonder Google-diensten), dan laat de knop dat
+/// via een snackbar weten in plaats van stilzwijgend niets te doen.
 class SpeakButton extends StatelessWidget {
+  final Strings t;
   final String text;
   final String locale;
   final double size;
 
   const SpeakButton({
     super.key,
+    required this.t,
     required this.text,
     required this.locale,
     this.size = 16,
   });
+
+  Future<void> _speak(BuildContext context) async {
+    final ok = await speechService.speak(text, locale);
+    if (ok || !context.mounted) return;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(t.ttsUnavailable)));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -437,7 +449,7 @@ class SpeakButton extends StatelessWidget {
       color: Colors.transparent,
       shape: const CircleBorder(),
       child: InkWell(
-        onTap: () => speechService.speak(text, locale),
+        onTap: () => _speak(context),
         customBorder: const CircleBorder(),
         child: Padding(
           padding: const EdgeInsets.all(6),

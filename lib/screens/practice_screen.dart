@@ -197,6 +197,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
                               ),
                               if (isTargetShown(q))
                                 SpeakButton(
+                                  t: t,
                                   text: shownWordOf(q),
                                   locale: widget.course.ttsLocale,
                                 ),
@@ -352,7 +353,12 @@ class _FeedbackBox extends StatelessWidget {
                   ),
                 ),
                 if (speakCorrectAnswer)
-                  SpeakButton(text: correctAnswer, locale: locale, size: 14),
+                  SpeakButton(
+                    t: t,
+                    text: correctAnswer,
+                    locale: locale,
+                    size: 14,
+                  ),
               ],
             ),
           ],

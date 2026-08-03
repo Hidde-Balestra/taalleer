@@ -13,6 +13,7 @@ import 'package:taalleer/languages/es/es_course.dart';
 import 'package:taalleer/main.dart';
 import 'package:taalleer/models.dart';
 import 'package:taalleer/screens/home_screen.dart';
+import 'package:taalleer/screens/settings_screen.dart';
 import 'package:taalleer/storage.dart';
 import 'package:taalleer/update_service.dart';
 
@@ -75,9 +76,21 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  Finder _settingsScrollable() => find.descendant(
+    of: find.byType(SettingsScreen),
+    matching: find.byType(Scrollable),
+  );
+
   /// Gaat terug van het (gepushte) instellingenscherm naar het onderliggende
-  /// tabblad.
+  /// tabblad. De terugknop staat bovenaan de lijst en kan, als er eerder
+  /// naar beneden gescrold is, buiten de cache-extent van de Sliver zijn
+  /// ontmount — daarom eerst terugscrollen naar boven.
   Future<void> closeSettings(WidgetTester tester) async {
+    await tester.scrollUntilVisible(
+      find.byIcon(Icons.arrow_back),
+      -300,
+      scrollable: _settingsScrollable(),
+    );
     await tester.tap(find.byIcon(Icons.arrow_back));
     await tester.pumpAndSettle();
   }
@@ -95,12 +108,18 @@ void main() {
     );
   }
 
-  /// Scrollt het instellingen-scherm tot [target] in beeld is. `ensureVisible`
-  /// (i.p.v. `scrollUntilVisible`) berekent de precieze scrollpositie: de
-  /// instellingenlijst is een niet-lazy `ListView`, dus elk kind staat sowieso
-  /// al in de widgetboom — `scrollUntilVisible` zou daardoor meteen "klaar"
-  /// zijn zonder het element ook echt binnen het testvenster te krijgen.
+  /// Scrollt het instellingen-scherm tot [target] in beeld is. Eerst
+  /// `scrollUntilVisible`, dat stapsgewijs sleept totdat het element bestaat
+  /// (nodig omdat de lijst een Sliver is: elementen buiten de cache-extent
+  /// zijn niet gemount, ook al staan ze al in de widgetlijst) en daarna
+  /// `ensureVisible` voor de precieze eindpositie (anders kan het element
+  /// net over de rand van het testvenster blijven steken).
   Future<void> scrollSettings(WidgetTester tester, Finder target) async {
+    await tester.scrollUntilVisible(
+      target,
+      200,
+      scrollable: _settingsScrollable(),
+    );
     await tester.ensureVisible(target);
     await tester.pumpAndSettle();
   }

@@ -76,7 +76,7 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  Finder _settingsScrollable() => find.descendant(
+  Finder settingsScrollable() => find.descendant(
     of: find.byType(SettingsScreen),
     matching: find.byType(Scrollable),
   );
@@ -89,7 +89,7 @@ void main() {
     await tester.scrollUntilVisible(
       find.byIcon(Icons.arrow_back),
       -300,
-      scrollable: _settingsScrollable(),
+      scrollable: settingsScrollable(),
     );
     await tester.tap(find.byIcon(Icons.arrow_back));
     await tester.pumpAndSettle();
@@ -118,7 +118,7 @@ void main() {
     await tester.scrollUntilVisible(
       target,
       200,
-      scrollable: _settingsScrollable(),
+      scrollable: settingsScrollable(),
     );
     await tester.ensureVisible(target);
     await tester.pumpAndSettle();

@@ -2,8 +2,11 @@ import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:taalleer/data.dart';
+import 'package:taalleer/languages/es/es_course.dart';
 import 'package:taalleer/models.dart';
 import 'package:taalleer/utils.dart';
+
+final _course = SpanishCourse();
 
 void main() {
   group('levenshtein', () {
@@ -141,7 +144,7 @@ void main() {
   });
 
   group('buildPractice / buildQuiz', () {
-    final weekWords = wordsForWeek(1);
+    final weekWords = wordsForWeek(_course, 1);
 
     test('oefensessie heeft 10 unieke woorden', () {
       final qs = buildPractice(weekWords, Lang.nl, random: Random(1));
@@ -190,7 +193,7 @@ void main() {
 
   group('buildConjugationQuiz', () {
     test('10 werkwoorden, elk met geldige persoon en antwoord', () {
-      final qs = buildConjugationQuiz(kWordBook, random: Random(7));
+      final qs = buildConjugationQuiz(_course.words, random: Random(7));
       expect(qs, hasLength(10));
       for (final q in qs) {
         expect(q.word.isVerb, isTrue);
@@ -202,7 +205,7 @@ void main() {
     });
 
     test('kiest geen niet-werkwoorden', () {
-      final qs = buildConjugationQuiz(kWordBook, random: Random(8));
+      final qs = buildConjugationQuiz(_course.words, random: Random(8));
       for (final q in qs) {
         expect(q.word.present, isNotEmpty);
       }
@@ -212,11 +215,11 @@ void main() {
   group('correctAnswerOf / shownWordOf', () {
     const word = Word(
       id: 1,
-      es: 'hablar',
+      target: 'hablar',
       nl: 'spreken',
       en: 'to speak',
       pronunciation: 'ah-BLAR',
-      exampleEs: '',
+      exampleTarget: '',
       exampleNl: '',
     );
 
@@ -247,60 +250,72 @@ void main() {
 
   group('woordenboek', () {
     test('woordenboek bevat minimaal 900 woorden met unieke ids', () {
-      expect(kWordBook.length, greaterThanOrEqualTo(900));
-      expect(kWordBook.map((w) => w.id).toSet(), hasLength(kWordBook.length));
+      expect(_course.words.length, greaterThanOrEqualTo(900));
+      expect(
+        _course.words.map((w) => w.id).toSet(),
+        hasLength(_course.words.length),
+      );
     });
 
     test('geen dubbele Spaanse lemma\'s in het woordenboek', () {
-      expect(kWordBook.map((w) => w.es).toSet(), hasLength(kWordBook.length));
+      expect(
+        _course.words.map((w) => w.target).toSet(),
+        hasLength(_course.words.length),
+      );
     });
 
     test('elk woord heeft vertalingen en een uitspraak', () {
-      for (final w in kWordBook) {
-        expect(w.es, isNotEmpty);
-        expect(w.nl, isNotEmpty, reason: 'nl ontbreekt bij ${w.es}');
-        expect(w.en, isNotEmpty, reason: 'en ontbreekt bij ${w.es}');
+      for (final w in _course.words) {
+        expect(w.target, isNotEmpty);
+        expect(w.nl, isNotEmpty, reason: 'nl ontbreekt bij ${w.target}');
+        expect(w.en, isNotEmpty, reason: 'en ontbreekt bij ${w.target}');
         expect(
           w.pronunciation,
           isNotEmpty,
-          reason: 'uitspraak ontbreekt bij ${w.es}',
+          reason: 'uitspraak ontbreekt bij ${w.target}',
         );
       }
     });
 
     test('wordById vindt woorden uit het hele boek', () {
-      expect(wordById(kWordBook.first.id)!.es, kWordBook.first.es);
-      expect(wordById(kWordBook.last.id)!.es, kWordBook.last.es);
-      expect(wordById(-1), isNull);
+      expect(
+        _course.wordById(_course.words.first.id)!.target,
+        _course.words.first.target,
+      );
+      expect(
+        _course.wordById(_course.words.last.id)!.target,
+        _course.words.last.target,
+      );
+      expect(_course.wordById(-1), isNull);
     });
 
     test('elk werkwoord heeft 6 vervoegingen', () {
-      final verbs = kWordBook.where((w) => w.isVerb).toList();
+      final verbs = _course.words.where((w) => w.isVerb).toList();
       expect(verbs.length, greaterThan(200));
       for (final w in verbs) {
         expect(
           w.present,
           hasLength(6),
-          reason: 'onvolledige vervoeging bij ${w.es}',
+          reason: 'onvolledige vervoeging bij ${w.target}',
         );
         expect(
           w.article,
           isEmpty,
-          reason: '${w.es} is werkwoord, geen lidwoord',
+          reason: '${w.target} is werkwoord, geen lidwoord',
         );
       }
     });
 
     test('woorden zijn nooit tegelijk werkwoord én zelfstandig naamwoord', () {
-      for (final w in kWordBook) {
-        expect(w.isVerb && w.isNoun, isFalse, reason: w.es);
+      for (final w in _course.words) {
+        expect(w.isVerb && w.isNoun, isFalse, reason: w.target);
       }
     });
 
     test('zelfstandige naamwoorden krijgen el of la', () {
-      for (final w in kWordBook) {
+      for (final w in _course.words) {
         if (w.isNoun) {
-          expect(['el', 'la'], contains(w.article), reason: w.es);
+          expect(['el', 'la'], contains(w.article), reason: w.target);
         }
       }
     });
@@ -309,7 +324,7 @@ void main() {
   group('willekeurige weekselectie', () {
     test('elke week geeft precies 20 unieke woorden', () {
       for (final seed in [0, 1, 7, 26, 52, 999, 10000]) {
-        final words = wordsForWeek(seed);
+        final words = wordsForWeek(_course, seed);
         expect(words, hasLength(kWordsPerWeek));
         expect(
           words.map((w) => w.id).toSet(),
@@ -320,32 +335,32 @@ void main() {
     });
 
     test('alle gekozen woorden komen uit het woordenboek', () {
-      final ids = kWordBook.map((w) => w.id).toSet();
-      for (final w in wordsForWeek(42)) {
+      final ids = _course.words.map((w) => w.id).toSet();
+      for (final w in wordsForWeek(_course, 42)) {
         expect(ids, contains(w.id));
       }
     });
 
     test('deterministisch: dezelfde seed geeft dezelfde 20 woorden', () {
       expect(
-        wordsForWeek(29).map((w) => w.id).toList(),
-        wordsForWeek(29).map((w) => w.id).toList(),
+        wordsForWeek(_course, 29).map((w) => w.id).toList(),
+        wordsForWeek(_course, 29).map((w) => w.id).toList(),
       );
     });
 
     test('de selectie is echt willekeurig, niet de eerste 20 uit het boek', () {
-      final firstTwenty = kWordBook
+      final firstTwenty = _course.words
           .take(kWordsPerWeek)
           .map((w) => w.id)
           .toSet();
-      final picked = wordsForWeek(3).map((w) => w.id).toSet();
+      final picked = wordsForWeek(_course, 3).map((w) => w.id).toSet();
       expect(picked, isNot(equals(firstTwenty)));
     });
 
     test('verschillende weken geven verschillende trekkingen', () {
-      final a = wordsForWeek(1).map((w) => w.id).toList();
-      final b = wordsForWeek(2).map((w) => w.id).toList();
-      final c = wordsForWeek(3).map((w) => w.id).toList();
+      final a = wordsForWeek(_course, 1).map((w) => w.id).toList();
+      final b = wordsForWeek(_course, 2).map((w) => w.id).toList();
+      final c = wordsForWeek(_course, 3).map((w) => w.id).toList();
       expect(a, isNot(equals(b)));
       expect(b, isNot(equals(c)));
     });
@@ -353,10 +368,10 @@ void main() {
     test('over veel weken komt een groot deel van het boek aan bod', () {
       final seen = <int>{};
       for (var seed = 0; seed < 200; seed++) {
-        seen.addAll(wordsForWeek(seed).map((w) => w.id));
+        seen.addAll(wordsForWeek(_course, seed).map((w) => w.id));
       }
       // 200 × 20 trekkingen met teruglegging dekken ruimschoots de helft.
-      expect(seen.length, greaterThan(kWordBook.length ~/ 2));
+      expect(seen.length, greaterThan(_course.words.length ~/ 2));
     });
 
     test('weekStartDate geeft de maandag van die week', () {
@@ -380,9 +395,11 @@ void main() {
 
     test('bij de reset horen nieuwe woorden', () {
       final thisWeek = wordsForWeek(
+        _course,
         currentWeekSeed(DateTime(2026, 7, 15)),
       ).map((w) => w.id).toList();
       final nextWeek = wordsForWeek(
+        _course,
         currentWeekSeed(DateTime(2026, 7, 20)),
       ).map((w) => w.id).toList();
       expect(thisWeek, isNot(equals(nextWeek)));

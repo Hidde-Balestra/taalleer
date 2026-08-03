@@ -3,7 +3,7 @@ import 'models.dart';
 /// Alle UI-teksten van de app, per taal (NL/EN), overgenomen uit het prototype.
 class Strings {
   // Navigatie
-  final String navHome, navWords, navResults, navSettings;
+  final String navHome, navWords, navGrammar, navResults, navSettings;
   // Home
   final String homeWeek, homeWordsLearned, homeStreak, homeWeeks;
   final String homePractice, homePracticeSub, homeQuiz, homeQuizSub;
@@ -18,6 +18,12 @@ class Strings {
   final String pastTitle, pastSubtitle, pastEmpty, pastWords, pastOpen;
   // Vervoegingstoets
   final String conjTitle, conjInstruction;
+  // Grammatica
+  final String grammarTitle,
+      grammarSubtitle,
+      grammarEmpty,
+      grammarRuleSingular,
+      grammarRulePlural;
   // Woordenlijst
   final String vocabTitle,
       vocabWeek,
@@ -49,15 +55,23 @@ class Strings {
   final String settingsDyslexia,
       settingsDyslexiaDesc,
       settingsDyslexiaActiveNote;
-  final String settingsSourceLang,
-      settingsDutch,
-      settingsEnglish,
-      settingsVersion;
+  final String settingsSourceLang, settingsDutch, settingsEnglish;
+  final String settingsCourse;
   final String settingsPause, settingsPauseDesc, settingsPauseActiveNote;
+  // Updates
+  final String updatesTitle,
+      updatesCurrentVersion,
+      updatesChecking,
+      updatesUpToDate,
+      updatesAvailable,
+      updatesFailed,
+      updatesCheckNow,
+      updatesViewRelease;
 
   const Strings({
     required this.navHome,
     required this.navWords,
+    required this.navGrammar,
     required this.navResults,
     required this.navSettings,
     required this.homeWeek,
@@ -90,6 +104,11 @@ class Strings {
     required this.pastOpen,
     required this.conjTitle,
     required this.conjInstruction,
+    required this.grammarTitle,
+    required this.grammarSubtitle,
+    required this.grammarEmpty,
+    required this.grammarRuleSingular,
+    required this.grammarRulePlural,
     required this.vocabTitle,
     required this.vocabWeek,
     required this.vocabSearch,
@@ -140,10 +159,18 @@ class Strings {
     required this.settingsSourceLang,
     required this.settingsDutch,
     required this.settingsEnglish,
-    required this.settingsVersion,
+    required this.settingsCourse,
     required this.settingsPause,
     required this.settingsPauseDesc,
     required this.settingsPauseActiveNote,
+    required this.updatesTitle,
+    required this.updatesCurrentVersion,
+    required this.updatesChecking,
+    required this.updatesUpToDate,
+    required this.updatesAvailable,
+    required this.updatesFailed,
+    required this.updatesCheckNow,
+    required this.updatesViewRelease,
   });
 
   static Strings of(Lang lang) => lang == Lang.nl ? nl : en;
@@ -151,6 +178,7 @@ class Strings {
   static const nl = Strings(
     navHome: 'Huis',
     navWords: 'Woorden',
+    navGrammar: 'Grammatica',
     navResults: 'Resultaten',
     navSettings: 'Instellingen',
     homeWeek: 'Week',
@@ -183,6 +211,11 @@ class Strings {
     pastOpen: 'Eerdere weken',
     conjTitle: 'Vervoegingstoets',
     conjInstruction: 'Vervoeg in de tegenwoordige tijd',
+    grammarTitle: 'Grammatica',
+    grammarSubtitle: 'De belangrijkste regels, per onderwerp',
+    grammarEmpty: 'Nog geen grammaticaregels beschikbaar voor deze taal.',
+    grammarRuleSingular: 'regel',
+    grammarRulePlural: 'regels',
     vocabTitle: 'Woordenlijst',
     vocabWeek: 'Week',
     vocabSearch: 'Zoeken…',
@@ -234,16 +267,25 @@ class Strings {
     settingsSourceLang: 'Brontaal',
     settingsDutch: 'Nederlands',
     settingsEnglish: 'Engels',
-    settingsVersion: 'TaalLeer v1.0',
+    settingsCourse: 'Taal die je leert',
     settingsPause: 'Streak pauzeren',
     settingsPauseDesc: 'Geen toetsen; je streak blijft bevroren staan',
     settingsPauseActiveNote:
         'Actief: je kunt geen toetsen maken en je streak staat stil totdat je de pauze uitschakelt.',
+    updatesTitle: 'Updates',
+    updatesCurrentVersion: 'Versie {v}',
+    updatesChecking: 'Bezig met controleren…',
+    updatesUpToDate: 'Je gebruikt de nieuwste versie',
+    updatesAvailable: 'Update beschikbaar: v{v}',
+    updatesFailed: 'Controleren op updates mislukt',
+    updatesCheckNow: 'Nu controleren',
+    updatesViewRelease: 'Bekijk release',
   );
 
   static const en = Strings(
     navHome: 'Home',
     navWords: 'Words',
+    navGrammar: 'Grammar',
     navResults: 'Results',
     navSettings: 'Settings',
     homeWeek: 'Week',
@@ -276,6 +318,11 @@ class Strings {
     pastOpen: 'Previous weeks',
     conjTitle: 'Conjugation Quiz',
     conjInstruction: 'Conjugate in the present tense',
+    grammarTitle: 'Grammar',
+    grammarSubtitle: 'The key rules, by topic',
+    grammarEmpty: 'No grammar rules available yet for this language.',
+    grammarRuleSingular: 'rule',
+    grammarRulePlural: 'rules',
     vocabTitle: 'Word List',
     vocabWeek: 'Week',
     vocabSearch: 'Search…',
@@ -327,16 +374,36 @@ class Strings {
     settingsSourceLang: 'Source language',
     settingsDutch: 'Dutch',
     settingsEnglish: 'English',
-    settingsVersion: 'TaalLeer v1.0',
+    settingsCourse: 'Language you are learning',
     settingsPause: 'Pause streak',
     settingsPauseDesc: 'No quizzes; your streak stays frozen',
     settingsPauseActiveNote:
         'Active: you cannot take quizzes and your streak is frozen until you turn off pause.',
+    updatesTitle: 'Updates',
+    updatesCurrentVersion: 'Version {v}',
+    updatesChecking: 'Checking for updates…',
+    updatesUpToDate: 'You are on the latest version',
+    updatesAvailable: 'Update available: v{v}',
+    updatesFailed: 'Could not check for updates',
+    updatesCheckNow: 'Check now',
+    updatesViewRelease: 'View release',
   );
 
   /// "morgen" of "over N dagen".
   String resetWhen(int days) =>
       days <= 1 ? resetTomorrow : resetInDays.replaceFirst('{d}', '$days');
+
+  /// "1 regel" of "N regels".
+  String grammarRuleCount(int n) =>
+      '$n ${n == 1 ? grammarRuleSingular : grammarRulePlural}';
+
+  /// "Versie 1.9.0".
+  String currentVersionLabel(String v) =>
+      updatesCurrentVersion.replaceFirst('{v}', v);
+
+  /// "Update beschikbaar: v1.9.0".
+  String updateAvailableLabel(String v) =>
+      updatesAvailable.replaceFirst('{v}', v);
 
   /// Vraaglabel op basis van vraagtype.
   String questionLabel(QuestionType type) {

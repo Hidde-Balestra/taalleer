@@ -1,4 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Nodig voor de update-check (GitHub API) en tekst-naar-spraak-download
+         op sommige toestellen. In debug/profile stond dit al (alleen voor
+         ontwikkeling), maar ontbrak hier voor release-builds. -->
+    <uses-permission android:name="android.permission.INTERNET"/>
     <application
         android:label="taalleer"
         android:name="${applicationName}"
@@ -40,6 +44,11 @@
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>
+        </intent>
+        <!-- Nodig om op Android 11+ een tekst-naar-spraak-engine te kunnen
+             vinden (package-visibility), zie flutter_tts. -->
+        <intent>
+            <action android:name="android.speech.tts.TextToSpeech"/>
         </intent>
     </queries>
 </manifest>

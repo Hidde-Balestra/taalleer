@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../grammar.dart';
 import '../i18n.dart';
+import '../language_course.dart';
 import '../models.dart';
 import '../theme.dart';
 import '../widgets.dart';
@@ -9,6 +9,7 @@ import '../widgets.dart';
 class VocabularyScreen extends StatefulWidget {
   final Strings t;
   final Lang lang;
+  final LanguageCourse course;
   final int weekNumber;
   final List<Word> words;
   final VoidCallback onOpenPast;
@@ -17,6 +18,7 @@ class VocabularyScreen extends StatefulWidget {
     super.key,
     required this.t,
     required this.lang,
+    required this.course,
     required this.weekNumber,
     required this.words,
     required this.onOpenPast,
@@ -38,7 +40,7 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
     final filtered = widget.words
         .where(
           (w) =>
-              w.es.toLowerCase().contains(query) ||
+              w.target.toLowerCase().contains(query) ||
               w.nl.toLowerCase().contains(query) ||
               w.en.toLowerCase().contains(query),
         )
@@ -135,6 +137,7 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
             itemBuilder: (context, i) => _WordCard(
               t: t,
               word: filtered[i],
+              course: widget.course,
               index: widget.words.indexOf(filtered[i]) + 1,
               expanded: _expandedId == filtered[i].id,
               onTap: () => setState(
@@ -153,6 +156,7 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
 class _WordCard extends StatelessWidget {
   final Strings t;
   final Word word;
+  final LanguageCourse course;
   final int index;
   final bool expanded;
   final VoidCallback onTap;
@@ -160,6 +164,7 @@ class _WordCard extends StatelessWidget {
   const _WordCard({
     required this.t,
     required this.word,
+    required this.course,
     required this.index,
     required this.expanded,
     required this.onTap,
@@ -183,24 +188,34 @@ class _WordCard extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text.rich(
-                          TextSpan(
-                            children: [
-                              if (word.article.isNotEmpty)
+                        Row(
+                          children: [
+                            Flexible(
+                              child: Text.rich(
                                 TextSpan(
-                                  text: '${word.article} ',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w500,
-                                    color: palette.muted,
-                                  ),
+                                  children: [
+                                    if (word.article.isNotEmpty)
+                                      TextSpan(
+                                        text: '${word.article} ',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                          color: palette.muted,
+                                        ),
+                                      ),
+                                    TextSpan(text: word.target),
+                                  ],
                                 ),
-                              TextSpan(text: word.es),
-                            ],
-                          ),
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                            SpeakButton(
+                              text: word.target,
+                              locale: course.ttsLocale,
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 2),
                         Text.rich(
@@ -263,10 +278,13 @@ class _WordCard extends StatelessWidget {
                           const SizedBox(height: 8),
                           _DetailRow(
                             label: t.vocabConjugation.toUpperCase(),
-                            child: _ConjugationTable(forms: word.present),
+                            child: _ConjugationTable(
+                              forms: word.present,
+                              pronouns: course.pronouns,
+                            ),
                           ),
                         ],
-                        if (word.exampleEs.isNotEmpty) ...[
+                        if (word.exampleTarget.isNotEmpty) ...[
                           const SizedBox(height: 8),
                           _DetailRow(
                             label: t.vocabExample.toUpperCase(),
@@ -274,7 +292,7 @@ class _WordCard extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  word.exampleEs,
+                                  word.exampleTarget,
                                   style: const TextStyle(
                                     fontSize: 14,
                                     fontStyle: FontStyle.italic,
@@ -339,8 +357,9 @@ class _DetailRow extends StatelessWidget {
 /// Toont de zes persoonsvormen van de tegenwoordige tijd naast hun voornaamwoord.
 class _ConjugationTable extends StatelessWidget {
   final List<String> forms;
+  final List<String> pronouns;
 
-  const _ConjugationTable({required this.forms});
+  const _ConjugationTable({required this.forms, required this.pronouns});
 
   @override
   Widget build(BuildContext context) {
@@ -348,7 +367,7 @@ class _ConjugationTable extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        for (var i = 0; i < forms.length && i < kPronouns.length; i++)
+        for (var i = 0; i < forms.length && i < pronouns.length; i++)
           Padding(
             padding: const EdgeInsets.only(bottom: 2),
             child: Row(
@@ -358,7 +377,7 @@ class _ConjugationTable extends StatelessWidget {
                 SizedBox(
                   width: 84,
                   child: Text(
-                    kPronouns[i],
+                    pronouns[i],
                     style: TextStyle(fontSize: 12, color: palette.muted),
                   ),
                 ),

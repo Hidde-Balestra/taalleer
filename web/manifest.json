@@ -1,11 +1,11 @@
 {
-    "name": "taalleer",
-    "short_name": "taalleer",
+    "name": "TaalLeer",
+    "short_name": "TaalLeer",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#7C3AED",
+    "theme_color": "#7C3AED",
+    "description": "TaalLeer - Spaanse woordjes leren met weektoetsen, streaks en dyslexie-modus.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

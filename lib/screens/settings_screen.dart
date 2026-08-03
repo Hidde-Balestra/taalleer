@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import '../i18n.dart';
+import '../languages/registry.dart';
 import '../models.dart';
 import '../theme.dart';
+import '../update_service.dart';
 import '../widgets.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -12,6 +15,9 @@ class SettingsScreen extends StatelessWidget {
   final bool paused;
   final ValueChanged<bool> onPausedChanged;
 
+  /// Optioneel injecteerbaar voor tests; standaard een echte [UpdateService].
+  final UpdateService? updateService;
+
   const SettingsScreen({
     super.key,
     required this.t,
@@ -19,6 +25,7 @@ class SettingsScreen extends StatelessWidget {
     required this.onChanged,
     required this.paused,
     required this.onPausedChanged,
+    this.updateService,
   });
 
   @override
@@ -31,6 +38,26 @@ class SettingsScreen extends StatelessWidget {
         Text(
           t.settingsTitle,
           style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 16),
+
+        // Taal die je leert
+        _SettingsCard(
+          icon: Icons.public,
+          title: t.settingsCourse,
+          child: _SegmentRow(
+            options: [
+              for (final course in kCourses)
+                _SegmentOption(
+                  label:
+                      '${course.flag} '
+                      '${settings.language == Lang.nl ? course.nameNl : course.nameEn}',
+                  selected: settings.courseId == course.id,
+                  onTap: () =>
+                      onChanged(settings.copyWith(courseId: course.id)),
+                ),
+            ],
+          ),
         ),
         const SizedBox(height: 16),
 
@@ -239,14 +266,155 @@ class SettingsScreen extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
-        Center(
-          child: Text(
-            t.settingsVersion,
-            style: TextStyle(fontSize: 12, color: palette.muted),
-          ),
-        ),
+        _UpdatesCard(t: t, updateService: updateService ?? UpdateService()),
       ],
     );
+  }
+}
+
+/// Toont de huidige versie en controleert automatisch (en op verzoek) of er
+/// een nieuwere release op GitHub staat.
+class _UpdatesCard extends StatefulWidget {
+  final Strings t;
+  final UpdateService updateService;
+
+  const _UpdatesCard({required this.t, required this.updateService});
+
+  @override
+  State<_UpdatesCard> createState() => _UpdatesCardState();
+}
+
+class _UpdatesCardState extends State<_UpdatesCard> {
+  String? _currentVersion;
+  UpdateCheckResult? _result;
+  bool _checking = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _check();
+  }
+
+  Future<void> _check() async {
+    setState(() => _checking = true);
+    final info = await PackageInfo.fromPlatform();
+    final result = await widget.updateService.checkForUpdate(info.version);
+    if (!mounted) return;
+    setState(() {
+      _currentVersion = info.version;
+      _result = result;
+      _checking = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final t = widget.t;
+    final palette = AppPalette.of(context);
+    return AppCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(
+                Icons.system_update_alt,
+                size: 16,
+                color: AppColors.primary,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                t.updatesTitle,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const Spacer(),
+              if (_currentVersion != null)
+                Text(
+                  t.currentVersionLabel(_currentVersion!),
+                  style: TextStyle(fontSize: 12, color: palette.muted),
+                ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          _buildStatus(palette),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatus(AppPalette palette) {
+    final t = widget.t;
+
+    if (_checking || _result == null) {
+      // Bewust een statisch icoon i.p.v. een ronddraaiende spinner: de check
+      // duurt doorgaans maar een fractie van een seconde, en een
+      // oneindig-lopende animatie zou `pumpAndSettle()` in tests blokkeren.
+      return Row(
+        children: [
+          Icon(Icons.sync, size: 14, color: palette.muted),
+          const SizedBox(width: 8),
+          Text(
+            t.updatesChecking,
+            style: TextStyle(fontSize: 12, color: palette.muted),
+          ),
+        ],
+      );
+    }
+
+    switch (_result!.status) {
+      case UpdateStatus.upToDate:
+        return Row(
+          children: [
+            const Icon(
+              Icons.check_circle_outline,
+              size: 14,
+              color: AppColors.green,
+            ),
+            const SizedBox(width: 6),
+            Text(
+              t.updatesUpToDate,
+              style: const TextStyle(fontSize: 12, color: AppColors.green),
+            ),
+          ],
+        );
+      case UpdateStatus.updateAvailable:
+        final url = _result!.releaseUrl;
+        return Row(
+          children: [
+            Expanded(
+              child: Text(
+                t.updateAvailableLabel(_result!.latestVersion ?? ''),
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.amber,
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: url == null
+                  ? null
+                  : () => widget.updateService.openReleasePage(url),
+              child: Text(t.updatesViewRelease),
+            ),
+          ],
+        );
+      case UpdateStatus.checkFailed:
+        return Row(
+          children: [
+            Expanded(
+              child: Text(
+                t.updatesFailed,
+                style: TextStyle(fontSize: 12, color: palette.muted),
+              ),
+            ),
+            TextButton(onPressed: _check, child: Text(t.updatesCheckNow)),
+          ],
+        );
+    }
   }
 }
 

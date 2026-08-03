@@ -6,7 +6,9 @@ Een Flutter-app om Spaanse woordjes te leren, gebaseerd op het [Figma Make proto
 
 - **Willekeurige woorden per week** — een Spaans woordenboek van ~1500 woorden (thematisch geordend: getallen, tijd, familie, lichaam, huis, eten, dieren, natuur, stad, reizen, kleding, kleuren, school, beroepen, technologie, gezondheid, sport, kunst, geld, gevoelens, bijvoeglijke naamwoorden, werkwoorden en kleine woorden). Elke week worden hieruit **20 willekeurige woorden** getrokken. De trekking is deterministisch per kalenderweek (jaaroverschrijdend, dus niet-herhalend): binnen één week tonen de woordenlijst, oefening en toets dezelfde woorden. Het boek kan onbeperkt groeien (zie [Woordenboek uitbreiden](#woordenboek-uitbreiden-richting-10000-woorden))
 - **Automatische uitspraak** — Spaans is fonetisch regelmatig; de uitspraakhint (bijv. `casa` → `KAH-sah`) wordt uit de spelling afgeleid, inclusief klemtoonregels en accenten
-- **Grammatica per woord** — in de woordenlijst toont elk zelfstandig naamwoord zijn lidwoord (**el**/**la**) en elk werkwoord de volledige tegenwoordige tijd (presente de indicativo). Beide worden automatisch afgeleid (`grammar.dart`): regelmatige vervoegingen via vaste uitgangen, onregelmatige/stamwisselende werkwoorden via tabellen, en het geslacht via uitgangsregels met een uitzonderingenlijst
+- **Woorden hardop laten uitspreken** — een uitspraakknopje (tekst-naar-spraak) bij woorden in de woordenlijst, oefening, vervoegingstoets en grammaticavoorbeelden
+- **Grammatica per woord** — in de woordenlijst toont elk zelfstandig naamwoord zijn lidwoord (**el**/**la**) en elk werkwoord de volledige tegenwoordige tijd (presente de indicativo). Beide worden automatisch afgeleid (`es_grammar.dart`): regelmatige vervoegingen via vaste uitgangen, onregelmatige/stamwisselende werkwoorden via tabellen, en het geslacht via uitgangsregels met een uitzonderingenlijst
+- **Grammaticascherm** — de belangrijkste grammaticaregels, gecategoriseerd per onderwerp (zelfstandige naamwoorden, bijvoeglijke naamwoorden, werkwoorden, ser/estar, voornaamwoorden, ontkenning & vraagzinnen), met voorbeelden en uitspraak
 - **Home** — weekoverzicht met streak, aantal woorden van deze week en het laatste cijfer
 - **Woordenlijst** — de 20 woorden van deze week met uitspraak en voorbeeldzinnen, doorzoekbaar
 - **Oefenen** — 10 vragen met directe feedback en uitspraakhint
@@ -18,12 +20,18 @@ Een Flutter-app om Spaanse woordjes te leren, gebaseerd op het [Figma Make proto
 - **Eerdere woorden** — een apart scherm (via het klok-icoon in de woordenlijst) met alle woorden die je eerder hebt gehad, gegroepeerd per week
 - **Resultaten** — historie van alle afgeronde toetsen
 - **Instellingen**
+  - Taal die je leert (op dit moment alleen Spaans — zie [Meertalige architectuur](#meertalige-architectuur))
   - App-taal: Nederlands / Engels
   - Brontaal: Nederlands / Engels (bepaalt de vraagrichting)
   - Weergave: licht / donker / systeem
   - **Dyslexie-modus**: kleine typefouten worden geaccepteerd (Levenshtein-afstand op basis van woordlengte) en de tekst krijgt ruimere letterafstand
+  - **Updates**: toont de huidige versie en controleert automatisch (en op verzoek) of er een nieuwere release op GitHub staat, met een link ernaartoe
 
-Alle data (instellingen en toetshistorie) wordt lokaal op het apparaat opgeslagen via `shared_preferences`. De app werkt volledig offline; er verlaat geen data het apparaat.
+Alle data (instellingen en toetshistorie) wordt lokaal op het apparaat opgeslagen via `shared_preferences`. De app werkt volledig offline, op twee uitzonderingen na: tekst-naar-spraak gebruikt de spraak-engine van het besturingssysteem, en de update-check haalt de nieuwste release-info op bij de GitHub API (`lib/update_service.dart`).
+
+### Meertalige architectuur
+
+De app leert momenteel Spaans, maar is opgezet rond een `LanguageCourse`-abstractie (`lib/language_course.dart`) zodat een nieuwe taal later zonder aanpassingen aan de rest van de app toegevoegd kan worden. Alles wat taal-specifiek is — het woordenboek, de uitspraakregels, de grammaticale afleidingen (vervoeging/lidwoorden) en de grammatica-content — zit achter die interface, geïmplementeerd voor Spaans in [lib/languages/es/](lib/languages/es/). Een taal toevoegen: een nieuwe map onder `lib/languages/`, een `LanguageCourse`-implementatie, en registreren in `lib/languages/registry.dart`. In Instellingen verschijnt de taal dan automatisch als keuze.
 
 ## Ontwikkelen
 
@@ -41,7 +49,7 @@ flutter test
 
 ## Woordenboek uitbreiden (richting 10.000+ woorden)
 
-Het woordenboek staat in [lib/word_book.dart](lib/word_book.dart) en de willekeurige weektrekking werkt met **elke omvang** — 1000, 10.000 of meer woorden. Hoe groter het boek, hoe meer verschillende woorden je in de loop van de weken tegenkomt. Nieuwe woorden toevoegen gaat met de import-tool:
+Het Spaanse woordenboek staat in [lib/languages/es/es_words.dart](lib/languages/es/es_words.dart) en de willekeurige weektrekking werkt met **elke omvang** — 1000, 10.000 of meer woorden. Hoe groter het boek, hoe meer verschillende woorden je in de loop van de weken tegenkomt. Nieuwe woorden toevoegen gaat met de import-tool:
 
 ```bash
 # Valideren (duplicaten, lege velden) + statistieken
@@ -49,7 +57,7 @@ dart run tool/import_words.dart --check
 
 # Batch importeren uit een CSV (formaat: spaans;nederlands;engels)
 dart run tool/import_words.dart nieuwe_woorden.csv
-dart format lib/word_book.dart
+dart format lib/languages/es/es_words.dart
 flutter test
 ```
 
@@ -90,17 +98,36 @@ In CI komt de keystore uit repo-secrets: `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEY
 
 ```
 lib/
-├── main.dart            # App-shell, thema-switching, tabnavigatie
-├── models.dart          # Word, QuizResult, Question, AppSettings (+ JSON)
-├── word_book.dart       # Woordenboek: 1000 lemma's (es, nl, en)
-├── data.dart            # Weekselectie + weekreset-datums
-├── pronounce.dart       # Automatische uitspraak (lettergrepen + klemtoon)
-├── grammar.dart         # Vervoeging (o.t.t.) + lidwoord (el/la)
-├── i18n.dart            # NL/EN vertalingen + datumnotatie
-├── utils.dart           # Levenshtein, cijferberekening, vragenbouwers
-├── theme.dart           # Licht/donker thema, dyslexie-typografie
-├── app_state.dart       # Instellingen + toetshistorie (ChangeNotifier)
-├── storage.dart         # Lokale opslag op het apparaat (shared_preferences)
-├── widgets.dart         # Herbruikbare UI (kaarten, knoppen, cijfercirkel)
-└── screens/             # De zeven schermen
+├── main.dart               # App-shell, thema-switching, tabnavigatie
+├── models.dart             # Word, QuizResult, Question, AppSettings (+ JSON)
+├── language_course.dart    # Abstractie voor een leerbare taal (zie hierboven)
+├── grammar_content.dart    # Model voor gecategoriseerde grammaticaregels
+├── languages/
+│   ├── registry.dart       # kCourses / courseById — hier een taal registreren
+│   └── es/                 # Spaanse cursus (implementatie van LanguageCourse)
+│       ├── es_course.dart          # SpanishCourse: koppelt onderstaande bestanden
+│       ├── es_words.dart           # Woordenboek: 1000 lemma's (es, nl, en)
+│       ├── es_pronounce.dart       # Automatische uitspraak (lettergrepen + klemtoon)
+│       ├── es_grammar.dart         # Vervoeging (o.t.t.) + lidwoord (el/la)
+│       └── es_grammar_content.dart # Grammaticaregels voor het grammaticascherm
+├── data.dart               # Weekselectie + weekreset-datums
+├── tts.dart                # Tekst-naar-spraak (SpeechService)
+├── update_service.dart     # Update-check tegen GitHub Releases
+├── i18n.dart                # NL/EN vertalingen + datumnotatie
+├── utils.dart               # Levenshtein, cijferberekening, vragenbouwers
+├── theme.dart                # Licht/donker thema, dyslexie-typografie
+├── app_state.dart           # Instellingen + toetshistorie (ChangeNotifier)
+├── storage.dart             # Lokale opslag op het apparaat (shared_preferences)
+├── widgets.dart              # Herbruikbare UI (kaarten, knoppen, cijfercirkel, uitspraakknop, logo)
+└── screens/                  # De schermen (incl. grammatica-scherm)
+
+design/
+├── logo.svg                # App-icoon (afgeronde hoeken, gebruikt voor Android/web)
+├── logo-square.svg         # Vol-vlakke variant voor iOS (geen transparantie/afronding)
+└── logo-maskable.svg       # Veilige-zone-variant voor Android/PWA maskable icons
 ```
+
+Alle app-iconen (`android/…/mipmap-*`, `ios/…/AppIcon.appiconset`, `web/icons`,
+`web/favicon.png`) zijn met `rsvg-convert` uit deze SVG's gegenereerd. Het
+beeldmerk zelf (twee overlappende spraakbubbels) staat ook als vectorwidget
+in de app (`TaalLeerLogo` in `lib/widgets.dart`, te zien op het home-scherm).

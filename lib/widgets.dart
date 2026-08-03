@@ -4,6 +4,7 @@ import 'data.dart';
 import 'i18n.dart';
 import 'models.dart';
 import 'theme.dart';
+import 'tts.dart';
 import 'utils.dart';
 
 /// Laat zien wanneer de woorden en de toets van deze week resetten.
@@ -316,6 +317,134 @@ class BackButtonCard extends StatelessWidget {
             border: Border.all(color: palette.border),
           ),
           child: Icon(Icons.arrow_back, size: 18, color: palette.foreground),
+        ),
+      ),
+    );
+  }
+}
+
+/// Het TaalLeer-beeldmerk: twee overlappende spraakbubbels op een paars/
+/// indigo gradient-vierkant — zelfde motief als het app-icoon
+/// (`design/logo.svg`), hier als vectorwidget zodat het op elke schaal
+/// scherp blijft zonder los asset.
+class TaalLeerLogo extends StatelessWidget {
+  final double size;
+
+  const TaalLeerLogo({super.key, this.size = 40});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [AppColors.primary, AppColors.indigo],
+        ),
+        borderRadius: BorderRadius.circular(size * 0.22),
+      ),
+      child: CustomPaint(size: Size(size, size), painter: _LogoPainter()),
+    );
+  }
+}
+
+class _LogoPainter extends CustomPainter {
+  // Coördinaten uit `design/logo.svg` (ontworpen op een 512×512 canvas),
+  // hier herschaald naar de daadwerkelijke widgetgrootte.
+  static Path _bubble(
+    double s, {
+    required double x,
+    required double y,
+    required double w,
+    required double h,
+    required double r,
+    required double tailX1,
+    required double tailX2,
+    required double tailTipX,
+    required double tailTipY,
+  }) {
+    final body = Path()..addRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromLTWH(x * s, y * s, w * s, h * s),
+        Radius.circular(r * s),
+      ),
+    );
+    final tail = Path()
+      ..moveTo(tailX1 * s, (y + h) * s)
+      ..lineTo(tailX2 * s, (y + h) * s)
+      ..lineTo(tailTipX * s, tailTipY * s)
+      ..close();
+    return Path.combine(PathOperation.union, body, tail);
+  }
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final s = size.width / 512;
+
+    final orange = _bubble(
+      s,
+      x: 272,
+      y: 118,
+      w: 172,
+      h: 128,
+      r: 34,
+      tailX1: 404,
+      tailX2: 440,
+      tailTipX: 450,
+      tailTipY: 282,
+    );
+    canvas.drawPath(orange, Paint()..color = AppColors.orange);
+
+    final white = _bubble(
+      s,
+      x: 104,
+      y: 206,
+      w: 240,
+      h: 176,
+      r: 44,
+      tailX1: 146,
+      tailX2: 188,
+      tailTipX: 134,
+      tailTipY: 424,
+    );
+    canvas.drawPath(white, Paint()..color = Colors.white);
+  }
+
+  @override
+  bool shouldRepaint(_LogoPainter oldDelegate) => false;
+}
+
+/// Klein rond knopje dat [text] hardop laat uitspreken in [locale]
+/// (bijv. `es-ES`) via `speechService`.
+class SpeakButton extends StatelessWidget {
+  final String text;
+  final String locale;
+  final double size;
+
+  const SpeakButton({
+    super.key,
+    required this.text,
+    required this.locale,
+    this.size = 16,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      shape: const CircleBorder(),
+      child: InkWell(
+        onTap: () => speechService.speak(text, locale),
+        customBorder: const CircleBorder(),
+        child: Padding(
+          padding: const EdgeInsets.all(6),
+          child: Icon(
+            Icons.volume_up_outlined,
+            size: size,
+            color: AppColors.primary,
+          ),
         ),
       ),
     );

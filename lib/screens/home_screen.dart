@@ -300,44 +300,53 @@ class _Header extends StatelessWidget {
         ),
         borderRadius: BorderRadius.circular(24),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Stack(
         children: [
-          Text(
-            formatDateLong(DateTime.now(), lang),
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.white.withValues(alpha: 0.7),
-            ),
+          const Positioned(
+            top: 0,
+            right: 0,
+            child: Opacity(opacity: 0.9, child: TaalLeerLogo(size: 32)),
           ),
-          const SizedBox(height: 2),
-          Text(
-            t.homeGreeting,
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            t.homeSubGreeting,
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.white.withValues(alpha: 0.6),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Row(
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _StatChip(label: t.homeWeek, value: '$weekNumber'),
-              const SizedBox(width: 8),
-              _StatChip(label: t.homeWordsLearned, value: '$wordCount'),
-              const SizedBox(width: 8),
-              _StatChip(
-                label: '🔥 ${t.homeStreak}',
-                value: '$streak',
-                background: Colors.orange.shade400,
+              Text(
+                formatDateLong(DateTime.now(), lang),
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.white.withValues(alpha: 0.7),
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                t.homeGreeting,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                t.homeSubGreeting,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.white.withValues(alpha: 0.6),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  _StatChip(label: t.homeWeek, value: '$weekNumber'),
+                  const SizedBox(width: 8),
+                  _StatChip(label: t.homeWordsLearned, value: '$wordCount'),
+                  const SizedBox(width: 8),
+                  _StatChip(
+                    label: '🔥 ${t.homeStreak}',
+                    value: '$streak',
+                    background: Colors.orange.shade400,
+                  ),
+                ],
               ),
             ],
           ),

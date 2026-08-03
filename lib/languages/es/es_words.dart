@@ -1,6 +1,6 @@
 /// Het Spaanse woordenboek: (Spaans, Nederlands, Engels).
 ///
-/// De uitspraak wordt automatisch afgeleid (zie `pronounce.dart`), omdat
+/// De uitspraak wordt automatisch afgeleid (zie `es_pronounce.dart`), omdat
 /// Spaans fonetisch regelmatig is — net als in een fysiek woordenboek staat
 /// hier per woord alleen het lemma met de vertalingen.
 ///

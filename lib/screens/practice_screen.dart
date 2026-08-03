@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../i18n.dart';
+import '../language_course.dart';
 import '../models.dart';
 import '../theme.dart';
 import '../utils.dart';
@@ -10,6 +11,7 @@ class PracticeScreen extends StatefulWidget {
   final Strings t;
   final bool dyslexia;
   final Lang sourceLang;
+  final LanguageCourse course;
   final List<Word> words;
 
   const PracticeScreen({
@@ -17,6 +19,7 @@ class PracticeScreen extends StatefulWidget {
     required this.t,
     required this.dyslexia,
     required this.sourceLang,
+    required this.course,
     required this.words,
   });
 
@@ -181,12 +184,23 @@ class _PracticeScreenState extends State<PracticeScreen> {
                             ),
                           ),
                           const SizedBox(height: 12),
-                          Text(
-                            shownWordOf(q),
-                            style: const TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                            ),
+                          Row(
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  shownWordOf(q),
+                                  style: const TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                              if (isTargetShown(q))
+                                SpeakButton(
+                                  text: shownWordOf(q),
+                                  locale: widget.course.ttsLocale,
+                                ),
+                            ],
                           ),
                           const SizedBox(height: 16),
                           if (!_checked)
@@ -203,6 +217,8 @@ class _PracticeScreenState extends State<PracticeScreen> {
                               t: t,
                               correct: _correct,
                               correctAnswer: correctAns,
+                              speakCorrectAnswer: !isTargetShown(q),
+                              locale: widget.course.ttsLocale,
                             ),
                         ],
                       ),
@@ -274,11 +290,15 @@ class _FeedbackBox extends StatelessWidget {
   final Strings t;
   final bool correct;
   final String correctAnswer;
+  final bool speakCorrectAnswer;
+  final String locale;
 
   const _FeedbackBox({
     required this.t,
     required this.correct,
     required this.correctAnswer,
+    required this.speakCorrectAnswer,
+    required this.locale,
   });
 
   @override
@@ -312,20 +332,28 @@ class _FeedbackBox extends StatelessWidget {
           ),
           if (!correct) ...[
             const SizedBox(height: 4),
-            Text.rich(
-              TextSpan(
-                children: [
-                  TextSpan(text: '${t.practiceCorrectAnswer}: '),
-                  TextSpan(
-                    text: correctAnswer,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      color: palette.foreground,
+            Row(
+              children: [
+                Flexible(
+                  child: Text.rich(
+                    TextSpan(
+                      children: [
+                        TextSpan(text: '${t.practiceCorrectAnswer}: '),
+                        TextSpan(
+                          text: correctAnswer,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: palette.foreground,
+                          ),
+                        ),
+                      ],
                     ),
+                    style: TextStyle(fontSize: 12, color: palette.muted),
                   ),
-                ],
-              ),
-              style: TextStyle(fontSize: 12, color: palette.muted),
+                ),
+                if (speakCorrectAnswer)
+                  SpeakButton(text: correctAnswer, locale: locale, size: 14),
+              ],
             ),
           ],
         ],

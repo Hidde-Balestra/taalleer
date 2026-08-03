@@ -80,7 +80,7 @@ String correctAnswerOf(Question q) {
   switch (q.type) {
     case QuestionType.nlEs:
     case QuestionType.enEs:
-      return q.word.es;
+      return q.word.target;
     case QuestionType.esNl:
       return q.word.nl;
     case QuestionType.esEn:
@@ -96,9 +96,15 @@ String shownWordOf(Question q) {
       return q.word.en;
     case QuestionType.esNl:
     case QuestionType.esEn:
-      return q.word.es;
+      return q.word.target;
   }
 }
+
+/// Is de doeltaal-vorm van [q] wat er getoond wordt (esNl/esEn) in plaats
+/// van pas na controleren zichtbaar (nlEs/enEs)? Gebruikt om te bepalen
+/// waar een uitspraakknop zonder hint-risico geplaatst kan worden.
+bool isTargetShown(Question q) =>
+    q.type == QuestionType.esNl || q.type == QuestionType.esEn;
 
 /// Oefensessie: 10 willekeurige woorden uit [words], willekeurige richting.
 List<Question> buildPractice(

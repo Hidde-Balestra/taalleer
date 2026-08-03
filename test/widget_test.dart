@@ -1,22 +1,53 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:taalleer/app_state.dart';
 import 'package:taalleer/data.dart';
 import 'package:taalleer/i18n.dart';
+import 'package:taalleer/languages/es/es_course.dart';
 import 'package:taalleer/main.dart';
 import 'package:taalleer/models.dart';
 import 'package:taalleer/screens/home_screen.dart';
 import 'package:taalleer/screens/settings_screen.dart';
+import 'package:taalleer/update_service.dart';
+
+final _course = SpanishCourse();
+
+/// Versie die overal in deze tests als "huidige versie" gemockt wordt.
+const _mockAppVersion = '1.9.0';
+
+/// Een [UpdateService] die geen echt netwerkverkeer doet: meldt altijd dat
+/// de mock-versie hierboven de nieuwste is, zodat bestaande tests (die niets
+/// met updates te maken hebben) deterministisch blijven.
+UpdateService _stubUpdateService() => UpdateService(
+  client: MockClient(
+    (request) async => http.Response(
+      '{"tag_name":"v$_mockAppVersion","html_url":"https://example.com/release"}',
+      200,
+    ),
+  ),
+);
 
 void main() {
   setUp(() {
     SharedPreferences.setMockInitialValues({});
+    PackageInfo.setMockInitialValues(
+      appName: 'TaalLeer',
+      packageName: 'com.example.taalleer',
+      version: _mockAppVersion,
+      buildNumber: '9',
+      buildSignature: '',
+    );
   });
 
   Future<AppState> pumpApp(WidgetTester tester, {AppState? state}) async {
     final appState = state ?? await AppState.load();
-    await tester.pumpWidget(TaalLeerApp(appState: appState));
+    await tester.pumpWidget(
+      TaalLeerApp(appState: appState, updateService: _stubUpdateService()),
+    );
     await tester.pumpAndSettle();
     return appState;
   }
@@ -29,6 +60,18 @@ void main() {
       150,
       scrollable: find.descendant(
         of: find.byType(HomeScreen),
+        matching: find.byType(Scrollable),
+      ),
+    );
+  }
+
+  /// Scrollt het instellingen-scherm tot [target] in beeld is.
+  Future<void> scrollSettings(WidgetTester tester, Finder target) async {
+    await tester.scrollUntilVisible(
+      target,
+      150,
+      scrollable: find.descendant(
+        of: find.byType(SettingsScreen),
         matching: find.byType(Scrollable),
       ),
     );
@@ -59,7 +102,7 @@ void main() {
       expect(find.text('0 weken'), findsOneWidget);
     });
 
-    testWidgets('tabbladen wisselen tussen de vier schermen', (tester) async {
+    testWidgets('tabbladen wisselen tussen de schermen', (tester) async {
       await pumpApp(tester);
 
       await tester.tap(find.text('Woorden'));
@@ -77,7 +120,7 @@ void main() {
   });
 
   group('Woordenlijst', () {
-    final weekWords = wordsForWeek(currentWeekSeed());
+    final weekWords = wordsForWeek(_course, currentWeekSeed());
 
     testWidgets('toont de woorden van deze week', (tester) async {
       await pumpApp(tester);
@@ -86,8 +129,8 @@ void main() {
 
       // De eerste woorden van deze week staan bovenaan de lijst. De kop kan
       // een lidwoord bevatten ("la casa"), dus zoeken we op deeltekst.
-      expect(find.textContaining(weekWords[0].es), findsWidgets);
-      expect(find.textContaining(weekWords[1].es), findsWidgets);
+      expect(find.textContaining(weekWords[0].target), findsWidgets);
+      expect(find.textContaining(weekWords[1].target), findsWidgets);
     });
 
     testWidgets('zoeken filtert de lijst', (tester) async {
@@ -98,22 +141,22 @@ void main() {
           .take(4)
           .firstWhere(
             (w) =>
-                !w.es.contains(target.es) &&
-                !w.nl.contains(target.es) &&
-                !w.en.contains(target.es),
+                !w.target.contains(target.target) &&
+                !w.nl.contains(target.target) &&
+                !w.en.contains(target.target),
           );
 
       await pumpApp(tester);
       await tester.tap(find.text('Woorden'));
       await tester.pumpAndSettle();
 
-      expect(find.textContaining(other.es), findsWidgets);
+      expect(find.textContaining(other.target), findsWidgets);
 
-      await tester.enterText(find.byType(TextField), target.es);
+      await tester.enterText(find.byType(TextField), target.target);
       await tester.pumpAndSettle();
 
-      expect(find.textContaining(target.es), findsWidgets);
-      expect(find.textContaining(other.es), findsNothing);
+      expect(find.textContaining(target.target), findsWidgets);
+      expect(find.textContaining(other.target), findsNothing);
     });
 
     testWidgets('woord uitklappen toont de uitspraak', (tester) async {
@@ -121,13 +164,13 @@ void main() {
       // (bij éénlettergrepige woorden zijn die gelijk).
       final target = weekWords
           .take(5)
-          .firstWhere((w) => w.pronunciation != w.es);
+          .firstWhere((w) => w.pronunciation != w.target);
 
       await pumpApp(tester);
       await tester.tap(find.text('Woorden'));
       await tester.pumpAndSettle();
 
-      await tester.tap(find.textContaining(target.es).first);
+      await tester.tap(find.textContaining(target.target).first);
       await tester.pumpAndSettle();
 
       expect(find.text(target.pronunciation), findsOneWidget);
@@ -140,6 +183,7 @@ void main() {
       await tester.tap(find.text('Instellingen'));
       await tester.pumpAndSettle();
 
+      await scrollSettings(tester, find.text('🇬🇧 Engels'));
       await tester.tap(find.text('🇬🇧 Engels'));
       await tester.pumpAndSettle();
 
@@ -156,9 +200,11 @@ void main() {
       await tester.tap(find.text('Instellingen'));
       await tester.pumpAndSettle();
 
+      await scrollSettings(tester, find.text('Donker'));
       await tester.tap(find.text('Donker'));
       await tester.pumpAndSettle();
-      await tester.tap(find.byType(Switch));
+      await scrollSettings(tester, find.byType(Switch).first);
+      await tester.tap(find.byType(Switch).first);
       await tester.pumpAndSettle();
 
       // Een verse AppState leest dezelfde lokale opslag: de keuzes zijn er nog.
@@ -172,7 +218,8 @@ void main() {
       await tester.tap(find.text('Instellingen'));
       await tester.pumpAndSettle();
 
-      await tester.tap(find.byType(Switch));
+      await scrollSettings(tester, find.byType(Switch).first);
+      await tester.tap(find.byType(Switch).first);
       await tester.pumpAndSettle();
 
       expect(
@@ -188,6 +235,7 @@ void main() {
       await tester.tap(find.text('Instellingen'));
       await tester.pumpAndSettle();
 
+      await scrollSettings(tester, find.text('Donker'));
       await tester.tap(find.text('Donker'));
       await tester.pumpAndSettle();
 
@@ -249,6 +297,7 @@ void main() {
 
         // Alleen woorden van deze week zaten in de toets.
         final weekIds = wordsForWeek(
+          _course,
           currentWeekSeed(),
         ).map((w) => w.id).toSet();
         for (final id in state.history.first.wrongWordIds) {
@@ -298,7 +347,7 @@ void main() {
       expect(state.history, hasLength(1));
       // De foute woorden zijn werkwoorden.
       for (final id in state.history.first.wrongWordIds) {
-        expect(wordById(id)!.isVerb, isTrue);
+        expect(_course.wordById(id)!.isVerb, isTrue);
       }
     });
   });
@@ -350,10 +399,10 @@ void main() {
 
       // Uitklappen toont de woorden van die week.
       final seed = later.pastWeekSeeds.first;
-      final firstWord = wordsForWeek(seed).first;
+      final firstWord = wordsForWeek(_course, seed).first;
       await tester.tap(find.textContaining('20 woorden').first);
       await tester.pumpAndSettle();
-      expect(find.textContaining(firstWord.es), findsWidgets);
+      expect(find.textContaining(firstWord.target), findsWidgets);
     });
   });
 
@@ -388,5 +437,76 @@ void main() {
       expect(find.text('Woordentoets'), findsNothing);
       expect(find.text('Vervoegingstoets'), findsNothing);
     });
+  });
+
+  group('Updates', () {
+    Widget wrapSettings(UpdateService service) => MaterialApp(
+      home: Scaffold(
+        body: SettingsScreen(
+          t: Strings.nl,
+          settings: const AppSettings(),
+          onChanged: (_) {},
+          paused: false,
+          onPausedChanged: (_) {},
+          updateService: service,
+        ),
+      ),
+    );
+
+    testWidgets('toont "up-to-date" als de laatste release gelijk is', (
+      tester,
+    ) async {
+      final service = UpdateService(
+        client: MockClient(
+          (request) async => http.Response(
+            '{"tag_name":"v$_mockAppVersion","html_url":"https://example.com/release"}',
+            200,
+          ),
+        ),
+      );
+
+      await tester.pumpWidget(wrapSettings(service));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Versie $_mockAppVersion'), findsOneWidget);
+      expect(find.text('Je gebruikt de nieuwste versie'), findsOneWidget);
+    });
+
+    testWidgets(
+      'toont een update-melding met knop als er een nieuwere release is',
+      (tester) async {
+        final service = UpdateService(
+          client: MockClient(
+            (request) async => http.Response(
+              '{"tag_name":"v9.9.9","html_url":"https://example.com/release"}',
+              200,
+            ),
+          ),
+        );
+
+        await tester.pumpWidget(wrapSettings(service));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Update beschikbaar: v9.9.9'), findsOneWidget);
+        expect(find.text('Bekijk release'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'toont een foutmelding met opnieuw-knop als de check mislukt',
+      (tester) async {
+        final service = UpdateService(
+          client: MockClient(
+            (request) async => http.Response('server error', 500),
+          ),
+        );
+
+        await tester.pumpWidget(wrapSettings(service));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Controleren op updates mislukt'), findsOneWidget);
+        expect(find.text('Nu controleren'), findsOneWidget);
+      },
+    );
   });
 }

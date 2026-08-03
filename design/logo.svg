@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7C3AED"/>
+      <stop offset="100%" stop-color="#4F46E5"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="0" y="0" width="512" height="512" rx="112" fill="url(#bg)"/>
+
+  <!-- Achterste spraakbubbel (oranje accent) -->
+  <rect x="272" y="118" width="172" height="128" rx="34" fill="#F97316"/>
+  <polygon points="404,244 440,244 450,282" fill="#F97316"/>
+
+  <!-- Voorste spraakbubbel (wit) -->
+  <rect x="104" y="206" width="240" height="176" rx="44" fill="#FFFFFF"/>
+  <polygon points="146,380 188,380 134,424" fill="#FFFFFF"/>
+</svg>

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../grammar.dart';
 import '../i18n.dart';
+import '../language_course.dart';
 import '../models.dart';
 import '../theme.dart';
 import '../utils.dart';
@@ -12,6 +12,7 @@ class ConjugationQuizScreen extends StatefulWidget {
   final Strings t;
   final bool dyslexia;
   final int weekNumber;
+  final LanguageCourse course;
   final List<Word> verbs;
   final ValueChanged<QuizResult> onFinish;
 
@@ -20,6 +21,7 @@ class ConjugationQuizScreen extends StatefulWidget {
     required this.t,
     required this.dyslexia,
     required this.weekNumber,
+    required this.course,
     required this.verbs,
     required this.onFinish,
   });
@@ -172,13 +174,25 @@ class _ConjugationQuizScreenState extends State<ConjugationQuizScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        '${q.word.es} · ${q.word.nl}',
-                        style: TextStyle(fontSize: 14, color: palette.muted),
+                      Row(
+                        children: [
+                          Text(
+                            '${q.word.target} · ${q.word.nl}',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: palette.muted,
+                            ),
+                          ),
+                          SpeakButton(
+                            text: q.word.target,
+                            locale: widget.course.ttsLocale,
+                            size: 14,
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 12),
                       Text(
-                        kPronouns[q.person],
+                        widget.course.pronouns[q.person],
                         style: const TextStyle(
                           fontSize: 30,
                           fontWeight: FontWeight.bold,
@@ -186,7 +200,7 @@ class _ConjugationQuizScreenState extends State<ConjugationQuizScreen> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        '${q.word.es} …',
+                        '${q.word.target} …',
                         style: TextStyle(fontSize: 14, color: palette.muted),
                       ),
                     ],

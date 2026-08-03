@@ -1,39 +1,13 @@
 import 'dart:math';
 
-import 'grammar.dart';
+import 'language_course.dart';
 import 'models.dart';
-import 'pronounce.dart';
-import 'word_book.dart';
 
 /// Aantal woorden dat per week wordt geleerd.
 const int kWordsPerWeek = 20;
 
-/// Het volledige Spaanse woordenboek (zie `word_book.dart`), met per woord
-/// een automatisch afgeleide uitspraak. Elke week worden hieruit
-/// [kWordsPerWeek] woorden willekeurig gekozen (zie [wordsForWeek]).
-final List<Word> kWordBook = List.unmodifiable([
-  for (var i = 0; i < kWordEntries.length; i++)
-    _buildWord(i + 1, kWordEntries[i]),
-]);
-
-/// Bouwt een [Word] met automatisch afgeleide uitspraak, en — waar van
-/// toepassing — het lidwoord (el/la) of de tegenwoordige tijd.
-Word _buildWord(int id, (String, String, String) entry) {
-  final (es, nl, en) = entry;
-  final verb = isVerbEntry(es, en);
-  return Word(
-    id: id,
-    es: es,
-    nl: nl,
-    en: en,
-    pronunciation: pronounceEs(es),
-    present: verb ? (presentTense(es) ?? const []) : const [],
-    article: (verb || kNonNouns.contains(es)) ? '' : articleFor(es),
-  );
-}
-
 /// De woorden van een week: [kWordsPerWeek] willekeurige woorden uit het
-/// hele woordenboek.
+/// hele woordenboek van [course].
 ///
 /// De keuze is willekeurig maar *deterministisch* per [seed]: dezelfde seed
 /// levert altijd exact dezelfde 20 woorden op. Dat is essentieel — de
@@ -43,11 +17,12 @@ Word _buildWord(int id, (String, String, String) entry) {
 ///
 /// Gebruik [currentWeekSeed] voor de seed in de app, zodat elke kalenderweek
 /// (jaaroverschrijdend) een nieuwe, niet-herhalende trekking krijgt.
-List<Word> wordsForWeek(int seed) {
-  final order = List<int>.generate(kWordBook.length, (i) => i)
+List<Word> wordsForWeek(LanguageCourse course, int seed) {
+  final wordBook = course.words;
+  final order = List<int>.generate(wordBook.length, (i) => i)
     ..shuffle(Random(seed));
   final picked = order.take(kWordsPerWeek).toList()..sort();
-  return [for (final i in picked) kWordBook[i]];
+  return [for (final i in picked) wordBook[i]];
 }
 
 /// Vast beginpunt van de weekteller: een maandag. In UTC, zodat het
@@ -81,10 +56,4 @@ int daysUntilWordReset([DateTime? now]) {
   return _dateOnlyUtc(
     nextWordReset(today),
   ).difference(_dateOnlyUtc(today)).inDays;
-}
-
-/// Zoekt een woord op id in het hele woordenboek.
-Word? wordById(int id) {
-  if (id < 1 || id > kWordBook.length) return null;
-  return kWordBook[id - 1];
 }

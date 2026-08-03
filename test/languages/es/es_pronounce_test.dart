@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:taalleer/pronounce.dart';
+import 'package:taalleer/languages/es/es_pronounce.dart';
 
 void main() {
   group('pronounceEs', () {

@@ -8,11 +8,13 @@ enum QuestionType { nlEs, enEs, esNl, esEn }
 
 class Word {
   final int id;
-  final String es;
+
+  /// Het woord in de taal die geleerd wordt (bijv. Spaans).
+  final String target;
   final String nl;
   final String en;
   final String pronunciation;
-  final String exampleEs;
+  final String exampleTarget;
   final String exampleNl;
 
   /// Lidwoord van een zelfstandig naamwoord: 'el', 'la' of '' (geen).
@@ -24,11 +26,11 @@ class Word {
 
   const Word({
     required this.id,
-    required this.es,
+    required this.target,
     required this.nl,
     required this.en,
     required this.pronunciation,
-    this.exampleEs = '',
+    this.exampleTarget = '',
     this.exampleNl = '',
     this.article = '',
     this.present = const [],
@@ -44,11 +46,16 @@ class AppSettings {
   final bool dyslexiaMode;
   final Lang sourceLang;
 
+  /// Id van de taal die geleerd wordt (zie `kCourses` in
+  /// `languages/registry.dart`), bijv. 'es' voor Spaans.
+  final String courseId;
+
   const AppSettings({
     this.language = Lang.nl,
     this.darkMode = DarkModeSetting.system,
     this.dyslexiaMode = false,
     this.sourceLang = Lang.nl,
+    this.courseId = 'es',
   });
 
   AppSettings copyWith({
@@ -56,12 +63,14 @@ class AppSettings {
     DarkModeSetting? darkMode,
     bool? dyslexiaMode,
     Lang? sourceLang,
+    String? courseId,
   }) {
     return AppSettings(
       language: language ?? this.language,
       darkMode: darkMode ?? this.darkMode,
       dyslexiaMode: dyslexiaMode ?? this.dyslexiaMode,
       sourceLang: sourceLang ?? this.sourceLang,
+      courseId: courseId ?? this.courseId,
     );
   }
 
@@ -70,6 +79,7 @@ class AppSettings {
     'darkMode': darkMode.name,
     'dyslexiaMode': dyslexiaMode,
     'sourceLang': sourceLang.name,
+    'courseId': courseId,
   };
 
   factory AppSettings.fromJson(Map<String, dynamic> json) => AppSettings(
@@ -79,6 +89,7 @@ class AppSettings {
         DarkModeSetting.system,
     dyslexiaMode: json['dyslexiaMode'] as bool? ?? false,
     sourceLang: Lang.values.asNameMap()[json['sourceLang']] ?? Lang.nl,
+    courseId: json['courseId'] as String? ?? 'es',
   );
 }
 

@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:taalleer/grammar.dart';
+import 'package:taalleer/languages/es/es_grammar.dart';
 
 void main() {
   group('presentTense — regelmatig', () {

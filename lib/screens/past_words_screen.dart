@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../data.dart';
 import '../i18n.dart';
+import '../language_course.dart';
 import '../models.dart';
 import '../theme.dart';
 import '../utils.dart';
@@ -12,6 +13,7 @@ import '../widgets.dart';
 class PastWordsScreen extends StatefulWidget {
   final Strings t;
   final Lang lang;
+  final LanguageCourse course;
 
   /// De weken (seeds) die al geweest zijn, nieuwste eerst.
   final List<int> weekSeeds;
@@ -20,6 +22,7 @@ class PastWordsScreen extends StatefulWidget {
     super.key,
     required this.t,
     required this.lang,
+    required this.course,
     required this.weekSeeds,
   });
 
@@ -98,6 +101,7 @@ class _PastWordsScreenState extends State<PastWordsScreen> {
                     return _WeekSection(
                       t: t,
                       lang: widget.lang,
+                      course: widget.course,
                       seed: seed,
                       expanded: _expandedSeed == seed,
                       onTap: () => setState(
@@ -118,6 +122,7 @@ class _PastWordsScreenState extends State<PastWordsScreen> {
 class _WeekSection extends StatelessWidget {
   final Strings t;
   final Lang lang;
+  final LanguageCourse course;
   final int seed;
   final bool expanded;
   final VoidCallback onTap;
@@ -125,6 +130,7 @@ class _WeekSection extends StatelessWidget {
   const _WeekSection({
     required this.t,
     required this.lang,
+    required this.course,
     required this.seed,
     required this.expanded,
     required this.onTap,
@@ -133,7 +139,7 @@ class _WeekSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final palette = AppPalette.of(context);
-    final words = wordsForWeek(seed);
+    final words = wordsForWeek(course, seed);
     final start = weekStartDate(seed);
 
     return AppCard(
@@ -213,7 +219,7 @@ class _WeekSection extends StatelessWidget {
                                             ),
                                           ),
                                         TextSpan(
-                                          text: w.es,
+                                          text: w.target,
                                           style: const TextStyle(
                                             fontWeight: FontWeight.w600,
                                           ),

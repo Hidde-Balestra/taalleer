@@ -1,5 +1,5 @@
-// Hulpprogramma om het woordenboek (lib/word_book.dart) te laten groeien
-// richting 10.000+ woorden, en om het te valideren.
+// Hulpprogramma om het Spaanse woordenboek (lib/languages/es/es_words.dart)
+// te laten groeien richting 10.000+ woorden, en om het te valideren.
 //
 // Gebruik:
 //   dart run tool/import_words.dart --check
@@ -10,14 +10,14 @@
 //       Leest regels in het formaat `spaans;nederlands;engels` (of met
 //       komma's/tabs als scheidingsteken), slaat duplicaten over en voegt
 //       de rest achteraan toe — zo blijven bestaande weeknummers dezelfde
-//       woorden houden. Daarna wordt lib/word_book.dart opnieuw
-//       gegenereerd.
+//       woorden houden. Daarna wordt lib/languages/es/es_words.dart
+//       opnieuw gegenereerd.
 //
 // ignore_for_file: avoid_print
 
 import 'dart:io';
 
-const wordBookPath = 'lib/word_book.dart';
+const wordBookPath = 'lib/languages/es/es_words.dart';
 
 final entryPattern = RegExp(
   r"\('((?:[^'\\]|\\.)*)', '((?:[^'\\]|\\.)*)', '((?:[^'\\]|\\.)*)'\)",
@@ -44,7 +44,7 @@ void writeWordBook(List<(String, String, String)> entries) {
   final buffer = StringBuffer('''
 /// Het Spaanse woordenboek: (Spaans, Nederlands, Engels).
 ///
-/// De uitspraak wordt automatisch afgeleid (zie `pronounce.dart`), omdat
+/// De uitspraak wordt automatisch afgeleid (zie `es_pronounce.dart`), omdat
 /// Spaans fonetisch regelmatig is — net als in een fysiek woordenboek staat
 /// hier per woord alleen het lemma met de vertalingen.
 ///
@@ -137,5 +137,7 @@ void main(List<String> args) {
   writeWordBook(merged);
   print('Toegevoegd: ${added.length}, overgeslagen: $skipped');
   printStats(merged);
-  print('Klaar. Draai nu: dart format lib/word_book.dart && flutter test');
+  print(
+    'Klaar. Draai nu: dart format lib/languages/es/es_words.dart && flutter test',
+  );
 }

@@ -1,22 +1,28 @@
 import 'package:flutter/material.dart';
 
-import '../data.dart';
 import '../i18n.dart';
+import '../language_course.dart';
 import '../models.dart';
 import '../theme.dart';
 import '../widgets.dart';
 
 class QuizResultScreen extends StatelessWidget {
   final Strings t;
+  final LanguageCourse course;
   final QuizResult result;
 
-  const QuizResultScreen({super.key, required this.t, required this.result});
+  const QuizResultScreen({
+    super.key,
+    required this.t,
+    required this.course,
+    required this.result,
+  });
 
   @override
   Widget build(BuildContext context) {
     final palette = AppPalette.of(context);
     final passed = result.grade >= 5.5;
-    final wrongWords = kWordBook
+    final wrongWords = course.words
         .where((w) => result.wrongWordIds.contains(w.id))
         .toList();
     final chipColor = passed ? AppColors.green : AppColors.red;
@@ -106,7 +112,7 @@ class QuizResultScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              w.es,
+                              w.target,
                               style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,

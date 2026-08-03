@@ -23,13 +23,45 @@ class SpeechService {
     if (text.isEmpty) return false;
     try {
       final tts = _tts ??= FlutterTts();
+      final resolved = await _resolveLocale(tts, locale);
+      if (resolved == null) return false;
       await tts.stop();
-      await tts.setLanguage(locale);
+      await tts.setLanguage(resolved);
       await tts.setSpeechRate(0.45);
       return _looksSuccessful(await tts.speak(text));
     } catch (_) {
       return false;
     }
+  }
+
+  /// Zoekt een locale die de geïnstalleerde spraak-engine daadwerkelijk
+  /// heeft. Sommige (lichte, offline) engines zoals RHVoice of eSpeak
+  /// installeren maar één regionale variant van een taal — bv. Spaans
+  /// (Ecuador, `es-EC`) i.p.v. Spaans (Spanje, `es-ES`) — en doen, anders dan
+  /// Google's engine, geen automatische taal-fallback: `setLanguage('es-ES')`
+  /// mislukt dan altijd, ook al kan de engine gewoon Spaans. We vragen
+  /// daarom eerst op wat er écht geïnstalleerd is en kiezen de eerste
+  /// variant met dezelfde taalcode. Geeft `null` als de engine deze taal
+  /// helemaal niet heeft.
+  Future<String?> _resolveLocale(FlutterTts tts, String locale) async {
+    List<String> installed;
+    try {
+      final raw = await tts.getLanguages;
+      installed = raw is List ? raw.whereType<String>().toList() : const [];
+    } catch (_) {
+      installed = const [];
+    }
+    // Geen lijst op te vragen (bv. niet ondersteund door de engine): gewoon
+    // de gevraagde locale proberen, zoals voorheen.
+    if (installed.isEmpty) return locale;
+    if (installed.contains(locale)) return locale;
+    final wanted = locale.split(RegExp('[-_]')).first.toLowerCase();
+    for (final code in installed) {
+      if (code.split(RegExp('[-_]')).first.toLowerCase() == wanted) {
+        return code;
+      }
+    }
+    return null;
   }
 
   /// `speak()` geeft platform-afhankelijk een statuscode terug (op Android

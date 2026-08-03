@@ -27,6 +27,11 @@ abstract class LanguageCourse {
   /// taal geen vervoeging kent of [infinitive] geen werkwoord is.
   List<String>? presentTense(String infinitive) => null;
 
+  /// Vervoegt een werkwoord in de verleden tijd, of `null` als deze taal
+  /// geen (enkelvoudige) verleden tijd kent of [infinitive] geen werkwoord
+  /// is.
+  List<String>? preteriteTense(String infinitive) => null;
+
   /// Lidwoord van een zelfstandig naamwoord, of `null` als deze taal geen
   /// lidwoorden kent of [noun] geen (telbaar) zelfstandig naamwoord is.
   String? articleFor(String noun) => null;
@@ -59,6 +64,7 @@ abstract class LanguageCourse {
       en: en,
       pronunciation: pronounce(target),
       present: verb ? (presentTense(target) ?? const []) : const [],
+      past: verb ? (preteriteTense(target) ?? const []) : const [],
       article: verb ? '' : (articleFor(target) ?? ''),
     );
   }

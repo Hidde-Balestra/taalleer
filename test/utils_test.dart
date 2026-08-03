@@ -306,6 +306,17 @@ void main() {
       }
     });
 
+    test('elk werkwoord heeft ook 6 verleden-tijdvormen', () {
+      final verbs = _course.words.where((w) => w.isVerb).toList();
+      for (final w in verbs) {
+        expect(
+          w.past,
+          hasLength(6),
+          reason: 'onvolledige verleden tijd bij ${w.target}',
+        );
+      }
+    });
+
     test('woorden zijn nooit tegelijk werkwoord én zelfstandig naamwoord', () {
       for (final w in _course.words) {
         expect(w.isVerb && w.isNoun, isFalse, reason: w.target);

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
@@ -12,12 +14,22 @@ import 'package:taalleer/main.dart';
 import 'package:taalleer/models.dart';
 import 'package:taalleer/screens/home_screen.dart';
 import 'package:taalleer/screens/settings_screen.dart';
+import 'package:taalleer/storage.dart';
 import 'package:taalleer/update_service.dart';
 
 final _course = SpanishCourse();
 
 /// Versie die overal in deze tests als "huidige versie" gemockt wordt.
 const _mockAppVersion = '1.9.0';
+
+/// Instellingen die de meeste tests als vertrekpunt willen: onboarding al
+/// doorlopen (anders zou elke test eerst dat scherm moeten doorlopen) en
+/// Nederlands (de taal waarin bijna alle bestaande verwachtingen hieronder
+/// geschreven zijn).
+const _defaultTestSettings = AppSettings(
+  language: Lang.nl,
+  onboardingComplete: true,
+);
 
 /// Een [UpdateService] die geen echt netwerkverkeer doet: meldt altijd dat
 /// de mock-versie hierboven de nieuwste is, zodat bestaande tests (die niets
@@ -33,7 +45,12 @@ UpdateService _stubUpdateService() => UpdateService(
 
 void main() {
   setUp(() {
-    SharedPreferences.setMockInitialValues({});
+    SharedPreferences.setMockInitialValues({
+      // Vooraf ingesteld alsof de onboarding al is doorlopen, zodat
+      // pumpApp() standaard direct het home-scherm toont i.p.v. onboarding.
+      // Losstaande onboarding-tests zetten hun eigen (lege) staat op.
+      AppStorage.settingsKey: jsonEncode(_defaultTestSettings.toJson()),
+    });
     PackageInfo.setMockInitialValues(
       appName: 'TaalLeer',
       packageName: 'com.example.taalleer',
@@ -50,6 +67,20 @@ void main() {
     );
     await tester.pumpAndSettle();
     return appState;
+  }
+
+  /// Tikt op het tandwiel-icoon (Instellingen zit niet meer in de onderbalk,
+  /// maar wordt als aparte pagina gepusht).
+  Future<void> openSettings(WidgetTester tester) async {
+    await tester.tap(find.byIcon(Icons.settings_outlined));
+    await tester.pumpAndSettle();
+  }
+
+  /// Gaat terug van het (gepushte) instellingenscherm naar het onderliggende
+  /// tabblad.
+  Future<void> closeSettings(WidgetTester tester) async {
+    await tester.tap(find.byIcon(Icons.arrow_back));
+    await tester.pumpAndSettle();
   }
 
   /// Scrollt het home-scherm tot [target] in beeld is (de lijst is langer dan
@@ -109,9 +140,9 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Woordenlijst'), findsOneWidget);
 
-      await tester.tap(find.text('Instellingen'));
-      await tester.pumpAndSettle();
+      await openSettings(tester);
       expect(find.text('App-taal'), findsOneWidget);
+      await closeSettings(tester);
 
       await tester.tap(find.text('Huis'));
       await tester.pumpAndSettle();
@@ -180,14 +211,14 @@ void main() {
   group('Instellingen', () {
     testWidgets('taal wisselen naar Engels vertaalt de UI', (tester) async {
       await pumpApp(tester);
-      await tester.tap(find.text('Instellingen'));
-      await tester.pumpAndSettle();
+      await openSettings(tester);
 
       await scrollSettings(tester, find.text('🇬🇧 Engels'));
       await tester.tap(find.text('🇬🇧 Engels'));
       await tester.pumpAndSettle();
 
       expect(find.text('App Language'), findsOneWidget);
+      await closeSettings(tester);
       await tester.tap(find.text('Home'));
       await tester.pumpAndSettle();
       expect(find.text('Welcome back! 👋'), findsOneWidget);
@@ -197,8 +228,7 @@ void main() {
       tester,
     ) async {
       await pumpApp(tester);
-      await tester.tap(find.text('Instellingen'));
-      await tester.pumpAndSettle();
+      await openSettings(tester);
 
       await scrollSettings(tester, find.text('Donker'));
       await tester.tap(find.text('Donker'));
@@ -218,8 +248,7 @@ void main() {
 
     testWidgets('dyslexie-schakelaar toont uitlegtekst', (tester) async {
       await pumpApp(tester);
-      await tester.tap(find.text('Instellingen'));
-      await tester.pumpAndSettle();
+      await openSettings(tester);
 
       // Scroll op basis van een unieke tekst i.p.v. `find.byType(Switch).first`:
       // die laatste gooit een StateError zodra er nog geen enkele Switch
@@ -238,8 +267,7 @@ void main() {
 
     testWidgets('donkere modus kiezen past het thema aan', (tester) async {
       await pumpApp(tester);
-      await tester.tap(find.text('Instellingen'));
-      await tester.pumpAndSettle();
+      await openSettings(tester);
 
       await scrollSettings(tester, find.text('Donker'));
       await tester.tap(find.text('Donker'));
@@ -390,6 +418,7 @@ void main() {
       // Een gebruiker die drie weken geleden begon.
       final startWeek = currentWeekSeed();
       final later = AppState(
+        settings: _defaultTestSettings,
         nowWeek: () => startWeek + 3,
         streakState: StreakState(firstWeek: startWeek),
       );
@@ -417,8 +446,7 @@ void main() {
       tester,
     ) async {
       await pumpApp(tester);
-      await tester.tap(find.text('Instellingen'));
-      await tester.pumpAndSettle();
+      await openSettings(tester);
 
       // Scroll de pauze-kaart in beeld en zet de pauze aan (de laatste
       // switch; dyslexie is de eerste).
@@ -436,12 +464,77 @@ void main() {
       // Bevestigingsnotitie verschijnt op het instellingen-scherm.
       expect(find.textContaining('je kunt geen toetsen maken'), findsOneWidget);
 
-      await tester.tap(find.text('Huis'));
-      await tester.pumpAndSettle();
+      // Terug naar het (nooit-verlaten) home-tabblad erachter.
+      await closeSettings(tester);
 
       expect(find.text('Streak gepauzeerd'), findsOneWidget);
       expect(find.text('Woordentoets'), findsNothing);
       expect(find.text('Vervoegingstoets'), findsNothing);
+    });
+  });
+
+  group('Onboarding', () {
+    /// Een écht verse start: negeert de vooraf ingestelde (onboarding-
+    /// voltooide) staat uit de globale setUp.
+    Future<AppState> pumpFreshApp(WidgetTester tester) async {
+      SharedPreferences.setMockInitialValues({});
+      final appState = await AppState.load();
+      await tester.pumpWidget(
+        TaalLeerApp(appState: appState, updateService: _stubUpdateService()),
+      );
+      await tester.pumpAndSettle();
+      return appState;
+    }
+
+    testWidgets('verse gebruiker ziet eerst het onboarding-scherm', (
+      tester,
+    ) async {
+      await pumpFreshApp(tester);
+
+      // Standaard Engels, met Spaans als (enige) cursuskeuze.
+      expect(find.text('Welcome to TaalLeer'), findsOneWidget);
+      expect(find.text('🇪🇸 Spanish'), findsOneWidget);
+      expect(find.text('Home'), findsNothing);
+    });
+
+    testWidgets(
+      'kiezen en starten opent het home-scherm en onthoudt de keuze',
+      (tester) async {
+        await pumpFreshApp(tester);
+
+        await tester.tap(find.text('🇳🇱 Nederlands'));
+        await tester.pumpAndSettle();
+        expect(find.text('Welkom bij TaalLeer'), findsOneWidget);
+
+        await tester.tap(find.text('Beginnen'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Welkom terug! 👋'), findsOneWidget);
+
+        // De keuze staat op het apparaat: een verse AppState ziet 'm ook.
+        final reloaded = await AppState.load();
+        expect(reloaded.settings.onboardingComplete, isTrue);
+        expect(reloaded.settings.language, Lang.nl);
+        expect(reloaded.settings.sourceLang, Lang.nl);
+        expect(reloaded.settings.courseId, 'es');
+      },
+    );
+
+    testWidgets('na een herstart wordt de onboarding niet opnieuw getoond', (
+      tester,
+    ) async {
+      await pumpFreshApp(tester);
+      await tester.tap(find.text('Get started'));
+      await tester.pumpAndSettle();
+      expect(find.text('Welcome back! 👋'), findsOneWidget);
+
+      // Nieuwe AppState, alsof de app opnieuw is gestart.
+      final restarted = await AppState.load();
+      await tester.pumpWidget(
+        TaalLeerApp(appState: restarted, updateService: _stubUpdateService()),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Welcome back! 👋'), findsOneWidget);
     });
   });
 }

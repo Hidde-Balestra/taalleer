@@ -285,6 +285,16 @@ class _WordCard extends StatelessWidget {
                             ),
                           ),
                         ],
+                        if (word.past.isNotEmpty) ...[
+                          const SizedBox(height: 8),
+                          _DetailRow(
+                            label: t.vocabPastTense.toUpperCase(),
+                            child: _ConjugationTable(
+                              forms: word.past,
+                              pronouns: course.pronouns,
+                            ),
+                          ),
+                        ],
                         if (word.exampleTarget.isNotEmpty) ...[
                           const SizedBox(height: 8),
                           _DetailRow(

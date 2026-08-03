@@ -1,8 +1,8 @@
 /// Spaanse grammatica-hulpmiddelen: de tegenwoordige tijd (presente de
-/// indicativo) van werkwoorden en het lidwoord (el/la) van zelfstandige
-/// naamwoorden.
+/// indicativo) en de verleden tijd (pretérito indefinido) van werkwoorden,
+/// en het lidwoord (el/la) van zelfstandige naamwoorden.
 ///
-/// Beide worden uit het woord zelf afgeleid: regelmatige vervoegingen via
+/// Alle drie worden uit het woord zelf afgeleid: regelmatige vervoegingen via
 /// vaste uitgangen, onregelmatige en stamwisselende werkwoorden via tabellen,
 /// en het geslacht via uitgangsregels met een lijst uitzonderingen. Zo werkt
 /// het ook voor later toegevoegde woorden.
@@ -192,6 +192,201 @@ String _applyStemChange(String stem, String rule) {
   final idx = stem.lastIndexOf(from);
   if (idx < 0) return stem;
   return stem.substring(0, idx) + to + stem.substring(idx + from.length);
+}
+
+// ─── Verleden tijd (pretérito indefinido) ────────────────────────────────
+
+/// "Sterke" preteritos: onregelmatige stam mét onregelmatige (onbeklemtoonde)
+/// uitgangen, plus enkele werkwoorden die om andere redenen niet in het
+/// reguliere patroon passen (ser/ir/dar/ver/haber, en reír/freír waarvan de
+/// stamklinker in de hij/zij-vorm wegvalt: rio/frio).
+const Map<String, List<String>> _preteriteIrregular = {
+  'ser': ['fui', 'fuiste', 'fue', 'fuimos', 'fuisteis', 'fueron'],
+  'ir': ['fui', 'fuiste', 'fue', 'fuimos', 'fuisteis', 'fueron'],
+  'dar': ['di', 'diste', 'dio', 'dimos', 'disteis', 'dieron'],
+  'ver': ['vi', 'viste', 'vio', 'vimos', 'visteis', 'vieron'],
+  'haber': ['hube', 'hubiste', 'hubo', 'hubimos', 'hubisteis', 'hubieron'],
+  'estar': [
+    'estuve',
+    'estuviste',
+    'estuvo',
+    'estuvimos',
+    'estuvisteis',
+    'estuvieron',
+  ],
+  'andar': [
+    'anduve',
+    'anduviste',
+    'anduvo',
+    'anduvimos',
+    'anduvisteis',
+    'anduvieron',
+  ],
+  'tener': ['tuve', 'tuviste', 'tuvo', 'tuvimos', 'tuvisteis', 'tuvieron'],
+  'mantener': [
+    'mantuve',
+    'mantuviste',
+    'mantuvo',
+    'mantuvimos',
+    'mantuvisteis',
+    'mantuvieron',
+  ],
+  'obtener': [
+    'obtuve',
+    'obtuviste',
+    'obtuvo',
+    'obtuvimos',
+    'obtuvisteis',
+    'obtuvieron',
+  ],
+  'poder': ['pude', 'pudiste', 'pudo', 'pudimos', 'pudisteis', 'pudieron'],
+  'poner': ['puse', 'pusiste', 'puso', 'pusimos', 'pusisteis', 'pusieron'],
+  'suponer': [
+    'supuse',
+    'supusiste',
+    'supuso',
+    'supusimos',
+    'supusisteis',
+    'supusieron',
+  ],
+  'proponer': [
+    'propuse',
+    'propusiste',
+    'propuso',
+    'propusimos',
+    'propusisteis',
+    'propusieron',
+  ],
+  'saber': ['supe', 'supiste', 'supo', 'supimos', 'supisteis', 'supieron'],
+  'caber': ['cupe', 'cupiste', 'cupo', 'cupimos', 'cupisteis', 'cupieron'],
+  'hacer': ['hice', 'hiciste', 'hizo', 'hicimos', 'hicisteis', 'hicieron'],
+  'querer': [
+    'quise',
+    'quisiste',
+    'quiso',
+    'quisimos',
+    'quisisteis',
+    'quisieron',
+  ],
+  'venir': ['vine', 'viniste', 'vino', 'vinimos', 'vinisteis', 'vinieron'],
+  'decir': ['dije', 'dijiste', 'dijo', 'dijimos', 'dijisteis', 'dijeron'],
+  'traer': ['traje', 'trajiste', 'trajo', 'trajimos', 'trajisteis', 'trajeron'],
+  'conducir': [
+    'conduje',
+    'condujiste',
+    'condujo',
+    'condujimos',
+    'condujisteis',
+    'condujeron',
+  ],
+  'producir': [
+    'produje',
+    'produjiste',
+    'produjo',
+    'produjimos',
+    'produjisteis',
+    'produjeron',
+  ],
+  'traducir': [
+    'traduje',
+    'tradujiste',
+    'tradujo',
+    'tradujimos',
+    'tradujisteis',
+    'tradujeron',
+  ],
+  'reír': ['reí', 'reíste', 'rio', 'reímos', 'reísteis', 'rieron'],
+  'freír': ['freí', 'freíste', 'frio', 'freímos', 'freísteis', 'frieron'],
+};
+
+/// Vervoegt [infinitive] in de verleden tijd/pretérito indefinido (6
+/// vormen), of geeft `null` als het geen op -ar/-er/-ir eindigend werkwoord
+/// is.
+List<String>? preteriteTense(String infinitive) {
+  var verb = infinitive.trim().toLowerCase();
+  var reflexive = false;
+  if (verb.length > 4 &&
+      (verb.endsWith('arse') ||
+          verb.endsWith('erse') ||
+          verb.endsWith('irse') ||
+          verb.endsWith('írse'))) {
+    reflexive = true;
+    verb = verb.substring(0, verb.length - 2);
+  }
+
+  final forms = _conjugatePreterite(verb);
+  if (forms == null) return null;
+  if (!reflexive) return forms;
+  return [for (var i = 0; i < 6; i++) '${_reflexive[i]} ${forms[i]}'];
+}
+
+List<String>? _conjugatePreterite(String verb) {
+  final irregular = _preteriteIrregular[verb];
+  if (irregular != null) return List.of(irregular);
+
+  String group;
+  if (verb.endsWith('ar')) {
+    group = 'ar';
+  } else if (verb.endsWith('er')) {
+    group = 'er';
+  } else if (verb.endsWith('ir') || verb.endsWith('ír')) {
+    group = 'ir';
+  } else {
+    return null;
+  }
+  final stem = verb.substring(0, verb.length - 2);
+  final endings = group == 'ar'
+      ? ['é', 'aste', 'ó', 'amos', 'asteis', 'aron']
+      : ['í', 'iste', 'ió', 'imos', 'isteis', 'ieron'];
+
+  final forms = [for (var i = 0; i < 6; i++) stem + endings[i]];
+
+  // Spellingswijziging in de yo-vorm bij -car/-gar/-zar, om de uitspraak
+  // van de medeklinker te behouden (bv. buscar → busqué, niet "buscé").
+  if (group == 'ar') {
+    if (verb.endsWith('car')) {
+      forms[0] = '${stem.substring(0, stem.length - 1)}qué';
+    } else if (verb.endsWith('gar')) {
+      forms[0] = '${stem}ué';
+    } else if (verb.endsWith('zar')) {
+      forms[0] = '${stem.substring(0, stem.length - 1)}cé';
+    }
+  }
+
+  // Eindigt de stam op een klinker (leer, creer, caer, oír, construir, ...),
+  // dan wordt de onbeklemtoonde i tussen twee klinkers een y: leyó, cayó,
+  // oyó, construyó. Eindigt de stam specifiek op -u (het -uir-groepje), dan
+  // is dat de enige aanpassing; bij een andere klinker (a/e/i/o) krijgen ook
+  // de iste/imos/isteis-vormen een accent om de lettergreepscheiding aan te
+  // geven (bv. caíste, leímos) — dat hiaat speelt bij -uir niet.
+  if ((group == 'er' || group == 'ir') &&
+      stem.isNotEmpty &&
+      'aeiou'.contains(stem[stem.length - 1])) {
+    forms[2] = '${stem}yó';
+    forms[5] = '${stem}yeron';
+    if (!stem.endsWith('u')) {
+      forms[1] = '${stem}íste';
+      forms[3] = '${stem}ímos';
+      forms[4] = '${stem}ísteis';
+    }
+  }
+
+  // -ir werkwoorden met stamwisseling in de tegenwoordige tijd behouden een
+  // verzwakte wisseling in de hij/zij- en zij(mv)-vorm: e→i, o→u (bv.
+  // pedir → pidió, dormir → durmió). Bij -ar/-er werkwoorden (bv. contar,
+  // pensar) is de verleden tijd juist volledig regelmatig.
+  if (group == 'ir') {
+    final change = _stemChange[verb];
+    if (change == 'e>ie' || change == 'e>i') {
+      forms[2] = _applyStemChange(stem, 'e>i') + endings[2];
+      forms[5] = _applyStemChange(stem, 'e>i') + endings[5];
+    } else if (change == 'o>ue') {
+      forms[2] = _applyStemChange(stem, 'o>u') + endings[2];
+      forms[5] = _applyStemChange(stem, 'o>u') + endings[5];
+    }
+  }
+
+  return forms;
 }
 
 // ─── Lidwoord (el/la) ─────────────────────────────────────────────────────

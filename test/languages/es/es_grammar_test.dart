@@ -163,6 +163,197 @@ void main() {
     });
   });
 
+  group('preteriteTense — regelmatig', () {
+    test('-ar (hablar)', () {
+      expect(preteriteTense('hablar'), [
+        'hablé',
+        'hablaste',
+        'habló',
+        'hablamos',
+        'hablasteis',
+        'hablaron',
+      ]);
+    });
+
+    test('-er (comer)', () {
+      expect(preteriteTense('comer'), [
+        'comí',
+        'comiste',
+        'comió',
+        'comimos',
+        'comisteis',
+        'comieron',
+      ]);
+    });
+
+    test('-ir (vivir)', () {
+      expect(preteriteTense('vivir'), [
+        'viví',
+        'viviste',
+        'vivió',
+        'vivimos',
+        'vivisteis',
+        'vivieron',
+      ]);
+    });
+
+    test('geen werkwoord geeft null', () {
+      expect(preteriteTense('casa'), isNull);
+      expect(preteriteTense('color'), isNull);
+    });
+  });
+
+  group('preteriteTense — spellingswijziging yo-vorm', () {
+    test('-car (buscar → busqué)', () {
+      expect(preteriteTense('buscar')!.first, 'busqué');
+      expect(preteriteTense('buscar')![2], 'buscó');
+    });
+
+    test('-gar (jugar → jugué)', () {
+      expect(preteriteTense('jugar')!.first, 'jugué');
+    });
+
+    test('-zar (empezar → empecé)', () {
+      expect(preteriteTense('empezar')!.first, 'empecé');
+    });
+  });
+
+  group('preteriteTense — klinkerstam (tussen-y)', () {
+    test('leer (leyó/leyeron + accenten)', () {
+      expect(preteriteTense('leer'), [
+        'leí',
+        'leíste',
+        'leyó',
+        'leímos',
+        'leísteis',
+        'leyeron',
+      ]);
+    });
+
+    test('construir (tussen-y, geen accenten)', () {
+      expect(preteriteTense('construir'), [
+        'construí',
+        'construiste',
+        'construyó',
+        'construimos',
+        'construisteis',
+        'construyeron',
+      ]);
+    });
+  });
+
+  group('preteriteTense — stamwisseling (alleen 3e persoon)', () {
+    test('pedir (e→i)', () {
+      expect(preteriteTense('pedir'), [
+        'pedí',
+        'pediste',
+        'pidió',
+        'pedimos',
+        'pedisteis',
+        'pidieron',
+      ]);
+    });
+
+    test('dormir (o→u)', () {
+      expect(preteriteTense('dormir'), [
+        'dormí',
+        'dormiste',
+        'durmió',
+        'dormimos',
+        'dormisteis',
+        'durmieron',
+      ]);
+    });
+
+    test('pensar (-ar met stamwisseling in presente) blijft regelmatig', () {
+      expect(preteriteTense('pensar'), [
+        'pensé',
+        'pensaste',
+        'pensó',
+        'pensamos',
+        'pensasteis',
+        'pensaron',
+      ]);
+    });
+  });
+
+  group('preteriteTense — onregelmatig', () {
+    test('ser en ir hebben gelijke vormen', () {
+      expect(preteriteTense('ser'), [
+        'fui',
+        'fuiste',
+        'fue',
+        'fuimos',
+        'fuisteis',
+        'fueron',
+      ]);
+      expect(preteriteTense('ir'), preteriteTense('ser'));
+    });
+
+    test('tener', () {
+      expect(preteriteTense('tener'), [
+        'tuve',
+        'tuviste',
+        'tuvo',
+        'tuvimos',
+        'tuvisteis',
+        'tuvieron',
+      ]);
+    });
+
+    test('estar', () {
+      expect(preteriteTense('estar')!.first, 'estuve');
+    });
+
+    test('hacer (c→z in hij/zij-vorm)', () {
+      expect(preteriteTense('hacer'), [
+        'hice',
+        'hiciste',
+        'hizo',
+        'hicimos',
+        'hicisteis',
+        'hicieron',
+      ]);
+    });
+
+    test('decir (dijeron, geen -ieron)', () {
+      expect(preteriteTense('decir'), [
+        'dije',
+        'dijiste',
+        'dijo',
+        'dijimos',
+        'dijisteis',
+        'dijeron',
+      ]);
+    });
+
+    test('dar en ver zijn onregelmatig kort', () {
+      expect(preteriteTense('dar'), [
+        'di',
+        'diste',
+        'dio',
+        'dimos',
+        'disteis',
+        'dieron',
+      ]);
+      expect(preteriteTense('ver'), [
+        'vi',
+        'viste',
+        'vio',
+        'vimos',
+        'visteis',
+        'vieron',
+      ]);
+    });
+  });
+
+  group('preteriteTense — wederkerend', () {
+    test('despedirse (e→i + wederkerend)', () {
+      expect(preteriteTense('despedirse')!.first, 'me despedí');
+      expect(preteriteTense('despedirse')![2], 'se despidió');
+    });
+  });
+
   group('articleFor', () {
     test('-o is el, -a is la', () {
       expect(articleFor('libro'), 'el');

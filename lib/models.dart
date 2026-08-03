@@ -24,6 +24,11 @@ class Word {
   /// persoonsvormen, of leeg als het geen werkwoord is.
   final List<String> present;
 
+  /// Verleden tijd (pretérito indefinido) van een werkwoord: de 6
+  /// persoonsvormen, of leeg als het geen werkwoord is of de taal geen
+  /// (enkelvoudige) verleden tijd kent.
+  final List<String> past;
+
   const Word({
     required this.id,
     required this.target,
@@ -34,6 +39,7 @@ class Word {
     this.exampleNl = '',
     this.article = '',
     this.present = const [],
+    this.past = const [],
   });
 
   bool get isNoun => article.isNotEmpty;
@@ -50,12 +56,18 @@ class AppSettings {
   /// `languages/registry.dart`), bijv. 'es' voor Spaans.
   final String courseId;
 
+  /// Heeft de gebruiker het onboarding-scherm (app-taal + cursuskeuze)
+  /// doorlopen? Zolang dit `false` is, toont de app dat scherm i.p.v. het
+  /// home-scherm.
+  final bool onboardingComplete;
+
   const AppSettings({
-    this.language = Lang.nl,
+    this.language = Lang.en,
     this.darkMode = DarkModeSetting.system,
     this.dyslexiaMode = false,
     this.sourceLang = Lang.nl,
     this.courseId = 'es',
+    this.onboardingComplete = false,
   });
 
   AppSettings copyWith({
@@ -64,6 +76,7 @@ class AppSettings {
     bool? dyslexiaMode,
     Lang? sourceLang,
     String? courseId,
+    bool? onboardingComplete,
   }) {
     return AppSettings(
       language: language ?? this.language,
@@ -71,6 +84,7 @@ class AppSettings {
       dyslexiaMode: dyslexiaMode ?? this.dyslexiaMode,
       sourceLang: sourceLang ?? this.sourceLang,
       courseId: courseId ?? this.courseId,
+      onboardingComplete: onboardingComplete ?? this.onboardingComplete,
     );
   }
 
@@ -80,16 +94,18 @@ class AppSettings {
     'dyslexiaMode': dyslexiaMode,
     'sourceLang': sourceLang.name,
     'courseId': courseId,
+    'onboardingComplete': onboardingComplete,
   };
 
   factory AppSettings.fromJson(Map<String, dynamic> json) => AppSettings(
-    language: Lang.values.asNameMap()[json['language']] ?? Lang.nl,
+    language: Lang.values.asNameMap()[json['language']] ?? Lang.en,
     darkMode:
         DarkModeSetting.values.asNameMap()[json['darkMode']] ??
         DarkModeSetting.system,
     dyslexiaMode: json['dyslexiaMode'] as bool? ?? false,
     sourceLang: Lang.values.asNameMap()[json['sourceLang']] ?? Lang.nl,
     courseId: json['courseId'] as String? ?? 'es',
+    onboardingComplete: json['onboardingComplete'] as bool? ?? false,
   );
 }
 

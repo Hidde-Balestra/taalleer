@@ -24,7 +24,7 @@ void main() {
       final state = await AppState.load();
       expect(state.history, isEmpty);
       expect(state.streak, 0);
-      expect(state.settings.language, Lang.nl);
+      expect(state.settings.language, Lang.en);
     });
 
     test(

@@ -2,6 +2,12 @@ import 'models.dart';
 
 /// Alle UI-teksten van de app, per taal (NL/EN), overgenomen uit het prototype.
 class Strings {
+  // Onboarding
+  final String onboardingTitle,
+      onboardingSubtitle,
+      onboardingLanguageQuestion,
+      onboardingCourseQuestion,
+      onboardingStart;
   // Navigatie
   final String navHome, navWords, navGrammar, navResults, navSettings;
   // Home
@@ -31,6 +37,7 @@ class Strings {
       vocabPronunciation,
       vocabExample,
       vocabConjugation,
+      vocabPastTense,
       vocabArticle;
   // Oefenen
   final String practiceTitle, practiceToEs, practiceToNl, practiceToEn;
@@ -71,6 +78,11 @@ class Strings {
       updatesViewRelease;
 
   const Strings({
+    required this.onboardingTitle,
+    required this.onboardingSubtitle,
+    required this.onboardingLanguageQuestion,
+    required this.onboardingCourseQuestion,
+    required this.onboardingStart,
     required this.navHome,
     required this.navWords,
     required this.navGrammar,
@@ -117,6 +129,7 @@ class Strings {
     required this.vocabPronunciation,
     required this.vocabExample,
     required this.vocabConjugation,
+    required this.vocabPastTense,
     required this.vocabArticle,
     required this.practiceTitle,
     required this.practiceToEs,
@@ -179,6 +192,12 @@ class Strings {
   static Strings of(Lang lang) => lang == Lang.nl ? nl : en;
 
   static const nl = Strings(
+    onboardingTitle: 'Welkom bij TaalLeer',
+    onboardingSubtitle:
+        'Kies je taal om te beginnen — dit kun je later altijd wijzigen.',
+    onboardingLanguageQuestion: 'Welke taal spreek je?',
+    onboardingCourseQuestion: 'Welke taal wil je leren?',
+    onboardingStart: 'Beginnen',
     navHome: 'Huis',
     navWords: 'Woorden',
     navGrammar: 'Grammatica',
@@ -225,6 +244,7 @@ class Strings {
     vocabPronunciation: 'Uitspraak',
     vocabExample: 'Voorbeeld',
     vocabConjugation: 'Tegenwoordige tijd',
+    vocabPastTense: 'Verleden tijd',
     vocabArticle: 'Lidwoord',
     practiceTitle: 'Oefenen',
     practiceToEs: 'Vertaal naar het Spaans',
@@ -291,6 +311,12 @@ class Strings {
   );
 
   static const en = Strings(
+    onboardingTitle: 'Welcome to TaalLeer',
+    onboardingSubtitle:
+        'Choose your language to get started — you can always change this later.',
+    onboardingLanguageQuestion: 'Which language do you speak?',
+    onboardingCourseQuestion: 'Which language do you want to learn?',
+    onboardingStart: 'Get started',
     navHome: 'Home',
     navWords: 'Words',
     navGrammar: 'Grammar',
@@ -337,6 +363,7 @@ class Strings {
     vocabPronunciation: 'Pronunciation',
     vocabExample: 'Example',
     vocabConjugation: 'Present tense',
+    vocabPastTense: 'Past tense',
     vocabArticle: 'Article',
     practiceTitle: 'Practice',
     practiceToEs: 'Translate to Spanish',

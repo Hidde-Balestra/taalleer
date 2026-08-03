@@ -189,6 +189,94 @@ final List<GrammarCategory> kSpanishGrammarCategories = [
     ],
   ),
   GrammarCategory(
+    titleNl: 'Werkwoorden — verleden tijd (pretérito indefinido)',
+    titleEn: 'Verbs — past tense (pretérito indefinido)',
+    icon: Icons.history_toggle_off,
+    rules: [
+      GrammarRule(
+        titleNl: 'Regelmatig op -ar',
+        titleEn: 'Regular -ar verbs',
+        bodyNl:
+            'Haal -ar weg en voeg toe: -é, -aste, -ó, -amos, -asteis, -aron. '
+            'Gebruik deze tijd voor een afgeronde actie in het verleden, met '
+            'een duidelijk begin en eind.',
+        bodyEn:
+            'Drop -ar and add: -é, -aste, -ó, -amos, -asteis, -aron. Use this '
+            'tense for a completed action in the past, with a clear start '
+            'and end.',
+        examples: [
+          ('hablé', 'ik sprak', 'I spoke'),
+          ('hablamos', 'wij spraken', 'we spoke'),
+        ],
+      ),
+      GrammarRule(
+        titleNl: 'Regelmatig op -er/-ir',
+        titleEn: 'Regular -er/-ir verbs',
+        bodyNl:
+            '-er en -ir werkwoorden krijgen dezelfde uitgangen: -í, -iste, '
+            '-ió, -imos, -isteis, -ieron.',
+        bodyEn:
+            '-er and -ir verbs share the same endings: -í, -iste, -ió, '
+            '-imos, -isteis, -ieron.',
+        examples: [
+          ('comí', 'ik at', 'I ate'),
+          ('viví', 'ik woonde', 'I lived'),
+        ],
+      ),
+      GrammarRule(
+        titleNl: 'Stamwisseling: alleen de 3e persoon',
+        titleEn: 'Stem change: only the 3rd person',
+        bodyNl:
+            'Bij -ir werkwoorden met stamwisseling verandert in de verleden '
+            'tijd alléén de hij/zij-vorm en de zij(mv.)-vorm — en dan zwakker '
+            'dan in de tegenwoordige tijd: e→i, o→u. -ar en -er werkwoorden '
+            'wisselen in de verleden tijd helemaal niet (bv. contar → conté, '
+            'geen stamwisseling).',
+        bodyEn:
+            'For -ir verbs with a stem change, only the "he/she" and "they" '
+            'forms change in the past tense — and more weakly than in the '
+            'present tense: e→i, o→u. -ar and -er verbs never stem-change in '
+            'the past tense at all (e.g. contar → conté, no stem change).',
+        examples: [
+          ('pidió', 'hij/zij vroeg', 'he/she asked for'),
+          ('durmió', 'hij/zij sliep', 'he/she slept'),
+        ],
+      ),
+      GrammarRule(
+        titleNl: 'Spellingwijziging bij -car, -gar, -zar',
+        titleEn: 'Spelling change for -car, -gar, -zar',
+        bodyNl:
+            'Alléén in de yo-vorm, om de uitspraak van de medeklinker te '
+            'behouden: -car → -qué, -gar → -gué, -zar → -cé.',
+        bodyEn:
+            'Only in the "I" form, to keep the consonant sound the same: '
+            '-car → -qué, -gar → -gué, -zar → -cé.',
+        examples: [
+          ('busqué', 'ik zocht', 'I searched'),
+          ('empecé', 'ik begon', 'I began'),
+        ],
+      ),
+      GrammarRule(
+        titleNl: 'Volledig onregelmatig',
+        titleEn: 'Fully irregular',
+        bodyNl:
+            'Ser en ir hebben in de verleden tijd exact dezelfde vormen (fui, '
+            'fuiste, fue...) — de context maakt duidelijk welke bedoeld '
+            'wordt. Andere veelgebruikte onregelmatige werkwoorden: tener → '
+            'tuve, estar → estuve, hacer → hice, decir → dije.',
+        bodyEn:
+            'Ser and ir have exactly the same forms in the past tense (fui, '
+            'fuiste, fue...) — context makes clear which one is meant. Other '
+            'common irregular verbs: tener → tuve, estar → estuve, hacer → '
+            'hice, decir → dije.',
+        examples: [
+          ('fui', 'ik was / ik ging', 'I was / I went'),
+          ('tuve', 'ik had', 'I had'),
+        ],
+      ),
+    ],
+  ),
+  GrammarCategory(
     titleNl: 'Ser vs. estar',
     titleEn: 'Ser vs. estar',
     icon: Icons.compare_arrows,

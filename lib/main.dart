@@ -10,6 +10,7 @@ import 'screens/conjugation_quiz_screen.dart';
 import 'screens/grammar_screen.dart';
 import 'screens/history_screen.dart';
 import 'screens/home_screen.dart';
+import 'screens/onboarding_screen.dart';
 import 'screens/past_words_screen.dart';
 import 'screens/practice_screen.dart';
 import 'screens/quiz_result_screen.dart';
@@ -63,7 +64,18 @@ class TaalLeerApp extends StatelessWidget {
             brightness: Brightness.dark,
             dyslexiaMode: settings.dyslexiaMode,
           ),
-          home: HomeShell(appState: appState, updateService: updateService),
+          home: settings.onboardingComplete
+              ? HomeShell(appState: appState, updateService: updateService)
+              : OnboardingScreen(
+                  onComplete: (language, courseId) => appState.updateSettings(
+                    settings.copyWith(
+                      language: language,
+                      sourceLang: language,
+                      courseId: courseId,
+                      onboardingComplete: true,
+                    ),
+                  ),
+                ),
         );
       },
     );
@@ -151,6 +163,21 @@ class _HomeShellState extends State<HomeShell> {
     );
   }
 
+  void _openSettings(Strings t, AppSettings settings) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => SettingsScreen(
+          t: t,
+          settings: settings,
+          onChanged: widget.appState.updateSettings,
+          paused: widget.appState.paused,
+          onPausedChanged: widget.appState.setPaused,
+          updateService: widget.updateService,
+        ),
+      ),
+    );
+  }
+
   ValueChanged<QuizResult> _finishQuiz(Strings t, LanguageCourse course) =>
       (result) {
         widget.appState.addResult(result);
@@ -201,14 +228,6 @@ class _HomeShellState extends State<HomeShell> {
         history: widget.appState.history,
         streak: widget.appState.streak,
       ),
-      SettingsScreen(
-        t: t,
-        settings: settings,
-        onChanged: widget.appState.updateSettings,
-        paused: widget.appState.paused,
-        onPausedChanged: widget.appState.setPaused,
-        updateService: widget.updateService,
-      ),
     ];
 
     final navItems = [
@@ -228,16 +247,33 @@ class _HomeShellState extends State<HomeShell> {
         activeIcon: Icons.bar_chart,
         label: t.navResults,
       ),
-      (
-        icon: Icons.settings_outlined,
-        activeIcon: Icons.settings,
-        label: t.navSettings,
-      ),
     ];
 
     return Scaffold(
       body: SafeArea(
-        child: IndexedStack(index: _tab, children: tabs),
+        child: Column(
+          children: [
+            // Vast tandwiel-icoon, zichtbaar op elk tabblad — Instellingen
+            // zat eerst in de onderbalk, maar die werd daarmee te druk.
+            Padding(
+              padding: const EdgeInsets.fromLTRB(8, 4, 8, 0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  IconButton(
+                    onPressed: () => _openSettings(t, settings),
+                    icon: const Icon(Icons.settings_outlined),
+                    tooltip: t.navSettings,
+                    color: palette.muted,
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: IndexedStack(index: _tab, children: tabs),
+            ),
+          ],
+        ),
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(

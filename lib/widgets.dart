@@ -463,3 +463,86 @@ class SpeakButton extends StatelessWidget {
     );
   }
 }
+
+/// Eén keuze binnen een [SegmentRow].
+class SegmentOption {
+  final String label;
+  final IconData? icon;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const SegmentOption({
+    required this.label,
+    this.icon,
+    required this.selected,
+    required this.onTap,
+  });
+}
+
+/// Rij van gelijk verdeelde keuzeknoppen, waarvan er één geselecteerd is
+/// (bv. app-taal, brontaal, cursus — in zowel Instellingen als de
+/// onboarding).
+class SegmentRow extends StatelessWidget {
+  final List<SegmentOption> options;
+
+  const SegmentRow({super.key, required this.options});
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = AppPalette.of(context);
+    return Row(
+      children: [
+        for (var i = 0; i < options.length; i++) ...[
+          if (i > 0) const SizedBox(width: 8),
+          Expanded(
+            child: Material(
+              color: options[i].selected ? AppColors.primary : palette.card,
+              borderRadius: BorderRadius.circular(12),
+              child: InkWell(
+                onTap: options[i].onTap,
+                borderRadius: BorderRadius.circular(12),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: options[i].selected
+                          ? AppColors.primary
+                          : palette.border,
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      if (options[i].icon != null) ...[
+                        Icon(
+                          options[i].icon,
+                          size: 14,
+                          color: options[i].selected
+                              ? Colors.white
+                              : palette.foreground,
+                        ),
+                        const SizedBox(height: 4),
+                      ],
+                      Text(
+                        options[i].label,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: options[i].selected
+                              ? Colors.white
+                              : palette.foreground,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+}

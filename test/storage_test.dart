@@ -34,20 +34,23 @@ void main() {
         darkMode: DarkModeSetting.dark,
         dyslexiaMode: true,
         sourceLang: Lang.en,
+        onboardingComplete: true,
       );
       final copy = AppSettings.fromJson(settings.toJson());
       expect(copy.language, Lang.en);
       expect(copy.darkMode, DarkModeSetting.dark);
       expect(copy.dyslexiaMode, isTrue);
       expect(copy.sourceLang, Lang.en);
+      expect(copy.onboardingComplete, isTrue);
     });
 
     test('AppSettings valt terug op standaardwaarden bij onbekende JSON', () {
       final copy = AppSettings.fromJson({'language': 'xx', 'darkMode': 99});
-      expect(copy.language, Lang.nl);
+      expect(copy.language, Lang.en);
       expect(copy.darkMode, DarkModeSetting.system);
       expect(copy.dyslexiaMode, isFalse);
       expect(copy.sourceLang, Lang.nl);
+      expect(copy.onboardingComplete, isFalse);
     });
   });
 
@@ -63,9 +66,10 @@ void main() {
         final settings = await storage.loadSettings();
         final history = await storage.loadHistory();
 
-        expect(settings.language, Lang.nl);
+        expect(settings.language, Lang.en);
         expect(settings.darkMode, DarkModeSetting.system);
         expect(settings.dyslexiaMode, isFalse);
+        expect(settings.onboardingComplete, isFalse);
         expect(history, isEmpty);
       },
     );
@@ -112,7 +116,7 @@ void main() {
       final settings = await storage.loadSettings();
       final history = await storage.loadHistory();
 
-      expect(settings.language, Lang.nl);
+      expect(settings.language, Lang.en);
       expect(history, isEmpty);
     });
   });

@@ -35,6 +35,10 @@ class SpanishCourse extends LanguageCourse {
       grammar.presentTense(infinitive);
 
   @override
+  List<String>? preteriteTense(String infinitive) =>
+      grammar.preteriteTense(infinitive);
+
+  @override
   String? articleFor(String noun) =>
       grammar.kNonNouns.contains(noun) ? null : grammar.articleFor(noun);
 

@@ -163,16 +163,27 @@ class _HomeShellState extends State<HomeShell> {
     );
   }
 
-  void _openSettings(Strings t, AppSettings settings) {
+  void _openSettings() {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => SettingsScreen(
-          t: t,
-          settings: settings,
-          onChanged: widget.appState.updateSettings,
-          paused: widget.appState.paused,
-          onPausedChanged: widget.appState.setPaused,
-          updateService: widget.updateService,
+        // Instellingen blijft, eenmaal gepusht, meeluisteren met appState:
+        // zonder deze ListenableBuilder zou het scherm blijven werken met
+        // de settings/paused-waarden van het moment van pushen, waardoor
+        // opeenvolgende wijzigingen (bv. eerst donkere modus, dan dyslexie)
+        // elkaar zouden overschrijven op basis van verouderde data.
+        builder: (_) => ListenableBuilder(
+          listenable: widget.appState,
+          builder: (context, _) {
+            final settings = widget.appState.settings;
+            return SettingsScreen(
+              t: Strings.of(settings.language),
+              settings: settings,
+              onChanged: widget.appState.updateSettings,
+              paused: widget.appState.paused,
+              onPausedChanged: widget.appState.setPaused,
+              updateService: widget.updateService,
+            );
+          },
         ),
       ),
     );
@@ -261,7 +272,7 @@ class _HomeShellState extends State<HomeShell> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   IconButton(
-                    onPressed: () => _openSettings(t, settings),
+                    onPressed: _openSettings,
                     icon: const Icon(Icons.settings_outlined),
                     tooltip: t.navSettings,
                     color: palette.muted,

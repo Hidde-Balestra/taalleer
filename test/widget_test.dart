@@ -13,7 +13,6 @@ import 'package:taalleer/languages/es/es_course.dart';
 import 'package:taalleer/main.dart';
 import 'package:taalleer/models.dart';
 import 'package:taalleer/screens/home_screen.dart';
-import 'package:taalleer/screens/settings_screen.dart';
 import 'package:taalleer/storage.dart';
 import 'package:taalleer/update_service.dart';
 
@@ -96,16 +95,14 @@ void main() {
     );
   }
 
-  /// Scrollt het instellingen-scherm tot [target] in beeld is.
+  /// Scrollt het instellingen-scherm tot [target] in beeld is. `ensureVisible`
+  /// (i.p.v. `scrollUntilVisible`) berekent de precieze scrollpositie: de
+  /// instellingenlijst is een niet-lazy `ListView`, dus elk kind staat sowieso
+  /// al in de widgetboom — `scrollUntilVisible` zou daardoor meteen "klaar"
+  /// zijn zonder het element ook echt binnen het testvenster te krijgen.
   Future<void> scrollSettings(WidgetTester tester, Finder target) async {
-    await tester.scrollUntilVisible(
-      target,
-      150,
-      scrollable: find.descendant(
-        of: find.byType(SettingsScreen),
-        matching: find.byType(Scrollable),
-      ),
-    );
+    await tester.ensureVisible(target);
+    await tester.pumpAndSettle();
   }
 
   group('Navigatie', () {
@@ -450,14 +447,7 @@ void main() {
 
       // Scroll de pauze-kaart in beeld en zet de pauze aan (de laatste
       // switch; dyslexie is de eerste).
-      await tester.scrollUntilVisible(
-        find.text('Streak pauzeren'),
-        200,
-        scrollable: find.descendant(
-          of: find.byType(SettingsScreen),
-          matching: find.byType(Scrollable),
-        ),
-      );
+      await scrollSettings(tester, find.text('Streak pauzeren'));
       await tester.tap(find.byType(Switch).last);
       await tester.pumpAndSettle();
 

@@ -59,13 +59,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               const SizedBox(height: 10),
               SegmentRow(
                 options: [
+                  // Bewust de eigennamen ("Nederlands"/"English") i.p.v.
+                  // vertaalde labels: een Nederlandstalige gebruiker die de
+                  // Engelse standaardtekst niet leest, moet zijn eigen taal
+                  // toch herkennen.
                   SegmentOption(
-                    label: '🇳🇱 ${t.settingsDutch}',
+                    label: '🇳🇱 Nederlands',
                     selected: _language == Lang.nl,
                     onTap: () => setState(() => _language = Lang.nl),
                   ),
                   SegmentOption(
-                    label: '🇬🇧 ${t.settingsEnglish}',
+                    label: '🇬🇧 English',
                     selected: _language == Lang.en,
                     onTap: () => setState(() => _language = Lang.en),
                   ),

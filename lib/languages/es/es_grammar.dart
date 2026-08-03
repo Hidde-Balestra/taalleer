@@ -365,9 +365,9 @@ List<String>? _conjugatePreterite(String verb) {
     forms[2] = '${stem}yó';
     forms[5] = '${stem}yeron';
     if (!stem.endsWith('u')) {
-      forms[1] = '${stem}íste';
-      forms[3] = '${stem}ímos';
-      forms[4] = '${stem}ísteis';
+      forms[1] = '$stemíste';
+      forms[3] = '$stemímos';
+      forms[4] = '$stemísteis';
     }
   }
 

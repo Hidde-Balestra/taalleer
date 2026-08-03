@@ -74,9 +74,7 @@ class UpdateService {
           : tagName;
       final isNewer = compareVersions(latestVersion, currentVersion) > 0;
       return UpdateCheckResult(
-        status: isNewer
-            ? UpdateStatus.updateAvailable
-            : UpdateStatus.upToDate,
+        status: isNewer ? UpdateStatus.updateAvailable : UpdateStatus.upToDate,
         latestVersion: latestVersion,
         releaseUrl: htmlUrl,
       );

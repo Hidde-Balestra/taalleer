@@ -12,6 +12,7 @@ import 'package:taalleer/main.dart';
 import 'package:taalleer/models.dart';
 import 'package:taalleer/screens/home_screen.dart';
 import 'package:taalleer/screens/settings_screen.dart';
+import 'package:taalleer/theme.dart';
 import 'package:taalleer/update_service.dart';
 
 final _course = SpanishCourse();
@@ -203,7 +204,10 @@ void main() {
       await scrollSettings(tester, find.text('Donker'));
       await tester.tap(find.text('Donker'));
       await tester.pumpAndSettle();
-      await scrollSettings(tester, find.byType(Switch).first);
+      // Scroll op basis van een unieke tekst i.p.v. `find.byType(Switch).first`:
+      // die laatste gooit een StateError zodra er nog geen enkele Switch
+      // gebouwd is (bv. vóór scrollen), in plaats van gewoon door te scrollen.
+      await scrollSettings(tester, find.text('Dyslexie Modus'));
       await tester.tap(find.byType(Switch).first);
       await tester.pumpAndSettle();
 
@@ -218,7 +222,10 @@ void main() {
       await tester.tap(find.text('Instellingen'));
       await tester.pumpAndSettle();
 
-      await scrollSettings(tester, find.byType(Switch).first);
+      // Scroll op basis van een unieke tekst i.p.v. `find.byType(Switch).first`:
+      // die laatste gooit een StateError zodra er nog geen enkele Switch
+      // gebouwd is (bv. vóór scrollen), in plaats van gewoon door te scrollen.
+      await scrollSettings(tester, find.text('Dyslexie Modus'));
       await tester.tap(find.byType(Switch).first);
       await tester.pumpAndSettle();
 
@@ -441,6 +448,7 @@ void main() {
 
   group('Updates', () {
     Widget wrapSettings(UpdateService service) => MaterialApp(
+      theme: buildTheme(brightness: Brightness.light, dyslexiaMode: false),
       home: Scaffold(
         body: SettingsScreen(
           t: Strings.nl,
@@ -492,21 +500,20 @@ void main() {
       },
     );
 
-    testWidgets(
-      'toont een foutmelding met opnieuw-knop als de check mislukt',
-      (tester) async {
-        final service = UpdateService(
-          client: MockClient(
-            (request) async => http.Response('server error', 500),
-          ),
-        );
+    testWidgets('toont een foutmelding met opnieuw-knop als de check mislukt', (
+      tester,
+    ) async {
+      final service = UpdateService(
+        client: MockClient(
+          (request) async => http.Response('server error', 500),
+        ),
+      );
 
-        await tester.pumpWidget(wrapSettings(service));
-        await tester.pumpAndSettle();
+      await tester.pumpWidget(wrapSettings(service));
+      await tester.pumpAndSettle();
 
-        expect(find.text('Controleren op updates mislukt'), findsOneWidget);
-        expect(find.text('Nu controleren'), findsOneWidget);
-      },
-    );
+      expect(find.text('Controleren op updates mislukt'), findsOneWidget);
+      expect(find.text('Nu controleren'), findsOneWidget);
+    });
   });
 }

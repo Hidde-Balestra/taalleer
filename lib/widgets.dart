@@ -365,12 +365,13 @@ class _LogoPainter extends CustomPainter {
     required double tailTipX,
     required double tailTipY,
   }) {
-    final body = Path()..addRRect(
-      RRect.fromRectAndRadius(
-        Rect.fromLTWH(x * s, y * s, w * s, h * s),
-        Radius.circular(r * s),
-      ),
-    );
+    final body = Path()
+      ..addRRect(
+        RRect.fromRectAndRadius(
+          Rect.fromLTWH(x * s, y * s, w * s, h * s),
+          Radius.circular(r * s),
+        ),
+      );
     final tail = Path()
       ..moveTo(tailX1 * s, (y + h) * s)
       ..lineTo(tailX2 * s, (y + h) * s)

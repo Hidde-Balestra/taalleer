@@ -39,8 +39,7 @@ class SpanishCourse extends LanguageCourse {
       grammar.kNonNouns.contains(noun) ? null : grammar.articleFor(noun);
 
   @override
-  bool isVerbEntry(String target, String en) =>
-      grammar.isVerbEntry(target, en);
+  bool isVerbEntry(String target, String en) => grammar.isVerbEntry(target, en);
 
   @override
   List<String> get pronouns => grammar.kPronouns;

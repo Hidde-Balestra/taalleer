@@ -184,10 +184,7 @@ final List<GrammarCategory> kSpanishGrammarCategories = [
         bodyEn:
             'A handful of very common verbs follow no pattern at all and '
             'have to be memorised: ser, estar, ir, haber, ver.',
-        examples: [
-          ('soy', 'ik ben', 'I am'),
-          ('voy', 'ik ga', 'I go'),
-        ],
+        examples: [('soy', 'ik ben', 'I am'), ('voy', 'ik ga', 'I go')],
       ),
     ],
   ),
@@ -281,7 +278,11 @@ final List<GrammarCategory> kSpanishGrammarCategories = [
             'simpler than in English, there is no separate negative word '
             'needed after the verb.',
         examples: [
-          ('No hablo francés.', 'Ik spreek geen Frans.', "I don't speak French."),
+          (
+            'No hablo francés.',
+            'Ik spreek geen Frans.',
+            "I don't speak French.",
+          ),
         ],
       ),
       GrammarRule(
@@ -295,9 +296,7 @@ final List<GrammarCategory> kSpanishGrammarCategories = [
             'qué (what), quién (who), dónde (where), cuándo (when), cómo '
             '(how), por qué (why) — always with an accent when used as a '
             'question word.',
-        examples: [
-          ('¿Dónde vives?', 'Waar woon je?', 'Where do you live?'),
-        ],
+        examples: [('¿Dónde vives?', 'Waar woon je?', 'Where do you live?')],
       ),
       GrammarRule(
         titleNl: 'Vraag- en uitroeptekens aan het begin',

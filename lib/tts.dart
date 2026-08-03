@@ -9,17 +9,24 @@ import 'package:flutter_tts/flutter_tts.dart';
 /// uitspraak hier niet beschikbaar is. Uitspraak is een leuke extra, geen
 /// kernfunctie die de rest van de app mag laten crashen.
 class SpeechService {
-  final FlutterTts _tts = FlutterTts();
+  // Lazy (niet als veldinitialisator): FlutterTts() zet zelf al een
+  // MethodChannel-handler op in zijn constructor, wat crasht als de Flutter-
+  // binding nog niet is geïnitialiseerd (bv. in een kale `test()`, of in
+  // theorie vóór WidgetsFlutterBinding.ensureInitialized()). Door de
+  // constructie hier, binnen de try/catch, te doen, vangen we ook dát geval
+  // netjes op i.p.v. alleen fouten uit latere methodeaanroepen.
+  FlutterTts? _tts;
 
   /// Spreekt [text] uit in [locale]. Geeft `true` terug als dat is gelukt,
   /// `false` als er geen (passende) spraak-engine beschikbaar is.
   Future<bool> speak(String text, String locale) async {
     if (text.isEmpty) return false;
     try {
-      await _tts.stop();
-      await _tts.setLanguage(locale);
-      await _tts.setSpeechRate(0.45);
-      return _looksSuccessful(await _tts.speak(text));
+      final tts = _tts ??= FlutterTts();
+      await tts.stop();
+      await tts.setLanguage(locale);
+      await tts.setSpeechRate(0.45);
+      return _looksSuccessful(await tts.speak(text));
     } catch (_) {
       return false;
     }

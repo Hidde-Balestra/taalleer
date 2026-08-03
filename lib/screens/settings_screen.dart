@@ -284,71 +284,77 @@ class _UpdatesCard extends StatefulWidget {
   State<_UpdatesCard> createState() => _UpdatesCardState();
 }
 
+class _UpdateInfo {
+  final String version;
+  final UpdateCheckResult result;
+
+  const _UpdateInfo({required this.version, required this.result});
+}
+
 class _UpdatesCardState extends State<_UpdatesCard> {
-  String? _currentVersion;
-  UpdateCheckResult? _result;
-  bool _checking = true;
+  // `late final` + FutureBuilder (i.p.v. handmatig setState/mounted-gedoe):
+  // de Future wordt precies één keer aangemaakt bij het aanmaken van deze
+  // State, en FutureBuilder handelt de widgetlevenscyclus er zelf veilig
+  // omheen af — geen risico op setState tijdens de build-fase of op een
+  // vergeten mounted-check.
+  late Future<_UpdateInfo> _future = _check();
 
-  @override
-  void initState() {
-    super.initState();
-    _check();
-  }
-
-  Future<void> _check() async {
-    setState(() => _checking = true);
+  Future<_UpdateInfo> _check() async {
     final info = await PackageInfo.fromPlatform();
     final result = await widget.updateService.checkForUpdate(info.version);
-    if (!mounted) return;
-    setState(() {
-      _currentVersion = info.version;
-      _result = result;
-      _checking = false;
-    });
+    return _UpdateInfo(version: info.version, result: result);
   }
+
+  void _retry() => setState(() => _future = _check());
 
   @override
   Widget build(BuildContext context) {
     final t = widget.t;
     final palette = AppPalette.of(context);
     return AppCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+      child: FutureBuilder<_UpdateInfo>(
+        future: _future,
+        builder: (context, snapshot) {
+          final info = snapshot.data;
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Icon(
-                Icons.system_update_alt,
-                size: 16,
-                color: AppColors.primary,
+              Row(
+                children: [
+                  const Icon(
+                    Icons.system_update_alt,
+                    size: 16,
+                    color: AppColors.primary,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    t.updatesTitle,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const Spacer(),
+                  if (info != null)
+                    Text(
+                      t.currentVersionLabel(info.version),
+                      style: TextStyle(fontSize: 12, color: palette.muted),
+                    ),
+                ],
               ),
-              const SizedBox(width: 8),
-              Text(
-                t.updatesTitle,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const Spacer(),
-              if (_currentVersion != null)
-                Text(
-                  t.currentVersionLabel(_currentVersion!),
-                  style: TextStyle(fontSize: 12, color: palette.muted),
-                ),
+              const SizedBox(height: 10),
+              _buildStatus(palette, info),
             ],
-          ),
-          const SizedBox(height: 10),
-          _buildStatus(palette),
-        ],
+          );
+        },
       ),
     );
   }
 
-  Widget _buildStatus(AppPalette palette) {
+  Widget _buildStatus(AppPalette palette, _UpdateInfo? info) {
     final t = widget.t;
 
-    if (_checking || _result == null) {
+    if (info == null) {
       // Bewust een statisch icoon i.p.v. een ronddraaiende spinner: de check
       // duurt doorgaans maar een fractie van een seconde, en een
       // oneindig-lopende animatie zou `pumpAndSettle()` in tests blokkeren.
@@ -364,7 +370,8 @@ class _UpdatesCardState extends State<_UpdatesCard> {
       );
     }
 
-    switch (_result!.status) {
+    final result = info.result;
+    switch (result.status) {
       case UpdateStatus.upToDate:
         return Row(
           children: [
@@ -381,12 +388,12 @@ class _UpdatesCardState extends State<_UpdatesCard> {
           ],
         );
       case UpdateStatus.updateAvailable:
-        final url = _result!.releaseUrl;
+        final url = result.releaseUrl;
         return Row(
           children: [
             Expanded(
               child: Text(
-                t.updateAvailableLabel(_result!.latestVersion ?? ''),
+                t.updateAvailableLabel(result.latestVersion ?? ''),
                 style: const TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
@@ -411,7 +418,7 @@ class _UpdatesCardState extends State<_UpdatesCard> {
                 style: TextStyle(fontSize: 12, color: palette.muted),
               ),
             ),
-            TextButton(onPressed: _check, child: Text(t.updatesCheckNow)),
+            TextButton(onPressed: _retry, child: Text(t.updatesCheckNow)),
           ],
         );
     }

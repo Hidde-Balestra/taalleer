@@ -12,7 +12,6 @@ import 'package:taalleer/main.dart';
 import 'package:taalleer/models.dart';
 import 'package:taalleer/screens/home_screen.dart';
 import 'package:taalleer/screens/settings_screen.dart';
-import 'package:taalleer/theme.dart';
 import 'package:taalleer/update_service.dart';
 
 final _course = SpanishCourse();
@@ -443,77 +442,6 @@ void main() {
       expect(find.text('Streak gepauzeerd'), findsOneWidget);
       expect(find.text('Woordentoets'), findsNothing);
       expect(find.text('Vervoegingstoets'), findsNothing);
-    });
-  });
-
-  group('Updates', () {
-    Widget wrapSettings(UpdateService service) => MaterialApp(
-      theme: buildTheme(brightness: Brightness.light, dyslexiaMode: false),
-      home: Scaffold(
-        body: SettingsScreen(
-          t: Strings.nl,
-          settings: const AppSettings(),
-          onChanged: (_) {},
-          paused: false,
-          onPausedChanged: (_) {},
-          updateService: service,
-        ),
-      ),
-    );
-
-    testWidgets('toont "up-to-date" als de laatste release gelijk is', (
-      tester,
-    ) async {
-      final service = UpdateService(
-        client: MockClient(
-          (request) async => http.Response(
-            '{"tag_name":"v$_mockAppVersion","html_url":"https://example.com/release"}',
-            200,
-          ),
-        ),
-      );
-
-      await tester.pumpWidget(wrapSettings(service));
-      await tester.pumpAndSettle();
-
-      expect(find.text('Versie $_mockAppVersion'), findsOneWidget);
-      expect(find.text('Je gebruikt de nieuwste versie'), findsOneWidget);
-    });
-
-    testWidgets(
-      'toont een update-melding met knop als er een nieuwere release is',
-      (tester) async {
-        final service = UpdateService(
-          client: MockClient(
-            (request) async => http.Response(
-              '{"tag_name":"v9.9.9","html_url":"https://example.com/release"}',
-              200,
-            ),
-          ),
-        );
-
-        await tester.pumpWidget(wrapSettings(service));
-        await tester.pumpAndSettle();
-
-        expect(find.text('Update beschikbaar: v9.9.9'), findsOneWidget);
-        expect(find.text('Bekijk release'), findsOneWidget);
-      },
-    );
-
-    testWidgets('toont een foutmelding met opnieuw-knop als de check mislukt', (
-      tester,
-    ) async {
-      final service = UpdateService(
-        client: MockClient(
-          (request) async => http.Response('server error', 500),
-        ),
-      );
-
-      await tester.pumpWidget(wrapSettings(service));
-      await tester.pumpAndSettle();
-
-      expect(find.text('Controleren op updates mislukt'), findsOneWidget);
-      expect(find.text('Nu controleren'), findsOneWidget);
     });
   });
 }

@@ -191,6 +191,7 @@ class SettingsScreen extends StatelessWidget {
                         ),
                       ),
                       Switch(
+                        key: const Key('dyslexiaSwitch'),
                         value: settings.dyslexiaMode,
                         activeTrackColor: AppColors.primary,
                         onChanged: (v) =>
@@ -259,6 +260,7 @@ class SettingsScreen extends StatelessWidget {
                         ),
                       ),
                       Switch(
+                        key: const Key('pauseSwitch'),
                         value: paused,
                         activeTrackColor: AppColors.primary,
                         onChanged: onPausedChanged,
@@ -326,6 +328,7 @@ class SettingsScreen extends StatelessWidget {
                         ),
                       ),
                       Switch(
+                        key: const Key('reminderSwitch'),
                         value: settings.dailyReminder,
                         activeTrackColor: AppColors.primary,
                         onChanged: (v) => _onReminderToggled(v, settings),

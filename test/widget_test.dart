@@ -129,6 +129,11 @@ void main() {
       await pumpApp(tester);
       expect(find.text('Welkom terug! 👋'), findsOneWidget);
       expect(find.text('Oefenen'), findsOneWidget);
+
+      // De lijst is inmiddels langer dan het testvenster (Luisteroefening
+      // erbij) — net als "Laatste cijfer" moeten deze knoppen dus eerst in
+      // beeld gescrold worden (de Sliver mount ze pas dan).
+      await scrollHome(tester, find.text('Vervoegingstoets'));
       expect(find.text('Woordentoets'), findsOneWidget);
       expect(find.text('Vervoegingstoets'), findsOneWidget);
 
@@ -382,6 +387,7 @@ void main() {
     testWidgets('werkwoord vervoegen en resultaat opslaan', (tester) async {
       final state = await pumpApp(tester);
 
+      await scrollHome(tester, find.text('Vervoegingstoets'));
       await tester.tap(find.text('Vervoegingstoets'));
       await tester.pumpAndSettle();
       expect(find.text('Vervoeg in de tegenwoordige tijd'), findsOneWidget);
@@ -464,10 +470,12 @@ void main() {
       await pumpApp(tester);
       await openSettings(tester);
 
-      // Scroll de pauze-kaart in beeld en zet de pauze aan (de laatste
-      // switch; dyslexie is de eerste).
+      // Scroll de pauze-kaart in beeld en zet de pauze aan. Op key zoeken
+      // i.p.v. positioneel (.first/.last): er zijn inmiddels drie switches
+      // (dyslexie, pauze, herinnering) en alleen de pauze-switch moet hier
+      // geraakt worden.
       await scrollSettings(tester, find.text('Streak pauzeren'));
-      await tester.tap(find.byType(Switch).last);
+      await tester.tap(find.byKey(const Key('pauseSwitch')));
       await tester.pumpAndSettle();
 
       // Bevestigingsnotitie verschijnt op het instellingen-scherm.

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'app_state.dart';
 import 'data.dart';
+import 'home_widget_service.dart';
 import 'i18n.dart';
 import 'language_course.dart';
 import 'languages/registry.dart';
@@ -38,6 +39,11 @@ Future<void> main() async {
       body: Strings.of(appState.settings.language).reminderNotificationBody,
     );
   }
+  // Startscherm-widget: eenmaal bij het opstarten en daarna bij elke
+  // wijziging in de streak (bv. na een toets) — een no-op als de gebruiker
+  // geen widget aan zijn startscherm heeft toegevoegd.
+  updateHomeWidget(appState);
+  appState.addListener(() => updateHomeWidget(appState));
   runApp(TaalLeerApp(appState: appState));
 }
 

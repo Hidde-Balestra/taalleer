@@ -10,6 +10,7 @@ import 'screens/conjugation_quiz_screen.dart';
 import 'screens/grammar_screen.dart';
 import 'screens/history_screen.dart';
 import 'screens/home_screen.dart';
+import 'screens/listening_practice_screen.dart';
 import 'screens/onboarding_screen.dart';
 import 'screens/past_words_screen.dart';
 import 'screens/practice_screen.dart';
@@ -105,6 +106,25 @@ class _HomeShellState extends State<HomeShell> {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => PracticeScreen(
+          t: t,
+          dyslexia: settings.dyslexiaMode,
+          sourceLang: settings.sourceLang,
+          course: course,
+          words: words,
+        ),
+      ),
+    );
+  }
+
+  void _openListeningPractice(
+    Strings t,
+    AppSettings settings,
+    LanguageCourse course,
+    List<Word> words,
+  ) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => ListeningPracticeScreen(
           t: t,
           dyslexia: settings.dyslexiaMode,
           sourceLang: settings.sourceLang,
@@ -227,6 +247,8 @@ class _HomeShellState extends State<HomeShell> {
         onQuiz: () => _openQuiz(t, settings, course, weekWords),
         onConjQuiz: () => _openConjQuiz(t, settings, course),
         onPracticeWeakWords: () => _openPractice(t, settings, course, weak),
+        onListeningPractice: () =>
+            _openListeningPractice(t, settings, course, weekWords),
       ),
       VocabularyScreen(
         t: t,

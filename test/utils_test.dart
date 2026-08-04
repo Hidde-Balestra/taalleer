@@ -191,6 +191,30 @@ void main() {
     });
   });
 
+  group('buildListeningPractice', () {
+    final weekWords = wordsForWeek(_course, 1);
+
+    test('10 unieke woorden', () {
+      final qs = buildListeningPractice(weekWords, Lang.nl, random: Random(1));
+      expect(qs, hasLength(10));
+      expect(qs.map((q) => q.word.id).toSet(), hasLength(10));
+    });
+
+    test('altijd esNl bij brontaal NL', () {
+      final qs = buildListeningPractice(weekWords, Lang.nl, random: Random(1));
+      for (final q in qs) {
+        expect(q.type, QuestionType.esNl);
+      }
+    });
+
+    test('altijd esEn bij brontaal EN', () {
+      final qs = buildListeningPractice(weekWords, Lang.en, random: Random(1));
+      for (final q in qs) {
+        expect(q.type, QuestionType.esEn);
+      }
+    });
+  });
+
   group('buildConjugationQuiz', () {
     test('10 werkwoorden, elk met geldige persoon en antwoord', () {
       final qs = buildConjugationQuiz(_course.words, random: Random(7));

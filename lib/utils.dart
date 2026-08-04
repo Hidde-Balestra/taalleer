@@ -137,6 +137,20 @@ List<Question> buildQuiz(List<Word> words, Lang sourceLang, {Random? random}) {
   );
 }
 
+/// Luisteroefening: 10 willekeurige woorden uit [words], altijd met het
+/// doeltaalwoord als audio (esNl/esEn) — de andere richting heeft geen zin
+/// zonder tekst te tonen.
+List<Question> buildListeningPractice(
+  List<Word> words,
+  Lang sourceLang, {
+  Random? random,
+}) {
+  final rng = random ?? Random();
+  final type = sourceLang == Lang.nl ? QuestionType.esNl : QuestionType.esEn;
+  final shuffled = [...words]..shuffle(rng);
+  return shuffled.take(10).map((w) => Question(word: w, type: type)).toList();
+}
+
 /// Vervoegingstoets: 10 werkwoorden uit [verbs], elk in een willekeurige
 /// persoon. Wederkerende werkwoorden (met voornaamwoord in de vorm) worden
 /// overgeslagen om het antwoord eenduidig te houden.

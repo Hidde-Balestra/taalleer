@@ -47,6 +47,9 @@ class Strings {
   final String practicePlaceholder, practiceCheck, practiceNext;
   final String practiceCorrect, practiceIncorrect, practiceCorrectAnswer;
   final String practiceSummary, practiceScore, practiceBackHome;
+  // Luisteroefening
+  final String listeningPracticeTitle, listeningPracticeInstruction;
+  final String homeListeningPractice, homeListeningPracticeSub;
   // Toets
   final String quizTitle, quizPlaceholder, quizSubmit;
   final String quizDyslexiaActive, quizNoHints, quizProgress;
@@ -151,6 +154,10 @@ class Strings {
     required this.practiceSummary,
     required this.practiceScore,
     required this.practiceBackHome,
+    required this.listeningPracticeTitle,
+    required this.listeningPracticeInstruction,
+    required this.homeListeningPractice,
+    required this.homeListeningPracticeSub,
     required this.quizTitle,
     required this.quizPlaceholder,
     required this.quizSubmit,
@@ -270,6 +277,10 @@ class Strings {
     practiceSummary: 'Oefensessie voltooid!',
     practiceScore: 'Score',
     practiceBackHome: 'Terug naar huis',
+    listeningPracticeTitle: 'Luisteroefening',
+    listeningPracticeInstruction: 'Luister en typ de vertaling',
+    homeListeningPractice: 'Luisteroefening',
+    homeListeningPracticeSub: 'Hoor het woord, typ de vertaling',
     quizTitle: 'Weektoets',
     quizPlaceholder: 'Jouw antwoord…',
     quizSubmit: 'Bevestigen →',
@@ -393,6 +404,10 @@ class Strings {
     practiceSummary: 'Practice session complete!',
     practiceScore: 'Score',
     practiceBackHome: 'Back to home',
+    listeningPracticeTitle: 'Listening practice',
+    listeningPracticeInstruction: 'Listen and type the translation',
+    homeListeningPractice: 'Listening practice',
+    homeListeningPracticeSub: 'Hear the word, type the translation',
     quizTitle: 'Weekly Quiz',
     quizPlaceholder: 'Your answer…',
     quizSubmit: 'Submit →',

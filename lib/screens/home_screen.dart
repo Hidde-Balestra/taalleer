@@ -21,6 +21,7 @@ class HomeScreen extends StatelessWidget {
   final VoidCallback onQuiz;
   final VoidCallback onConjQuiz;
   final VoidCallback onPracticeWeakWords;
+  final VoidCallback onListeningPractice;
 
   const HomeScreen({
     super.key,
@@ -37,6 +38,7 @@ class HomeScreen extends StatelessWidget {
     required this.onQuiz,
     required this.onConjQuiz,
     required this.onPracticeWeakWords,
+    required this.onListeningPractice,
   });
 
   @override
@@ -69,6 +71,16 @@ class HomeScreen extends StatelessWidget {
             color: Colors.white,
             size: 20,
           ),
+        ),
+        const SizedBox(height: 12),
+        _GradientActionButton(
+          onTap: onListeningPractice,
+          gradient: const LinearGradient(
+            colors: [AppColors.indigo, AppColors.primaryDark],
+          ),
+          title: t.homeListeningPractice,
+          subtitle: t.homeListeningPracticeSub,
+          trailing: const Icon(Icons.headphones, color: Colors.white, size: 20),
         ),
         const SizedBox(height: 12),
         if (paused)

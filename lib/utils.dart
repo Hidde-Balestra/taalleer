@@ -89,6 +89,27 @@ String correctAnswerOf(Question q) {
   }
 }
 
+/// Alle correcte antwoorden voor [q]: de primaire vertaling
+/// ([correctAnswerOf]) plus eventuele erkende alternatieve spellingen (bv.
+/// "kado" naast "cadeau") — die laatste tellen alleen mee bij het nakijken,
+/// niet bij het tónen van het woord.
+List<String> acceptedAnswersOf(Question q) {
+  final variants = switch (q.type) {
+    QuestionType.esNl => q.word.nlVariants,
+    QuestionType.esEn => q.word.enVariants,
+    QuestionType.nlEs || QuestionType.enEs => const [],
+  };
+  return [correctAnswerOf(q), ...variants];
+}
+
+/// Is [input] een goed antwoord op [q]? Controleert tegen alle
+/// [acceptedAnswersOf], elk met dezelfde `isAcceptable`-regels (haakjes,
+/// dyslexie-tolerantie).
+bool isAnswerAcceptable(Question q, String input, {required bool dyslexia}) =>
+    acceptedAnswersOf(
+      q,
+    ).any((correct) => isAcceptable(input, correct, dyslexia: dyslexia));
+
 String shownWordOf(Question q) {
   switch (q.type) {
     case QuestionType.nlEs:

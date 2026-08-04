@@ -55,6 +55,12 @@ abstract class LanguageCourse {
   /// er geen voorbeeld beschikbaar is.
   (String, String)? exampleFor(String word) => null;
 
+  /// Extra correcte NL/EN-spellingen naast de primaire vertaling in
+  /// [wordEntries] (bv. "kado" naast "cadeau") — alleen gebruikt bij het
+  /// nakijken van een antwoord, niet bij het tonen van het woord.
+  List<String> nlVariantsFor(String word) => const [];
+  List<String> enVariantsFor(String word) => const [];
+
   /// Persoonsvormen voor de vervoegingstabel (bijv. yo/tú/él/…), leeg als
   /// deze taal geen vervoeging kent.
   List<String> get pronouns => const [];
@@ -89,6 +95,8 @@ abstract class LanguageCourse {
       gerundio: verb ? (gerundioForm(target) ?? '') : '',
       article: verb ? '' : (articleFor(target) ?? ''),
       category: categoryFor(target) ?? '',
+      nlVariants: nlVariantsFor(target),
+      enVariants: enVariantsFor(target),
     );
   }
 

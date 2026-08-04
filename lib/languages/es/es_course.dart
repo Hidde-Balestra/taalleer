@@ -1,5 +1,6 @@
 import '../../grammar_content.dart';
 import '../../language_course.dart';
+import 'es_answer_variants.dart';
 import 'es_categories.dart';
 import 'es_examples.dart';
 import 'es_grammar.dart' as grammar;
@@ -65,4 +66,12 @@ class SpanishCourse extends LanguageCourse {
 
   @override
   (String, String)? exampleFor(String word) => kSpanishExamples[word];
+
+  @override
+  List<String> nlVariantsFor(String word) =>
+      kNlAnswerVariants[word] ?? const [];
+
+  @override
+  List<String> enVariantsFor(String word) =>
+      kEnAnswerVariants[word] ?? const [];
 }

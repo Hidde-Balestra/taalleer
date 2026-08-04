@@ -66,9 +66,9 @@ class _ListeningPracticeScreenState extends State<ListeningPracticeScreen> {
   void _check() {
     if (_controller.text.trim().isEmpty) return;
     final q = _questions[_idx];
-    final ok = isAcceptable(
+    final ok = isAnswerAcceptable(
+      q,
       _controller.text,
-      correctAnswerOf(q),
       dyslexia: widget.dyslexia,
     );
     setState(() {

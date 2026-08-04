@@ -42,6 +42,13 @@ class Word {
   /// gedefinieerde thema's valt.
   final String category;
 
+  /// Extra correcte spellingen voor [nl]/[en] naast de primaire vertaling
+  /// (bv. "kado" naast "cadeau") — worden alleen bij het nakijken van een
+  /// antwoord meegeteld, niet getoond (overal waar het woord getoond wordt
+  /// blijft [nl]/[en] de enige/primaire spelling).
+  final List<String> nlVariants;
+  final List<String> enVariants;
+
   const Word({
     required this.id,
     required this.target,
@@ -56,6 +63,8 @@ class Word {
     this.future = const [],
     this.gerundio = '',
     this.category = '',
+    this.nlVariants = const [],
+    this.enVariants = const [],
   });
 
   bool get isNoun => article.isNotEmpty;

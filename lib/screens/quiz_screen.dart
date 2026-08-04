@@ -53,9 +53,9 @@ class _QuizScreenState extends State<QuizScreen> {
   void _submit() {
     if (_controller.text.trim().isEmpty) return;
     final q = _questions[_idx];
-    final ok = isAcceptable(
+    final ok = isAnswerAcceptable(
+      q,
       _controller.text,
-      correctAnswerOf(q),
       dyslexia: widget.dyslexia,
     );
     _answers.add((correct: ok, wordId: q.word.id));

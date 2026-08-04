@@ -272,6 +272,50 @@ void main() {
     });
   });
 
+  group('acceptedAnswersOf / isAnswerAcceptable', () {
+    const wordWithVariant = Word(
+      id: 1,
+      target: 'regalo',
+      nl: 'cadeau',
+      en: 'gift',
+      pronunciation: 'reh-GAH-loh',
+      nlVariants: ['kado'],
+    );
+
+    test('bevat de primaire vertaling plus de nl-varianten (esNl)', () {
+      const q = Question(word: wordWithVariant, type: QuestionType.esNl);
+      expect(acceptedAnswersOf(q), ['cadeau', 'kado']);
+    });
+
+    test('geen varianten bij esEn (die zitten alleen op nl hier)', () {
+      const q = Question(word: wordWithVariant, type: QuestionType.esEn);
+      expect(acceptedAnswersOf(q), ['gift']);
+    });
+
+    test('geen varianten bij nlEs/enEs (target heeft geen varianten)', () {
+      const q = Question(word: wordWithVariant, type: QuestionType.nlEs);
+      expect(acceptedAnswersOf(q), ['regalo']);
+    });
+
+    test(
+      'isAnswerAcceptable accepteert zowel de primaire spelling als de variant',
+      () {
+        const q = Question(word: wordWithVariant, type: QuestionType.esNl);
+        expect(isAnswerAcceptable(q, 'cadeau', dyslexia: false), isTrue);
+        expect(isAnswerAcceptable(q, 'kado', dyslexia: false), isTrue);
+        expect(isAnswerAcceptable(q, 'kadoo', dyslexia: false), isFalse);
+      },
+    );
+
+    test('regalo (echte woordenboek-data) accepteert cadeau én kado', () {
+      final word = _course.words.firstWhere((w) => w.target == 'regalo');
+      const type = QuestionType.esNl;
+      final q = Question(word: word, type: type);
+      expect(isAnswerAcceptable(q, 'cadeau', dyslexia: false), isTrue);
+      expect(isAnswerAcceptable(q, 'kado', dyslexia: false), isTrue);
+    });
+  });
+
   group('woordenboek', () {
     test('woordenboek bevat minimaal 900 woorden met unieke ids', () {
       expect(_course.words.length, greaterThanOrEqualTo(900));

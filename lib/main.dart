@@ -18,6 +18,7 @@ import 'screens/practice_screen.dart';
 import 'screens/quiz_result_screen.dart';
 import 'screens/quiz_screen.dart';
 import 'screens/settings_screen.dart';
+import 'screens/themes_screen.dart';
 import 'screens/vocabulary_screen.dart';
 import 'theme.dart';
 import 'update_service.dart';
@@ -206,6 +207,15 @@ class _HomeShellState extends State<HomeShell> {
     );
   }
 
+  void _openThemes(Strings t, AppSettings settings, LanguageCourse course) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) =>
+            ThemesScreen(t: t, lang: settings.language, course: course),
+      ),
+    );
+  }
+
   void _openSettings() {
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -280,6 +290,7 @@ class _HomeShellState extends State<HomeShell> {
         weekNumber: weekNumber,
         words: weekWords,
         onOpenPast: () => _openPastWords(t, settings, course),
+        onOpenThemes: () => _openThemes(t, settings, course),
       ),
       GrammarScreen(t: t, lang: settings.language, course: course),
       HistoryScreen(

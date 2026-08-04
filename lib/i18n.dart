@@ -31,6 +31,11 @@ class Strings {
       grammarEmpty,
       grammarRuleSingular,
       grammarRulePlural;
+  // Thema's
+  final String themesTitle,
+      themesSubtitle,
+      themesWordSingular,
+      themesWordPlural;
   // Woordenlijst
   final String vocabTitle,
       vocabWeek,
@@ -138,6 +143,10 @@ class Strings {
     required this.grammarEmpty,
     required this.grammarRuleSingular,
     required this.grammarRulePlural,
+    required this.themesTitle,
+    required this.themesSubtitle,
+    required this.themesWordSingular,
+    required this.themesWordPlural,
     required this.vocabTitle,
     required this.vocabWeek,
     required this.vocabSearch,
@@ -272,6 +281,10 @@ class Strings {
     grammarEmpty: 'Nog geen grammaticaregels beschikbaar voor deze taal.',
     grammarRuleSingular: 'regel',
     grammarRulePlural: 'regels',
+    themesTitle: "Thema's",
+    themesSubtitle: 'Woorden per onderwerp doorbladeren',
+    themesWordSingular: 'woord',
+    themesWordPlural: 'woorden',
     vocabTitle: 'Woordenlijst',
     vocabWeek: 'Week',
     vocabSearch: 'Zoeken…',
@@ -410,6 +423,10 @@ class Strings {
     grammarEmpty: 'No grammar rules available yet for this language.',
     grammarRuleSingular: 'rule',
     grammarRulePlural: 'rules',
+    themesTitle: 'Themes',
+    themesSubtitle: 'Browse words by topic',
+    themesWordSingular: 'word',
+    themesWordPlural: 'words',
     vocabTitle: 'Word List',
     vocabWeek: 'Week',
     vocabSearch: 'Search…',
@@ -506,6 +523,10 @@ class Strings {
   /// "1 regel" of "N regels".
   String grammarRuleCount(int n) =>
       '$n ${n == 1 ? grammarRuleSingular : grammarRulePlural}';
+
+  /// "1 woord" of "N woorden".
+  String themesWordCount(int n) =>
+      '$n ${n == 1 ? themesWordSingular : themesWordPlural}';
 
   /// "12 woorden waar je vaker fout op zat".
   String homeWeakWordsSub(int n) =>

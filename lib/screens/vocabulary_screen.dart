@@ -13,6 +13,7 @@ class VocabularyScreen extends StatefulWidget {
   final int weekNumber;
   final List<Word> words;
   final VoidCallback onOpenPast;
+  final VoidCallback onOpenThemes;
 
   const VocabularyScreen({
     super.key,
@@ -22,6 +23,7 @@ class VocabularyScreen extends StatefulWidget {
     required this.weekNumber,
     required this.words,
     required this.onOpenPast,
+    required this.onOpenThemes,
   });
 
   @override
@@ -94,37 +96,65 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
               const SizedBox(height: 12),
               WeekResetBanner(t: t, lang: widget.lang),
               const SizedBox(height: 12),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                decoration: BoxDecoration(
-                  color: palette.card,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: palette.border),
-                ),
-                child: Row(
-                  children: [
-                    Icon(Icons.search, size: 16, color: palette.muted),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: TextField(
-                        onChanged: (v) => setState(() => _search = v),
-                        decoration: InputDecoration(
-                          hintText: t.vocabSearch,
-                          hintStyle: TextStyle(
-                            color: palette.muted,
-                            fontSize: 14,
+              Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      decoration: BoxDecoration(
+                        color: palette.card,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: palette.border),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.search, size: 16, color: palette.muted),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: TextField(
+                              onChanged: (v) => setState(() => _search = v),
+                              decoration: InputDecoration(
+                                hintText: t.vocabSearch,
+                                hintStyle: TextStyle(
+                                  color: palette.muted,
+                                  fontSize: 14,
+                                ),
+                                border: InputBorder.none,
+                                isDense: true,
+                                contentPadding: const EdgeInsets.symmetric(
+                                  vertical: 12,
+                                ),
+                              ),
+                              style: const TextStyle(fontSize: 14),
+                            ),
                           ),
-                          border: InputBorder.none,
-                          isDense: true,
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 12,
-                          ),
-                        ),
-                        style: const TextStyle(fontSize: 14),
+                        ],
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(width: 8),
+                  // Naar het thema-scherm: woorden per onderwerp doorbladeren.
+                  Material(
+                    color: palette.card,
+                    borderRadius: BorderRadius.circular(12),
+                    child: InkWell(
+                      onTap: widget.onOpenThemes,
+                      borderRadius: BorderRadius.circular(12),
+                      child: Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: palette.border),
+                        ),
+                        child: Icon(
+                          Icons.category_outlined,
+                          size: 16,
+                          color: palette.foreground,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -134,7 +164,7 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
             itemCount: filtered.length,
             separatorBuilder: (_, _) => const SizedBox(height: 8),
-            itemBuilder: (context, i) => _WordCard(
+            itemBuilder: (context, i) => WordCard(
               t: t,
               word: filtered[i],
               course: widget.course,
@@ -153,7 +183,7 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
   }
 }
 
-class _WordCard extends StatelessWidget {
+class WordCard extends StatelessWidget {
   final Strings t;
   final Word word;
   final LanguageCourse course;
@@ -161,7 +191,7 @@ class _WordCard extends StatelessWidget {
   final bool expanded;
   final VoidCallback onTap;
 
-  const _WordCard({
+  const WordCard({
     required this.t,
     required this.word,
     required this.course,

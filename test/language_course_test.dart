@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:taalleer/languages/es/es_categories.dart';
 import 'package:taalleer/languages/es/es_course.dart';
 import 'package:taalleer/languages/registry.dart';
 
@@ -52,6 +53,15 @@ void main() {
       expect(course.grammarCategories, isNotEmpty);
       for (final category in course.grammarCategories) {
         expect(category.rules, isNotEmpty);
+      }
+    });
+
+    test('elk gezet category-veld is een geldig thema-id', () {
+      final ids = kWordCategories.map((c) => c.id).toSet();
+      for (final w in course.words) {
+        if (w.category.isNotEmpty) {
+          expect(ids, contains(w.category), reason: w.target);
+        }
       }
     });
   });

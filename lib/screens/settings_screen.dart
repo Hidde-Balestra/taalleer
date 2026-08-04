@@ -4,6 +4,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import '../i18n.dart';
 import '../languages/registry.dart';
 import '../models.dart';
+import '../notifications.dart';
 import '../theme.dart';
 import '../update_service.dart';
 import '../widgets.dart';
@@ -290,11 +291,117 @@ class SettingsScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
+
+            // Dagelijkse oefenherinnering
+            AppCard(
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.notifications_outlined,
+                        size: 16,
+                        color: AppColors.primary,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              t.settingsReminder,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            Text(
+                              t.settingsReminderDesc,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: palette.muted,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Switch(
+                        value: settings.dailyReminder,
+                        activeTrackColor: AppColors.primary,
+                        onChanged: (v) => _onReminderToggled(v, settings),
+                      ),
+                    ],
+                  ),
+                  AnimatedSize(
+                    duration: const Duration(milliseconds: 200),
+                    curve: Curves.easeOut,
+                    child: settings.dailyReminder
+                        ? Padding(
+                            padding: const EdgeInsets.only(top: 12),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    t.settingsReminderTime,
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      color: palette.muted,
+                                    ),
+                                  ),
+                                ),
+                                TextButton(
+                                  onPressed: () =>
+                                      _pickReminderTime(context, settings),
+                                  child: Text(
+                                    '${settings.reminderHour.toString().padLeft(2, '0')}:00',
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        : const SizedBox(width: double.infinity),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
             _UpdatesCard(t: t, updateService: updateService ?? UpdateService()),
           ],
         ),
       ),
     );
+  }
+
+  Future<void> _onReminderToggled(bool value, AppSettings settings) async {
+    if (value) {
+      final granted = await notificationService.requestPermission();
+      if (!granted) return;
+      await notificationService.scheduleDailyReminder(
+        hour: settings.reminderHour,
+        title: t.reminderNotificationTitle,
+        body: t.reminderNotificationBody,
+      );
+    } else {
+      await notificationService.cancelReminder();
+    }
+    onChanged(settings.copyWith(dailyReminder: value));
+  }
+
+  Future<void> _pickReminderTime(
+    BuildContext context,
+    AppSettings settings,
+  ) async {
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay(hour: settings.reminderHour, minute: 0),
+    );
+    if (picked == null) return;
+    await notificationService.scheduleDailyReminder(
+      hour: picked.hour,
+      title: t.reminderNotificationTitle,
+      body: t.reminderNotificationBody,
+    );
+    onChanged(settings.copyWith(reminderHour: picked.hour));
   }
 }
 

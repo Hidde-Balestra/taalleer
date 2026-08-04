@@ -35,6 +35,8 @@ void main() {
         dyslexiaMode: true,
         sourceLang: Lang.en,
         onboardingComplete: true,
+        dailyReminder: true,
+        reminderHour: 21,
       );
       final copy = AppSettings.fromJson(settings.toJson());
       expect(copy.language, Lang.en);
@@ -42,6 +44,8 @@ void main() {
       expect(copy.dyslexiaMode, isTrue);
       expect(copy.sourceLang, Lang.en);
       expect(copy.onboardingComplete, isTrue);
+      expect(copy.dailyReminder, isTrue);
+      expect(copy.reminderHour, 21);
     });
 
     test('AppSettings valt terug op standaardwaarden bij onbekende JSON', () {

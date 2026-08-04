@@ -3,6 +3,14 @@
          op sommige toestellen. In debug/profile stond dit al (alleen voor
          ontwikkeling), maar ontbrak hier voor release-builds. -->
     <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- Voor de dagelijkse oefenherinnering (flutter_local_notifications).
+         Android 13+ vereist expliciete toestemming om notificaties te tonen;
+         RECEIVE_BOOT_COMPLETED laat de geplande herinnering een reboot
+         overleven. Bewust géén SCHEDULE_EXACT_ALARM: de herinnering hoeft
+         niet minuutnauwkeurig, dus inexact schedulen volstaat en dat
+         vereist geen gevoelige permissie. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <application
         android:label="taalleer"
         android:name="${applicationName}"

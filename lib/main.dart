@@ -6,9 +6,10 @@ import 'i18n.dart';
 import 'language_course.dart';
 import 'languages/registry.dart';
 import 'models.dart';
+import 'notifications.dart';
+import 'screens/achievements_screen.dart';
 import 'screens/conjugation_quiz_screen.dart';
 import 'screens/grammar_screen.dart';
-import 'screens/achievements_screen.dart';
 import 'screens/history_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/listening_practice_screen.dart';
@@ -27,6 +28,16 @@ import 'utils.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final appState = await AppState.load();
+  // Herbevestigt de geplande herinnering bij elke app-start (idempotent) —
+  // zo overleeft die ook een her-installatie zonder dat de gebruiker de
+  // instelling opnieuw hoeft aan te zetten.
+  if (appState.settings.dailyReminder) {
+    notificationService.scheduleDailyReminder(
+      hour: appState.settings.reminderHour,
+      title: Strings.of(appState.settings.language).reminderNotificationTitle,
+      body: Strings.of(appState.settings.language).reminderNotificationBody,
+    );
+  }
   runApp(TaalLeerApp(appState: appState));
 }
 

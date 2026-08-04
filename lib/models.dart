@@ -77,6 +77,13 @@ class AppSettings {
   /// home-scherm.
   final bool onboardingComplete;
 
+  /// Dagelijkse oefenherinnering aan/uit (standaard uit — opt-in, want dit
+  /// vraagt notificatiepermissie).
+  final bool dailyReminder;
+
+  /// Uur van de dag (0-23) waarop de herinnering afgaat.
+  final int reminderHour;
+
   const AppSettings({
     this.language = Lang.en,
     this.darkMode = DarkModeSetting.system,
@@ -84,6 +91,8 @@ class AppSettings {
     this.sourceLang = Lang.nl,
     this.courseId = 'es',
     this.onboardingComplete = false,
+    this.dailyReminder = false,
+    this.reminderHour = 19,
   });
 
   AppSettings copyWith({
@@ -93,6 +102,8 @@ class AppSettings {
     Lang? sourceLang,
     String? courseId,
     bool? onboardingComplete,
+    bool? dailyReminder,
+    int? reminderHour,
   }) {
     return AppSettings(
       language: language ?? this.language,
@@ -101,6 +112,8 @@ class AppSettings {
       sourceLang: sourceLang ?? this.sourceLang,
       courseId: courseId ?? this.courseId,
       onboardingComplete: onboardingComplete ?? this.onboardingComplete,
+      dailyReminder: dailyReminder ?? this.dailyReminder,
+      reminderHour: reminderHour ?? this.reminderHour,
     );
   }
 
@@ -111,6 +124,8 @@ class AppSettings {
     'sourceLang': sourceLang.name,
     'courseId': courseId,
     'onboardingComplete': onboardingComplete,
+    'dailyReminder': dailyReminder,
+    'reminderHour': reminderHour,
   };
 
   factory AppSettings.fromJson(Map<String, dynamic> json) => AppSettings(
@@ -122,6 +137,8 @@ class AppSettings {
     sourceLang: Lang.values.asNameMap()[json['sourceLang']] ?? Lang.nl,
     courseId: json['courseId'] as String? ?? 'es',
     onboardingComplete: json['onboardingComplete'] as bool? ?? false,
+    dailyReminder: json['dailyReminder'] as bool? ?? false,
+    reminderHour: json['reminderHour'] as int? ?? 19,
   );
 }
 

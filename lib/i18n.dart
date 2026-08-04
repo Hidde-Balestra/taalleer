@@ -84,6 +84,8 @@ class Strings {
   final String settingsSourceLang, settingsDutch, settingsEnglish;
   final String settingsCourse;
   final String settingsPause, settingsPauseDesc, settingsPauseActiveNote;
+  final String settingsReminder, settingsReminderDesc, settingsReminderTime;
+  final String reminderNotificationTitle, reminderNotificationBody;
   // Uitspraak
   final String ttsUnavailable;
   // Updates
@@ -222,6 +224,11 @@ class Strings {
     required this.settingsPause,
     required this.settingsPauseDesc,
     required this.settingsPauseActiveNote,
+    required this.settingsReminder,
+    required this.settingsReminderDesc,
+    required this.settingsReminderTime,
+    required this.reminderNotificationTitle,
+    required this.reminderNotificationBody,
     required this.ttsUnavailable,
     required this.updatesTitle,
     required this.updatesCurrentVersion,
@@ -365,6 +372,11 @@ class Strings {
     settingsPauseDesc: 'Geen toetsen; je streak blijft bevroren staan',
     settingsPauseActiveNote:
         'Actief: je kunt geen toetsen maken en je streak staat stil totdat je de pauze uitschakelt.',
+    settingsReminder: 'Dagelijkse herinnering',
+    settingsReminderDesc: 'Een melding om te oefenen',
+    settingsReminderTime: 'Tijdstip',
+    reminderNotificationTitle: 'Tijd om te oefenen! 📚',
+    reminderNotificationBody: 'Neem vandaag even de tijd voor je Spaans.',
     ttsUnavailable:
         'Geen tekst-naar-spraak beschikbaar op dit toestel. Installeer een '
         'open-source spraak-engine zoals eSpeak NG (via F-Droid, zonder '
@@ -510,6 +522,11 @@ class Strings {
     settingsPauseDesc: 'No quizzes; your streak stays frozen',
     settingsPauseActiveNote:
         'Active: you cannot take quizzes and your streak is frozen until you turn off pause.',
+    settingsReminder: 'Daily reminder',
+    settingsReminderDesc: 'A notification to practise',
+    settingsReminderTime: 'Time',
+    reminderNotificationTitle: 'Time to practise! 📚',
+    reminderNotificationBody: 'Take a moment for your Spanish today.',
     ttsUnavailable:
         'Text-to-speech isn\'t available on this device. Install an '
         'open-source speech engine such as eSpeak NG (via F-Droid, no '

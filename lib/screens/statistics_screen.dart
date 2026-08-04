@@ -5,6 +5,7 @@ import '../language_course.dart';
 import '../models.dart';
 import '../stats.dart';
 import '../theme.dart';
+import '../utils.dart';
 import '../widgets.dart';
 
 /// Geaggregeerde blik op dezelfde data die het Resultaten-tabblad al toont.

@@ -185,8 +185,5 @@ List<Word> weakWords(
   }
   final sortedIds = counts.keys.toList()
     ..sort((a, b) => counts[b]!.compareTo(counts[a]!));
-  return [
-    for (final id in sortedIds.take(limit))
-      if (course.wordById(id) case final word?) word,
-  ];
+  return [for (final id in sortedIds.take(limit)) ?course.wordById(id)];
 }

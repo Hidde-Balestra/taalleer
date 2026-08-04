@@ -11,4 +11,4 @@ String buildShareText(Strings t, QuizResult result) => t.shareResultText
     .replaceFirst('{total}', '${result.total}');
 
 Future<void> shareResult(Strings t, QuizResult result) =>
-    SharePlus.instance.share(ShareParams(text: buildShareText(t, result)));
+    Share.share(buildShareText(t, result));

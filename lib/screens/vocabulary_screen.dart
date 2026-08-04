@@ -192,6 +192,7 @@ class WordCard extends StatelessWidget {
   final VoidCallback onTap;
 
   const WordCard({
+    super.key,
     required this.t,
     required this.word,
     required this.course,

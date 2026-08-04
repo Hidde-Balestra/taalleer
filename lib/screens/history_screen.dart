@@ -1,21 +1,25 @@
 import 'package:flutter/material.dart';
 
 import '../i18n.dart';
+import '../language_course.dart';
 import '../models.dart';
 import '../theme.dart';
 import '../utils.dart';
 import '../widgets.dart';
+import 'statistics_screen.dart';
 
 class HistoryScreen extends StatelessWidget {
   final Strings t;
   final List<QuizResult> history;
   final int streak;
+  final LanguageCourse course;
 
   const HistoryScreen({
     super.key,
     required this.t,
     required this.history,
     required this.streak,
+    required this.course,
   });
 
   @override
@@ -32,30 +36,65 @@ class HistoryScreen extends StatelessWidget {
               t.historyTitle,
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: AppColors.orange.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(999),
-              ),
-              child: Row(
-                children: [
-                  const Icon(
-                    Icons.local_fire_department,
-                    size: 14,
-                    color: AppColors.orange,
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
                   ),
-                  const SizedBox(width: 4),
-                  Text(
-                    '$streak ${streak == 1 ? "week" : t.homeWeeks}',
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.orange,
+                  decoration: BoxDecoration(
+                    color: AppColors.orange.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.local_fire_department,
+                        size: 14,
+                        color: AppColors.orange,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        '$streak ${streak == 1 ? "week" : t.homeWeeks}',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.orange,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(12),
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => StatisticsScreen(
+                          t: t,
+                          history: history,
+                          course: course,
+                        ),
+                      ),
+                    ),
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: palette.border),
+                      ),
+                      child: Icon(
+                        Icons.bar_chart,
+                        size: 16,
+                        color: palette.foreground,
+                      ),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ],
         ),

@@ -286,6 +286,7 @@ class _HomeShellState extends State<HomeShell> {
         t: t,
         history: widget.appState.history,
         streak: widget.appState.streak,
+        course: course,
       ),
     ];
 

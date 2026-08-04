@@ -65,6 +65,10 @@ class Strings {
   // Prestaties
   final String achievementsTitle, achievementsSubtitle, achievementsProgress;
   final String achievementsLocked;
+  // Statistieken
+  final String statsTitle, statsEmpty;
+  final String statsTotalQuizzes, statsAverageGrade, statsBestGrade;
+  final String statsWeakWords, statsWeakWordsEmpty;
   // Instellingen
   final String settingsTitle, settingsLanguage, settingsDarkMode;
   final String settingsLight, settingsDark, settingsSystem;
@@ -183,6 +187,13 @@ class Strings {
     required this.achievementsSubtitle,
     required this.achievementsProgress,
     required this.achievementsLocked,
+    required this.statsTitle,
+    required this.statsEmpty,
+    required this.statsTotalQuizzes,
+    required this.statsAverageGrade,
+    required this.statsBestGrade,
+    required this.statsWeakWords,
+    required this.statsWeakWordsEmpty,
     required this.settingsTitle,
     required this.settingsLanguage,
     required this.settingsDarkMode,
@@ -310,6 +321,13 @@ class Strings {
     achievementsSubtitle: 'Badges die je onderweg verdient',
     achievementsProgress: '{n} van {total} behaald',
     achievementsLocked: 'Nog niet behaald',
+    statsTitle: 'Statistieken',
+    statsEmpty: 'Nog geen statistieken — maak eerst een toets.',
+    statsTotalQuizzes: 'Toetsen gemaakt',
+    statsAverageGrade: 'Gemiddeld cijfer',
+    statsBestGrade: 'Beste cijfer',
+    statsWeakWords: 'Vaakst foute woorden',
+    statsWeakWordsEmpty: 'Nog geen woorden om te herhalen — goed bezig!',
     settingsTitle: 'Instellingen',
     settingsLanguage: 'App-taal',
     settingsDarkMode: 'Weergave',
@@ -441,6 +459,13 @@ class Strings {
     achievementsSubtitle: 'Badges you earn along the way',
     achievementsProgress: '{n} of {total} unlocked',
     achievementsLocked: 'Not unlocked yet',
+    statsTitle: 'Statistics',
+    statsEmpty: 'No statistics yet — take a quiz first.',
+    statsTotalQuizzes: 'Quizzes taken',
+    statsAverageGrade: 'Average grade',
+    statsBestGrade: 'Best grade',
+    statsWeakWords: 'Most often wrong',
+    statsWeakWordsEmpty: 'No words to review yet — nice work!',
     settingsTitle: 'Settings',
     settingsLanguage: 'App Language',
     settingsDarkMode: 'Appearance',

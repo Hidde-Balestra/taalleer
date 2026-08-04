@@ -65,6 +65,7 @@ class Strings {
       resultWrongWords,
       resultBackHome,
       resultWeek;
+  final String resultShare, shareResultText;
   // Historie
   final String historyTitle, historyWeek, historyNoResults;
   // Prestaties
@@ -189,6 +190,8 @@ class Strings {
     required this.resultWrongWords,
     required this.resultBackHome,
     required this.resultWeek,
+    required this.resultShare,
+    required this.shareResultText,
     required this.historyTitle,
     required this.historyWeek,
     required this.historyNoResults,
@@ -327,6 +330,9 @@ class Strings {
     resultWrongWords: 'Foute woorden',
     resultBackHome: 'Terug naar huis',
     resultWeek: 'Week',
+    resultShare: 'Delen',
+    shareResultText:
+        'Ik haalde een {grade} op mijn TaalLeer-toets — {correct}/{total} goed! 🎉',
     historyTitle: 'Resultaten',
     historyWeek: 'Week',
     historyNoResults: 'Nog geen resultaten beschikbaar.',
@@ -469,6 +475,9 @@ class Strings {
     resultWrongWords: 'Wrong words',
     resultBackHome: 'Back to home',
     resultWeek: 'Week',
+    resultShare: 'Share',
+    shareResultText:
+        'I scored a {grade} on my TaalLeer quiz — {correct}/{total} correct! 🎉',
     historyTitle: 'Results',
     historyWeek: 'Week',
     historyNoResults: 'No results available yet.',

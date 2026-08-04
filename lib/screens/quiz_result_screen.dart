@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../i18n.dart';
 import '../language_course.dart';
 import '../models.dart';
+import '../share.dart';
 import '../theme.dart';
 import '../widgets.dart';
 
@@ -36,15 +37,40 @@ class QuizResultScreen extends StatelessWidget {
               padding: const EdgeInsets.all(24),
               child: Column(
                 children: [
-                  Text(
-                    '${t.resultTitle} · ${t.resultWeek} ${result.weekNumber}'
-                        .toUpperCase(),
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                      letterSpacing: 0.5,
-                      color: palette.muted,
-                    ),
+                  Row(
+                    children: [
+                      const SizedBox(width: 24),
+                      Expanded(
+                        child: Text(
+                          '${t.resultTitle} · ${t.resultWeek} ${result.weekNumber}'
+                              .toUpperCase(),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            letterSpacing: 0.5,
+                            color: palette.muted,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 24),
+                      Material(
+                        color: Colors.transparent,
+                        shape: const CircleBorder(),
+                        child: InkWell(
+                          onTap: () => shareResult(t, result),
+                          customBorder: const CircleBorder(),
+                          child: Padding(
+                            padding: const EdgeInsets.all(4),
+                            child: Icon(
+                              Icons.share_outlined,
+                              size: 16,
+                              color: palette.muted,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 16),
                   GradeCircle(grade: result.grade),

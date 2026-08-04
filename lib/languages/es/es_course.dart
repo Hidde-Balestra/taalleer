@@ -1,6 +1,7 @@
 import '../../grammar_content.dart';
 import '../../language_course.dart';
 import 'es_categories.dart';
+import 'es_examples.dart';
 import 'es_grammar.dart' as grammar;
 import 'es_grammar_content.dart';
 import 'es_pronounce.dart';
@@ -61,4 +62,7 @@ class SpanishCourse extends LanguageCourse {
 
   @override
   String? categoryFor(String word) => categoryOf(word);
+
+  @override
+  (String, String)? exampleFor(String word) => kSpanishExamples[word];
 }

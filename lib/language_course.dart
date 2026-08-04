@@ -32,11 +32,28 @@ abstract class LanguageCourse {
   /// is.
   List<String>? preteriteTense(String infinitive) => null;
 
+  /// Vervoegt een werkwoord in de toekomende tijd, of `null` als deze taal
+  /// geen (enkelvoudige) toekomende tijd kent of [infinitive] geen werkwoord
+  /// is.
+  List<String>? futureTense(String infinitive) => null;
+
+  /// Geeft de gerundio (bv. "hablando"), of `null` als deze taal geen
+  /// gerundio kent of [infinitive] geen werkwoord is.
+  String? gerundioForm(String infinitive) => null;
+
   /// Lidwoord van een zelfstandig naamwoord, of `null` als deze taal geen
   /// lidwoorden kent of [noun] geen (telbaar) zelfstandig naamwoord is.
   String? articleFor(String noun) => null;
 
   bool isVerbEntry(String target, String en) => false;
+
+  /// Thema/categorie van een woord (bv. "eten"), of `null` als het woord
+  /// niet in een van de gedefinieerde thema's valt.
+  String? categoryFor(String word) => null;
+
+  /// Voorbeeldzin voor een woord als `(doeltaal, Nederlands)`, of `null` als
+  /// er geen voorbeeld beschikbaar is.
+  (String, String)? exampleFor(String word) => null;
 
   /// Persoonsvormen voor de vervoegingstabel (bijv. yo/tú/él/…), leeg als
   /// deze taal geen vervoeging kent.
@@ -57,15 +74,21 @@ abstract class LanguageCourse {
   Word _buildWord(int id, (String, String, String) entry) {
     final (target, nl, en) = entry;
     final verb = isVerbEntry(target, en);
+    final example = exampleFor(target);
     return Word(
       id: id,
       target: target,
       nl: nl,
       en: en,
       pronunciation: pronounce(target),
+      exampleTarget: example?.$1 ?? '',
+      exampleNl: example?.$2 ?? '',
       present: verb ? (presentTense(target) ?? const []) : const [],
       past: verb ? (preteriteTense(target) ?? const []) : const [],
+      future: verb ? (futureTense(target) ?? const []) : const [],
+      gerundio: verb ? (gerundioForm(target) ?? '') : '',
       article: verb ? '' : (articleFor(target) ?? ''),
+      category: categoryFor(target) ?? '',
     );
   }
 

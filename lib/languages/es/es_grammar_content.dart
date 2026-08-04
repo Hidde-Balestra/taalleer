@@ -277,6 +277,102 @@ final List<GrammarCategory> kSpanishGrammarCategories = [
     ],
   ),
   GrammarCategory(
+    titleNl: 'Werkwoorden — toekomende tijd (futuro simple)',
+    titleEn: 'Verbs — future tense (futuro simple)',
+    icon: Icons.update,
+    rules: [
+      GrammarRule(
+        titleNl: 'Regelmatig: infinitief + uitgang',
+        titleEn: 'Regular: infinitive + ending',
+        bodyNl:
+            'Anders dan bij de andere tijden haal je niets weg: je voegt de '
+            'uitgang gewoon toe aan de hele infinitief, voor -ar, -er én -ir '
+            'werkwoorden hetzelfde: -é, -ás, -á, -emos, -éis, -án.',
+        bodyEn:
+            'Unlike the other tenses, you don\'t drop anything — you simply '
+            'add the ending to the whole infinitive, the same for -ar, -er '
+            'and -ir verbs: -é, -ás, -á, -emos, -éis, -án.',
+        examples: [
+          ('hablaré', 'ik zal spreken', 'I will speak'),
+          ('viviremos', 'wij zullen wonen', 'we will live'),
+        ],
+      ),
+      GrammarRule(
+        titleNl: 'Onregelmatige stam',
+        titleEn: 'Irregular stem',
+        bodyNl:
+            'Een klein aantal veelgebruikte werkwoorden gebruikt een verkorte '
+            'of aangepaste stam in plaats van de volledige infinitief — de '
+            'uitgangen blijven wel gewoon regelmatig. Bv. tener → tendr-, '
+            'poder → podr-, hacer → har-, decir → dir-.',
+        bodyEn:
+            'A handful of common verbs use a shortened or altered stem '
+            'instead of the full infinitive — the endings themselves stay '
+            'regular. E.g. tener → tendr-, poder → podr-, hacer → har-, '
+            'decir → dir-.',
+        examples: [
+          ('tendré', 'ik zal hebben', 'I will have'),
+          ('haré', 'ik zal doen', 'I will do'),
+        ],
+      ),
+    ],
+  ),
+  GrammarCategory(
+    titleNl: 'Werkwoorden — gerundio',
+    titleEn: 'Verbs — gerund',
+    icon: Icons.all_inclusive,
+    rules: [
+      GrammarRule(
+        titleNl: 'Regelmatig',
+        titleEn: 'Regular',
+        bodyNl:
+            'De gerundio heeft maar één vorm (geen persoonsvervoeging) en '
+            'wordt vooral gebruikt met "estar" voor iets dat op dit moment '
+            'gebeurt. -ar → -ando, -er/-ir → -iendo.',
+        bodyEn:
+            'The gerund has only one form (no personal conjugation) and is '
+            'mostly used with "estar" for something happening right now. '
+            '-ar → -ando, -er/-ir → -iendo.',
+        examples: [
+          ('Estoy hablando.', 'Ik ben aan het praten.', 'I am talking.'),
+          ('Está comiendo.', 'Hij is aan het eten.', 'He is eating.'),
+        ],
+      ),
+      GrammarRule(
+        titleNl: 'Stamwisseling (alleen -ir)',
+        titleEn: 'Stem change (only -ir)',
+        bodyNl:
+            'Bij -ir werkwoorden met stamwisseling verzwakt de klinker net '
+            'als in de hij/zij-vorm van de verleden tijd: e→i, o→u. -ar en '
+            '-er werkwoorden blijven altijd regelmatig, ook als ze in de '
+            'tegenwoordige tijd wél wisselen (bv. contar → contando).',
+        bodyEn:
+            'For -ir verbs with a stem change, the vowel weakens the same '
+            'way as in the "he/she" form of the past tense: e→i, o→u. -ar '
+            'and -er verbs always stay regular, even if they do stem-change '
+            'in the present tense (e.g. contar → contando).',
+        examples: [
+          ('pidiendo', 'vragend', 'asking for'),
+          ('durmiendo', 'slapend', 'sleeping'),
+        ],
+      ),
+      GrammarRule(
+        titleNl: 'Onregelmatig',
+        titleEn: 'Irregular',
+        bodyNl:
+            'Een paar werkwoorden volgen geen enkel patroon: ir → yendo, '
+            'poder → pudiendo, decir → diciendo.',
+        bodyEn:
+            'A few verbs follow no pattern at all: ir → yendo, poder → '
+            'pudiendo, decir → diciendo.',
+        examples: [
+          ('yendo', 'gaand', 'going'),
+          ('diciendo', 'zeggend', 'saying'),
+        ],
+      ),
+    ],
+  ),
+  GrammarCategory(
     titleNl: 'Ser vs. estar',
     titleEn: 'Ser vs. estar',
     icon: Icons.compare_arrows,

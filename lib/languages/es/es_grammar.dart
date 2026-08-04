@@ -1,8 +1,9 @@
 /// Spaanse grammatica-hulpmiddelen: de tegenwoordige tijd (presente de
-/// indicativo) en de verleden tijd (pretérito indefinido) van werkwoorden,
-/// en het lidwoord (el/la) van zelfstandige naamwoorden.
+/// indicativo), de verleden tijd (pretérito indefinido), de toekomende tijd
+/// (futuro simple) en de gerundio van werkwoorden, en het lidwoord (el/la)
+/// van zelfstandige naamwoorden.
 ///
-/// Alle drie worden uit het woord zelf afgeleid: regelmatige vervoegingen via
+/// Alles wordt uit het woord zelf afgeleid: regelmatige vervoegingen via
 /// vaste uitgangen, onregelmatige en stamwisselende werkwoorden via tabellen,
 /// en het geslacht via uitgangsregels met een lijst uitzonderingen. Zo werkt
 /// het ook voor later toegevoegde woorden.
@@ -387,6 +388,163 @@ List<String>? _conjugatePreterite(String verb) {
   }
 
   return forms;
+}
+
+// ─── Toekomende tijd (futuro simple) ─────────────────────────────────────
+
+/// Onregelmatige futuro-stam (de uitgangen zelf blijven altijd regelmatig).
+const Map<String, String> _futureIrregular = {
+  'tener': 'tendr',
+  'mantener': 'mantendr',
+  'obtener': 'obtendr',
+  'poner': 'pondr',
+  'suponer': 'supondr',
+  'proponer': 'propondr',
+  'salir': 'saldr',
+  'venir': 'vendr',
+  'poder': 'podr',
+  'saber': 'sabr',
+  'caber': 'cabr',
+  'querer': 'querr',
+  'haber': 'habr',
+  'hacer': 'har',
+  'decir': 'dir',
+  'valer': 'valdr',
+};
+
+const List<String> _futureEndings = ['é', 'ás', 'á', 'emos', 'éis', 'án'];
+
+/// Vervoegt [infinitive] in de toekomende tijd/futuro simple (6 vormen), of
+/// geeft `null` als het geen op -ar/-er/-ir eindigend werkwoord is.
+List<String>? futureTense(String infinitive) {
+  var verb = infinitive.trim().toLowerCase();
+  var reflexive = false;
+  if (verb.length > 4 &&
+      (verb.endsWith('arse') ||
+          verb.endsWith('erse') ||
+          verb.endsWith('irse') ||
+          verb.endsWith('írse'))) {
+    reflexive = true;
+    verb = verb.substring(0, verb.length - 2);
+  }
+
+  final forms = _conjugateFuture(verb);
+  if (forms == null) return null;
+  if (!reflexive) return forms;
+  return [for (var i = 0; i < 6; i++) '${_reflexive[i]} ${forms[i]}'];
+}
+
+List<String>? _conjugateFuture(String verb) {
+  if (!(verb.endsWith('ar') ||
+      verb.endsWith('er') ||
+      verb.endsWith('ir') ||
+      verb.endsWith('ír'))) {
+    return null;
+  }
+  // Regelmatig: de hele infinitief + uitgang (dus geen stam-min-uitgang zoals
+  // bij presente/pretérito). Onregelmatig: alleen de stam wijkt af.
+  //
+  // Bij infinitieven op "-ír" (oír, reír, freír) markeert het accent alleen
+  // dat de í een eigen lettergreep vormt (geen tweeklank) — zodra de klemtoon
+  // door de uitgang naar achteren verschuift, vervalt dat accent weer: oír →
+  // oiré (niet "oíré").
+  final regularStem = verb.endsWith('ír')
+      ? '${verb.substring(0, verb.length - 2)}ir'
+      : verb;
+  final stem = _futureIrregular[verb] ?? regularStem;
+  return [for (final ending in _futureEndings) '$stem$ending'];
+}
+
+// ─── Gerundio ─────────────────────────────────────────────────────────────
+
+/// Volledig onregelmatige gerundio's: niet af te leiden uit de reguliere
+/// klinker-stam- of stamwisselregels hieronder (ir/poder/decir wijken op hun
+/// eigen manier af; reír/freír vallen weg naar "riendo"/"friendo" i.p.v. het
+/// verwachte "reyendo"/"freyendo").
+const Map<String, String> _gerundioIrregular = {
+  'ir': 'yendo',
+  'poder': 'pudiendo',
+  'decir': 'diciendo',
+  'reír': 'riendo',
+  'freír': 'friendo',
+};
+
+/// Geeft de gerundio (één vorm, bv. "hablando") van [infinitive], of `null`
+/// als het geen op -ar/-er/-ir eindigend werkwoord is.
+String? gerundioForm(String infinitive) {
+  var verb = infinitive.trim().toLowerCase();
+  var reflexive = false;
+  if (verb.length > 4 &&
+      (verb.endsWith('arse') ||
+          verb.endsWith('erse') ||
+          verb.endsWith('irse') ||
+          verb.endsWith('írse'))) {
+    reflexive = true;
+    verb = verb.substring(0, verb.length - 2);
+  }
+
+  final base = _conjugateGerundio(verb);
+  if (base == null) return null;
+  // Als achtervoegsel i.p.v. voorvoegsel (zoals presente/pretérito): de
+  // citeervorm van een wederkerend werkwoord is "equivocándose", niet
+  // "se equivocando" — vereist een accent vlak vóór de "-ndo".
+  return reflexive ? '${_accentBeforeNdo(base)}se' : base;
+}
+
+String? _conjugateGerundio(String verb) {
+  final irregular = _gerundioIrregular[verb];
+  if (irregular != null) return irregular;
+
+  String group;
+  if (verb.endsWith('ar')) {
+    group = 'ar';
+  } else if (verb.endsWith('er')) {
+    group = 'er';
+  } else if (verb.endsWith('ir') || verb.endsWith('ír')) {
+    group = 'ir';
+  } else {
+    return null;
+  }
+  final stem = verb.substring(0, verb.length - 2);
+
+  // Alléén -ir-werkwoorden met stamwisseling verzwakken de gerundio, net als
+  // de 3e persoon pretérito: e→i, o→u (pedir → pidiendo, dormir → durmiendo).
+  // -ar/-er-werkwoorden (contar, tener, querer, ...) blijven regelmatig, ook
+  // al wisselen ze in de tegenwoordige tijd wel (contando, teniendo). Dit
+  // moet vóór de klinker-stam-check hieronder, want een woord als "seguir"
+  // heeft toevallig ook een stam die op een klinker eindigt ("segu", door de
+  // "gu"-spelling) — dat is hier niet de reden van de onregelmatigheid.
+  if (group == 'ir') {
+    final change = _stemChange[verb];
+    if (change == 'e>ie' || change == 'e>i') {
+      return '${_applyStemChange(stem, 'e>i')}iendo';
+    } else if (change == 'o>ue') {
+      return '${_applyStemChange(stem, 'o>u')}iendo';
+    }
+  }
+
+  // Klinker-stam (leer, creer, caer, oír, construir, huir, ...): tussen-y,
+  // zelfde patroon als in de pretérito (leyendo, cayendo, oyendo,
+  // construyendo) — geldt voor -er én -ir, niet voor -ar.
+  if (group != 'ar' &&
+      stem.isNotEmpty &&
+      'aeiou'.contains(stem[stem.length - 1])) {
+    return '${stem}yendo';
+  }
+
+  return group == 'ar' ? '${stem}ando' : '${stem}iendo';
+}
+
+/// Zet de klinker vlak vóór "-ndo" om in een accentversie (a→á, e→é), nodig
+/// zodra "se" als achtervoegsel wordt toegevoegd.
+String _accentBeforeNdo(String gerundio) {
+  // "-ndo" is 3 tekens, dus de klinker die het accent moet krijgen staat op
+  // de 4e positie van achteren (bv. "habl-a-ndo": index length-4 is de 'a').
+  final idx = gerundio.length - 4;
+  if (idx < 0) return gerundio;
+  const accents = {'a': 'á', 'e': 'é'};
+  final accented = accents[gerundio[idx]] ?? gerundio[idx];
+  return gerundio.substring(0, idx) + accented + gerundio.substring(idx + 1);
 }
 
 // ─── Lidwoord (el/la) ─────────────────────────────────────────────────────

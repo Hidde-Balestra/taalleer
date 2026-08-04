@@ -29,6 +29,19 @@ class Word {
   /// (enkelvoudige) verleden tijd kent.
   final List<String> past;
 
+  /// Toekomende tijd (futuro simple) van een werkwoord: de 6 persoonsvormen,
+  /// of leeg als het geen werkwoord is of de taal geen (enkelvoudige)
+  /// toekomende tijd kent.
+  final List<String> future;
+
+  /// Gerundio (bv. "hablando"): één vorm, of leeg als het geen werkwoord is
+  /// of de taal geen gerundio kent.
+  final String gerundio;
+
+  /// Thema/categorie (bv. "eten"), of leeg als het woord niet in een van de
+  /// gedefinieerde thema's valt.
+  final String category;
+
   const Word({
     required this.id,
     required this.target,
@@ -40,6 +53,9 @@ class Word {
     this.article = '',
     this.present = const [],
     this.past = const [],
+    this.future = const [],
+    this.gerundio = '',
+    this.category = '',
   });
 
   bool get isNoun => article.isNotEmpty;

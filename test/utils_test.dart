@@ -317,6 +317,28 @@ void main() {
       }
     });
 
+    test('elk werkwoord heeft ook 6 toekomende-tijdvormen', () {
+      final verbs = _course.words.where((w) => w.isVerb).toList();
+      for (final w in verbs) {
+        expect(
+          w.future,
+          hasLength(6),
+          reason: 'onvolledige toekomende tijd bij ${w.target}',
+        );
+      }
+    });
+
+    test('elk werkwoord heeft een niet-lege gerundio', () {
+      final verbs = _course.words.where((w) => w.isVerb).toList();
+      for (final w in verbs) {
+        expect(
+          w.gerundio,
+          isNotEmpty,
+          reason: 'ontbrekende gerundio bij ${w.target}',
+        );
+      }
+    });
+
     test('woorden zijn nooit tegelijk werkwoord én zelfstandig naamwoord', () {
       for (final w in _course.words) {
         expect(w.isVerb && w.isNoun, isFalse, reason: w.target);

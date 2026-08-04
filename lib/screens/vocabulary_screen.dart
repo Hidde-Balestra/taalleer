@@ -295,6 +295,39 @@ class _WordCard extends StatelessWidget {
                             ),
                           ),
                         ],
+                        if (word.future.isNotEmpty) ...[
+                          const SizedBox(height: 8),
+                          _DetailRow(
+                            label: t.vocabFutureTense.toUpperCase(),
+                            child: _ConjugationTable(
+                              forms: word.future,
+                              pronouns: course.pronouns,
+                            ),
+                          ),
+                        ],
+                        if (word.gerundio.isNotEmpty) ...[
+                          const SizedBox(height: 8),
+                          _DetailRow(
+                            label: t.vocabGerundio.toUpperCase(),
+                            child: Row(
+                              children: [
+                                Text(
+                                  word.gerundio,
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                SpeakButton(
+                                  t: t,
+                                  text: word.gerundio,
+                                  locale: course.ttsLocale,
+                                  size: 14,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                         if (word.exampleTarget.isNotEmpty) ...[
                           const SizedBox(height: 8),
                           _DetailRow(

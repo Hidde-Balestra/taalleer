@@ -354,6 +354,159 @@ void main() {
     });
   });
 
+  group('futureTense — regelmatig', () {
+    test('-ar (hablar)', () {
+      expect(futureTense('hablar'), [
+        'hablaré',
+        'hablarás',
+        'hablará',
+        'hablaremos',
+        'hablaréis',
+        'hablarán',
+      ]);
+    });
+
+    test('-er (comer)', () {
+      expect(futureTense('comer'), [
+        'comeré',
+        'comerás',
+        'comerá',
+        'comeremos',
+        'comeréis',
+        'comerán',
+      ]);
+    });
+
+    test('-ir (vivir)', () {
+      expect(futureTense('vivir'), [
+        'viviré',
+        'vivirás',
+        'vivirá',
+        'viviremos',
+        'viviréis',
+        'vivirán',
+      ]);
+    });
+
+    test('geen werkwoord geeft null', () {
+      expect(futureTense('casa'), isNull);
+      expect(futureTense('color'), isNull);
+    });
+  });
+
+  group('futureTense — onregelmatige stam', () {
+    test('tener (tendr-)', () {
+      expect(futureTense('tener'), [
+        'tendré',
+        'tendrás',
+        'tendrá',
+        'tendremos',
+        'tendréis',
+        'tendrán',
+      ]);
+    });
+
+    test('hacer (har-)', () {
+      expect(futureTense('hacer')!.first, 'haré');
+    });
+
+    test('decir (dir-)', () {
+      expect(futureTense('decir')!.first, 'diré');
+    });
+
+    test('poder (podr-)', () {
+      expect(futureTense('poder')!.first, 'podré');
+    });
+  });
+
+  group('futureTense — wederkerend', () {
+    test('despedirse', () {
+      expect(futureTense('despedirse')!.first, 'me despediré');
+      expect(futureTense('despedirse')![2], 'se despedirá');
+    });
+  });
+
+  group('gerundioForm — regelmatig', () {
+    test('-ar (hablar)', () {
+      expect(gerundioForm('hablar'), 'hablando');
+    });
+
+    test('-er (comer)', () {
+      expect(gerundioForm('comer'), 'comiendo');
+    });
+
+    test('-ir (vivir)', () {
+      expect(gerundioForm('vivir'), 'viviendo');
+    });
+
+    test('geen werkwoord geeft null', () {
+      expect(gerundioForm('casa'), isNull);
+    });
+
+    test('-ar/-er met stamwisseling in presente blijft regelmatig', () {
+      expect(gerundioForm('contar'), 'contando');
+      expect(gerundioForm('tener'), 'teniendo');
+      expect(gerundioForm('querer'), 'queriendo');
+    });
+  });
+
+  group('gerundioForm — klinkerstam (tussen-y)', () {
+    test('leer', () {
+      expect(gerundioForm('leer'), 'leyendo');
+    });
+
+    test('construir', () {
+      expect(gerundioForm('construir'), 'construyendo');
+    });
+
+    test('oír', () {
+      expect(gerundioForm('oír'), 'oyendo');
+    });
+  });
+
+  group('gerundioForm — stamwisseling (alleen -ir)', () {
+    test('pedir (e→i)', () {
+      expect(gerundioForm('pedir'), 'pidiendo');
+    });
+
+    test('dormir (o→u)', () {
+      expect(gerundioForm('dormir'), 'durmiendo');
+    });
+
+    test('sentir (e→ie in presente wordt e→i)', () {
+      expect(gerundioForm('sentir'), 'sintiendo');
+    });
+  });
+
+  group('gerundioForm — onregelmatig', () {
+    test('ir', () {
+      expect(gerundioForm('ir'), 'yendo');
+    });
+
+    test('poder', () {
+      expect(gerundioForm('poder'), 'pudiendo');
+    });
+
+    test('decir', () {
+      expect(gerundioForm('decir'), 'diciendo');
+    });
+
+    test('reír / freír', () {
+      expect(gerundioForm('reír'), 'riendo');
+      expect(gerundioForm('freír'), 'friendo');
+    });
+  });
+
+  group('gerundioForm — wederkerend', () {
+    test('equivocarse (achtervoegsel + accent)', () {
+      expect(gerundioForm('equivocarse'), 'equivocándose');
+    });
+
+    test('despedirse (stamwisseling + achtervoegsel)', () {
+      expect(gerundioForm('despedirse'), 'despidiéndose');
+    });
+  });
+
   group('articleFor', () {
     test('-o is el, -a is la', () {
       expect(articleFor('libro'), 'el');

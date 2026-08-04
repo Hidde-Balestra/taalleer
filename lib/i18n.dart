@@ -38,6 +38,8 @@ class Strings {
       vocabExample,
       vocabConjugation,
       vocabPastTense,
+      vocabFutureTense,
+      vocabGerundio,
       vocabArticle;
   // Oefenen
   final String practiceTitle, practiceToEs, practiceToNl, practiceToEn;
@@ -130,6 +132,8 @@ class Strings {
     required this.vocabExample,
     required this.vocabConjugation,
     required this.vocabPastTense,
+    required this.vocabFutureTense,
+    required this.vocabGerundio,
     required this.vocabArticle,
     required this.practiceTitle,
     required this.practiceToEs,
@@ -245,6 +249,8 @@ class Strings {
     vocabExample: 'Voorbeeld',
     vocabConjugation: 'Tegenwoordige tijd',
     vocabPastTense: 'Verleden tijd',
+    vocabFutureTense: 'Toekomende tijd',
+    vocabGerundio: 'Gerundio',
     vocabArticle: 'Lidwoord',
     practiceTitle: 'Oefenen',
     practiceToEs: 'Vertaal naar het Spaans',
@@ -364,6 +370,8 @@ class Strings {
     vocabExample: 'Example',
     vocabConjugation: 'Present tense',
     vocabPastTense: 'Past tense',
+    vocabFutureTense: 'Future tense',
+    vocabGerundio: 'Gerund',
     vocabArticle: 'Article',
     practiceTitle: 'Practice',
     practiceToEs: 'Translate to Spanish',

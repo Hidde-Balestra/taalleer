@@ -18,6 +18,7 @@ class Strings {
   final String homeGreeting, homeSubGreeting;
   final String homeQuizDone, homePaused, homePausedSub;
   final String homeQuizNext, homeQuizOnce;
+  final String homeWeakWords, homeWeakWordsCount;
   // Reset van de week
   final String resetTitle, resetTomorrow, resetInDays;
   // Eerdere woorden
@@ -110,6 +111,8 @@ class Strings {
     required this.homePausedSub,
     required this.homeQuizNext,
     required this.homeQuizOnce,
+    required this.homeWeakWords,
+    required this.homeWeakWordsCount,
     required this.resetTitle,
     required this.resetTomorrow,
     required this.resetInDays,
@@ -227,6 +230,8 @@ class Strings {
     homePausedSub: 'Schakel de pauze uit om toetsen te maken',
     homeQuizNext: 'Volgende toets',
     homeQuizOnce: 'Je maakt één toets per week — kies er één.',
+    homeWeakWords: 'Zwakke woorden oefenen',
+    homeWeakWordsCount: '{n} woorden waar je vaker fout op zat',
     resetTitle: 'Nieuwe woorden en toets',
     resetTomorrow: 'morgen',
     resetInDays: 'over {d} dagen',
@@ -348,6 +353,8 @@ class Strings {
     homePausedSub: 'Turn off pause to take quizzes',
     homeQuizNext: 'Next quiz',
     homeQuizOnce: 'You take one quiz per week — pick one.',
+    homeWeakWords: 'Practice weak words',
+    homeWeakWordsCount: '{n} words you often got wrong',
     resetTitle: 'New words and quiz',
     resetTomorrow: 'tomorrow',
     resetInDays: 'in {d} days',
@@ -444,6 +451,10 @@ class Strings {
   /// "1 regel" of "N regels".
   String grammarRuleCount(int n) =>
       '$n ${n == 1 ? grammarRuleSingular : grammarRulePlural}';
+
+  /// "12 woorden waar je vaker fout op zat".
+  String homeWeakWordsSub(int n) =>
+      homeWeakWordsCount.replaceFirst('{n}', '$n');
 
   /// "Versie 1.9.0".
   String currentVersionLabel(String v) =>

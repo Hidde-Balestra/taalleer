@@ -448,4 +448,47 @@ void main() {
       expect(nextYear, isNot(w1));
     });
   });
+
+  group('weakWords', () {
+    QuizResult resultWith(List<int> wrongWordIds) => QuizResult(
+      id: 0,
+      weekNumber: 1,
+      year: 2026,
+      date: 'x',
+      grade: 5,
+      correct: 5,
+      total: 10,
+      wrongWordIds: wrongWordIds,
+    );
+
+    test('lege historie geeft een lege lijst', () {
+      expect(weakWords([], _course), isEmpty);
+    });
+
+    test('telt hoe vaak elk woord fout is en sorteert aflopend', () {
+      final id1 = _course.words[0].id;
+      final id2 = _course.words[1].id;
+      final history = [
+        resultWith([id1, id2]),
+        resultWith([id1]),
+        resultWith([id1]),
+      ];
+      final result = weakWords(history, _course);
+      expect(result.first.id, id1); // 3x fout, komt eerst
+      expect(result[1].id, id2); // 1x fout
+    });
+
+    test('respecteert limit', () {
+      final ids = _course.words.take(5).map((w) => w.id).toList();
+      final history = [resultWith(ids)];
+      expect(weakWords(history, _course, limit: 3), hasLength(3));
+    });
+
+    test('negeert onbekende ids veilig', () {
+      final history = [
+        resultWith([-1, 999999]),
+      ];
+      expect(weakWords(history, _course), isEmpty);
+    });
+  });
 }

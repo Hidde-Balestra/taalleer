@@ -16,9 +16,11 @@ class HomeScreen extends StatelessWidget {
   final List<QuizResult> history;
   final bool paused;
   final bool quizDoneThisWeek;
+  final int weakWordCount;
   final VoidCallback onPractice;
   final VoidCallback onQuiz;
   final VoidCallback onConjQuiz;
+  final VoidCallback onPracticeWeakWords;
 
   const HomeScreen({
     super.key,
@@ -30,9 +32,11 @@ class HomeScreen extends StatelessWidget {
     required this.history,
     required this.paused,
     required this.quizDoneThisWeek,
+    required this.weakWordCount,
     required this.onPractice,
     required this.onQuiz,
     required this.onConjQuiz,
+    required this.onPracticeWeakWords,
   });
 
   @override
@@ -181,6 +185,58 @@ class HomeScreen extends StatelessWidget {
           Text(
             t.homeQuizOnce,
             style: TextStyle(fontSize: 11, color: palette.muted),
+          ),
+        ],
+        if (weakWordCount > 0) ...[
+          const SizedBox(height: 12),
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(16),
+              onTap: onPracticeWeakWords,
+              child: AppCard(
+                child: Row(
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: AppColors.amber.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(
+                        Icons.refresh,
+                        size: 20,
+                        color: AppColors.amber,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            t.homeWeakWords,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                            ),
+                          ),
+                          Text(
+                            t.homeWeakWordsSub(weakWordCount),
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: palette.muted,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Icon(Icons.chevron_right, size: 18, color: palette.muted),
+                  ],
+                ),
+              ),
+            ),
           ),
         ],
         const SizedBox(height: 16),

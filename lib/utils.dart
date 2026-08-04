@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
+import 'language_course.dart';
 import 'models.dart';
 
 /// Levenshtein-afstand tussen twee strings.
@@ -150,5 +151,28 @@ List<ConjugationQuestion> buildConjugationQuiz(
   return [
     for (final w in pool.take(10))
       ConjugationQuestion(word: w, person: rng.nextInt(6)),
+  ];
+}
+
+/// De woorden waar de gebruiker historisch het vaakst fout op zat, aflopend
+/// gesorteerd op foutfrequentie (op basis van `wrongWordIds` in alle
+/// bewaarde toetsresultaten). Geeft een lege lijst als er nog geen historie
+/// is. Geen aparte opslag nodig — de data staat al in [history].
+List<Word> weakWords(
+  List<QuizResult> history,
+  LanguageCourse course, {
+  int limit = 20,
+}) {
+  final counts = <int, int>{};
+  for (final result in history) {
+    for (final id in result.wrongWordIds) {
+      counts[id] = (counts[id] ?? 0) + 1;
+    }
+  }
+  final sortedIds = counts.keys.toList()
+    ..sort((a, b) => counts[b]!.compareTo(counts[a]!));
+  return [
+    for (final id in sortedIds.take(limit))
+      if (course.wordById(id) case final word?) word,
   ];
 }

@@ -210,6 +210,7 @@ class _HomeShellState extends State<HomeShell> {
     // De 20 woorden van deze week worden willekeurig getrokken, maar
     // deterministisch per kalenderweek (niet-herhalend over de jaren heen).
     final weekWords = wordsForWeek(course, currentWeekSeed());
+    final weak = weakWords(widget.appState.history, course);
 
     final tabs = [
       HomeScreen(
@@ -221,9 +222,11 @@ class _HomeShellState extends State<HomeShell> {
         history: widget.appState.history,
         paused: widget.appState.paused,
         quizDoneThisWeek: widget.appState.quizDoneThisWeek,
+        weakWordCount: weak.length,
         onPractice: () => _openPractice(t, settings, course, weekWords),
         onQuiz: () => _openQuiz(t, settings, course, weekWords),
         onConjQuiz: () => _openConjQuiz(t, settings, course),
+        onPracticeWeakWords: () => _openPractice(t, settings, course, weak),
       ),
       VocabularyScreen(
         t: t,

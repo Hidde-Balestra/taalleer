@@ -8,6 +8,7 @@ import 'languages/registry.dart';
 import 'models.dart';
 import 'screens/conjugation_quiz_screen.dart';
 import 'screens/grammar_screen.dart';
+import 'screens/achievements_screen.dart';
 import 'screens/history_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/listening_practice_screen.dart';
@@ -183,6 +184,28 @@ class _HomeShellState extends State<HomeShell> {
     );
   }
 
+  void _openAchievements() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        // Zelfde reden als bij Instellingen: moet meeluisteren met live
+        // history/streak, anders bevriest de voortgang op het moment van
+        // openen.
+        builder: (_) => ListenableBuilder(
+          listenable: widget.appState,
+          builder: (context, _) {
+            final settings = widget.appState.settings;
+            return AchievementsScreen(
+              t: Strings.of(settings.language),
+              nl: settings.language == Lang.nl,
+              history: widget.appState.history,
+              streak: widget.appState.streak,
+            );
+          },
+        ),
+      ),
+    );
+  }
+
   void _openSettings() {
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -296,6 +319,12 @@ class _HomeShellState extends State<HomeShell> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
+                  IconButton(
+                    onPressed: _openAchievements,
+                    icon: const Icon(Icons.emoji_events_outlined),
+                    tooltip: t.achievementsTitle,
+                    color: palette.muted,
+                  ),
                   IconButton(
                     onPressed: _openSettings,
                     icon: const Icon(Icons.settings_outlined),

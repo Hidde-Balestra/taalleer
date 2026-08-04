@@ -62,6 +62,9 @@ class Strings {
       resultWeek;
   // Historie
   final String historyTitle, historyWeek, historyNoResults;
+  // Prestaties
+  final String achievementsTitle, achievementsSubtitle, achievementsProgress;
+  final String achievementsLocked;
   // Instellingen
   final String settingsTitle, settingsLanguage, settingsDarkMode;
   final String settingsLight, settingsDark, settingsSystem;
@@ -176,6 +179,10 @@ class Strings {
     required this.historyTitle,
     required this.historyWeek,
     required this.historyNoResults,
+    required this.achievementsTitle,
+    required this.achievementsSubtitle,
+    required this.achievementsProgress,
+    required this.achievementsLocked,
     required this.settingsTitle,
     required this.settingsLanguage,
     required this.settingsDarkMode,
@@ -299,6 +306,10 @@ class Strings {
     historyTitle: 'Resultaten',
     historyWeek: 'Week',
     historyNoResults: 'Nog geen resultaten beschikbaar.',
+    achievementsTitle: 'Prestaties',
+    achievementsSubtitle: 'Badges die je onderweg verdient',
+    achievementsProgress: '{n} van {total} behaald',
+    achievementsLocked: 'Nog niet behaald',
     settingsTitle: 'Instellingen',
     settingsLanguage: 'App-taal',
     settingsDarkMode: 'Weergave',
@@ -426,6 +437,10 @@ class Strings {
     historyTitle: 'Results',
     historyWeek: 'Week',
     historyNoResults: 'No results available yet.',
+    achievementsTitle: 'Achievements',
+    achievementsSubtitle: 'Badges you earn along the way',
+    achievementsProgress: '{n} of {total} unlocked',
+    achievementsLocked: 'Not unlocked yet',
     settingsTitle: 'Settings',
     settingsLanguage: 'App Language',
     settingsDarkMode: 'Appearance',
@@ -470,6 +485,12 @@ class Strings {
   /// "12 woorden waar je vaker fout op zat".
   String homeWeakWordsSub(int n) =>
       homeWeakWordsCount.replaceFirst('{n}', '$n');
+
+  /// "3 van 8 behaald".
+  String achievementsProgressLabel(int unlocked, int total) =>
+      achievementsProgress
+          .replaceFirst('{n}', '$unlocked')
+          .replaceFirst('{total}', '$total');
 
   /// "Versie 1.9.0".
   String currentVersionLabel(String v) =>

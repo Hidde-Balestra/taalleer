@@ -110,7 +110,8 @@ class _ClozeScreenState extends State<ClozeScreen> {
                 const SizedBox(height: 24),
                 PrimaryButton(
                   label: t.practiceBackHome,
-                  onPressed: () => Navigator.of(context).pop(),
+                  onPressed: () =>
+                      Navigator.of(context).popUntil((r) => r.isFirst),
                 ),
               ],
             ),

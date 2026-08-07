@@ -108,7 +108,8 @@ class _PracticeScreenState extends State<PracticeScreen> {
                 const SizedBox(height: 24),
                 PrimaryButton(
                   label: t.practiceBackHome,
-                  onPressed: () => Navigator.of(context).pop(),
+                  onPressed: () =>
+                      Navigator.of(context).popUntil((r) => r.isFirst),
                 ),
               ],
             ),

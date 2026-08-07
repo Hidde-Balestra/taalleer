@@ -111,7 +111,8 @@ class _SentenceBuilderScreenState extends State<SentenceBuilderScreen> {
                 const SizedBox(height: 24),
                 PrimaryButton(
                   label: t.practiceBackHome,
-                  onPressed: () => Navigator.of(context).pop(),
+                  onPressed: () =>
+                      Navigator.of(context).popUntil((r) => r.isFirst),
                 ),
               ],
             ),

@@ -168,7 +168,7 @@ class QuizResultScreen extends StatelessWidget {
             const SizedBox(height: 8),
             PrimaryButton(
               label: t.resultBackHome,
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: () => Navigator.of(context).popUntil((r) => r.isFirst),
             ),
           ],
         ),

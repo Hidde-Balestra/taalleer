@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:taalleer/data.dart';
+import 'package:taalleer/i18n.dart';
 import 'package:taalleer/languages/es/es_course.dart';
 import 'package:taalleer/models.dart';
 import 'package:taalleer/utils.dart';
@@ -573,8 +574,8 @@ void main() {
     });
   });
 
-  group('lastResultForCategory', () {
-    QuizResult resultWith(int id, String category) => QuizResult(
+  group('lastResultForQuiz', () {
+    QuizResult resultWith(int id, String quizId) => QuizResult(
       id: id,
       weekNumber: 1,
       year: 2026,
@@ -583,12 +584,12 @@ void main() {
       correct: 7,
       total: 10,
       wrongWordIds: const [],
-      category: category,
+      quizId: quizId,
     );
 
-    test('geeft null als de categorie nog nooit getoetst is', () {
-      expect(lastResultForCategory([], 'food'), isNull);
-      expect(lastResultForCategory([resultWith(1, 'family')], 'food'), isNull);
+    test('geeft null als die toets nog nooit gemaakt is', () {
+      expect(lastResultForQuiz([], 'food'), isNull);
+      expect(lastResultForQuiz([resultWith(1, 'family')], 'food'), isNull);
     });
 
     test('geeft de meest recente match (historie is al nieuwste-eerst)', () {
@@ -597,7 +598,29 @@ void main() {
         resultWith(2, 'family'),
         resultWith(1, 'food'),
       ];
-      expect(lastResultForCategory(history, 'food')!.id, 3);
+      expect(lastResultForQuiz(history, 'food')!.id, 3);
+    });
+  });
+
+  group('quizLabel', () {
+    test('geeft de eigen naam voor de algemene toetsen', () {
+      final t = Strings.of(Lang.nl);
+      expect(quizLabel(t, _course, kWordQuizId, true), t.homeQuiz);
+      expect(quizLabel(t, _course, kConjugationQuizId, true), t.homeConjQuiz);
+    });
+
+    test('zoekt de themanaam op voor een categorie-id', () {
+      final t = Strings.of(Lang.nl);
+      expect(quizLabel(t, _course, 'food', true), isNot(t.historyGeneralQuiz));
+    });
+
+    test('valt terug op een generiek label voor onbekende/lege id', () {
+      final t = Strings.of(Lang.nl);
+      expect(quizLabel(t, _course, '', true), t.historyGeneralQuiz);
+      expect(
+        quizLabel(t, _course, 'does-not-exist', true),
+        t.historyGeneralQuiz,
+      );
     });
   });
 

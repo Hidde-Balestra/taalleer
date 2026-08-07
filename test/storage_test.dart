@@ -13,7 +13,7 @@ void main() {
     correct: 7,
     total: 10,
     wrongWordIds: [3, 14, 20],
-    category: 'food',
+    quizId: 'food',
   );
 
   group('JSON-serialisatie', () {
@@ -27,7 +27,7 @@ void main() {
       expect(copy.correct, result.correct);
       expect(copy.total, result.total);
       expect(copy.wrongWordIds, result.wrongWordIds);
-      expect(copy.category, 'food');
+      expect(copy.quizId, 'food');
     });
 
     test('QuizResult zonder category in de JSON valt terug op leeg', () {
@@ -41,15 +41,23 @@ void main() {
         'total': 10,
         'wrongWordIds': <int>[],
       });
-      expect(copy.category, '');
+      expect(copy.quizId, '');
     });
 
     test('StreakState overleeft een toJson/fromJson-rondje', () {
+      // quizLastWeek bevat hier al eigen entries voor de algemene toetsen,
+      // zodat deze test puur de serialisatie test — de migratie vanuit de
+      // oude lastQuizWeek heeft een eigen test in app_state_test.dart.
       const state = StreakState(
         streak: 4,
         lastQuizWeek: 100,
         lastActivityWeek: 101,
-        categoryLastQuizWeek: {'food': 101, 'family': 99},
+        quizLastWeek: {
+          'food': 101,
+          'family': 99,
+          kWordQuizId: 100,
+          kConjugationQuizId: 100,
+        },
         paused: false,
         pauseOffset: 2,
         firstWeek: 90,
@@ -58,7 +66,12 @@ void main() {
       expect(copy.streak, 4);
       expect(copy.lastQuizWeek, 100);
       expect(copy.lastActivityWeek, 101);
-      expect(copy.categoryLastQuizWeek, {'food': 101, 'family': 99});
+      expect(copy.quizLastWeek, {
+        'food': 101,
+        'family': 99,
+        kWordQuizId: 100,
+        kConjugationQuizId: 100,
+      });
       expect(copy.pauseOffset, 2);
       expect(copy.firstWeek, 90);
     });

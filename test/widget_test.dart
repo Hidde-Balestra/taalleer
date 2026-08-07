@@ -108,6 +108,14 @@ void main() {
     );
   }
 
+  /// Tikt op de "Toetsen"-knop op Home (alle toetsen — algemeen en per
+  /// categorie — zitten op dat ene scherm).
+  Future<void> openQuizzes(WidgetTester tester) async {
+    await scrollHome(tester, find.text('Toetsen'));
+    await tester.tap(find.text('Toetsen'));
+    await tester.pumpAndSettle();
+  }
+
   /// Scrollt het instellingen-scherm tot [target] in beeld is. Eerst
   /// `scrollUntilVisible`, dat stapsgewijs sleept totdat het element bestaat
   /// (nodig omdat de lijst een Sliver is: elementen buiten de cache-extent
@@ -129,14 +137,10 @@ void main() {
       await pumpApp(tester);
       expect(find.text('Welkom terug! 👋'), findsOneWidget);
       expect(find.text('Oefenvormen'), findsOneWidget);
+      expect(find.text('Toetsen'), findsOneWidget);
 
-      // De lijst is langer dan het testvenster — net als "Laatste cijfer"
-      // moeten deze knoppen dus eerst in beeld gescrold worden (de Sliver
-      // mount ze pas dan).
-      await scrollHome(tester, find.text('Vervoegingstoets'));
-      expect(find.text('Woordentoets'), findsOneWidget);
-      expect(find.text('Vervoegingstoets'), findsOneWidget);
-
+      // De lijst is langer dan het testvenster — "Laatste cijfer" moet dus
+      // eerst in beeld gescrold worden (de Sliver mount 'm pas dan).
       await scrollHome(tester, find.text('Laatste cijfer'));
       expect(find.text('Laatste cijfer'), findsOneWidget);
     });
@@ -332,6 +336,7 @@ void main() {
       (tester) async {
         final state = await pumpApp(tester);
 
+        await openQuizzes(tester);
         await tester.tap(find.text('Woordentoets'));
         await tester.pumpAndSettle();
         expect(find.text('Weektoets'), findsOneWidget);
@@ -376,11 +381,11 @@ void main() {
         await tester.pumpAndSettle();
         expect(find.text('Welkom terug! 👋'), findsOneWidget);
 
-        // Deze week is nu een toets afgerond: de knoppen zijn op slot tot
-        // de wekelijkse reset (één toets per week).
-        expect(find.text('Toets van deze week afgerond ✓'), findsOneWidget);
-        expect(find.text('Woordentoets'), findsNothing);
-        expect(find.text('Vervoegingstoets'), findsNothing);
+        // Deze week is de algemene toets afgerond: op het Toetsen-scherm
+        // staat de Woordentoets nu vergrendeld, met het behaalde cijfer.
+        await openQuizzes(tester);
+        expect(find.text('Woordentoets'), findsOneWidget);
+        expect(find.text('0.0'), findsWidgets);
       },
     );
   });
@@ -389,7 +394,7 @@ void main() {
     testWidgets('werkwoord vervoegen en resultaat opslaan', (tester) async {
       final state = await pumpApp(tester);
 
-      await scrollHome(tester, find.text('Vervoegingstoets'));
+      await openQuizzes(tester);
       await tester.tap(find.text('Vervoegingstoets'));
       await tester.pumpAndSettle();
       expect(find.text('Vervoeg in de tegenwoordige tijd'), findsOneWidget);
@@ -487,8 +492,11 @@ void main() {
       await closeSettings(tester);
 
       expect(find.text('Streak gepauzeerd'), findsOneWidget);
-      expect(find.text('Woordentoets'), findsNothing);
-      expect(find.text('Vervoegingstoets'), findsNothing);
+
+      // Op het Toetsen-scherm staat ook een pauze-banner (naast die op Home
+      // zelf, die onder de IndexedStack gemount blijft staan).
+      await openQuizzes(tester);
+      expect(find.text('Streak gepauzeerd'), findsWidgets);
     });
   });
 

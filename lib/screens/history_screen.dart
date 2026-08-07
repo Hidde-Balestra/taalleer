@@ -145,10 +145,8 @@ class HistoryScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          r.category.isEmpty
-                              ? '${t.historyWeek} ${r.weekNumber}'
-                              : '${t.historyWeek} ${r.weekNumber} · '
-                                    '${course.categoryTitleFor(r.category, nl) ?? r.category}',
+                          '${t.historyWeek} ${r.weekNumber} · '
+                          '${quizLabel(t, course, r.quizId, nl)}',
                           style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,

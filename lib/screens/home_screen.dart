@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../data.dart';
 import '../i18n.dart';
 import '../models.dart';
 import '../theme.dart';
@@ -15,10 +14,8 @@ class HomeScreen extends StatelessWidget {
   final int wordCount;
   final List<QuizResult> history;
   final bool paused;
-  final bool quizDoneThisWeek;
   final VoidCallback onPracticeHub;
-  final VoidCallback onQuiz;
-  final VoidCallback onConjQuiz;
+  final VoidCallback onQuizzes;
 
   const HomeScreen({
     super.key,
@@ -29,10 +26,8 @@ class HomeScreen extends StatelessWidget {
     required this.wordCount,
     required this.history,
     required this.paused,
-    required this.quizDoneThisWeek,
     required this.onPracticeHub,
-    required this.onQuiz,
-    required this.onConjQuiz,
+    required this.onQuizzes,
   });
 
   @override
@@ -67,7 +62,21 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
-        if (paused)
+        _GradientActionButton(
+          onTap: onQuizzes,
+          gradient: const LinearGradient(
+            colors: [AppColors.orange, AppColors.orangeDark],
+          ),
+          title: t.quizzesTitle,
+          subtitle: t.quizzesSubtitle,
+          trailing: const Icon(
+            Icons.emoji_events_outlined,
+            color: Colors.white,
+            size: 20,
+          ),
+        ),
+        if (paused) ...[
+          const SizedBox(height: 12),
           Opacity(
             opacity: 0.7,
             child: AppCard(
@@ -108,79 +117,6 @@ class HomeScreen extends StatelessWidget {
                 ],
               ),
             ),
-          )
-        else if (quizDoneThisWeek)
-          // Eén toets per week: na afronden pas weer bij de reset.
-          AppCard(
-            child: Row(
-              children: [
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: AppColors.green.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Icon(
-                    Icons.check_circle,
-                    size: 20,
-                    color: AppColors.green,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        t.homeQuizDone,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 14,
-                        ),
-                      ),
-                      Text(
-                        '${t.homeQuizNext} ${t.resetWhen(daysUntilWordReset())}',
-                        style: TextStyle(fontSize: 12, color: palette.muted),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          )
-        else ...[
-          _GradientActionButton(
-            onTap: onQuiz,
-            gradient: const LinearGradient(
-              colors: [AppColors.orange, AppColors.orangeDark],
-            ),
-            title: t.homeQuiz,
-            subtitle: t.homeQuizSub,
-            trailing: const Icon(
-              Icons.emoji_events_outlined,
-              color: Colors.white,
-              size: 20,
-            ),
-          ),
-          const SizedBox(height: 12),
-          _GradientActionButton(
-            onTap: onConjQuiz,
-            gradient: const LinearGradient(
-              colors: [AppColors.primary, AppColors.indigo],
-            ),
-            title: t.homeConjQuiz,
-            subtitle: t.homeConjSub,
-            trailing: const Icon(
-              Icons.spellcheck,
-              color: Colors.white,
-              size: 20,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            t.homeQuizOnce,
-            style: TextStyle(fontSize: 11, color: palette.muted),
           ),
         ],
         const SizedBox(height: 16),

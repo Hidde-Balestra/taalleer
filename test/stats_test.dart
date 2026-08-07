@@ -10,7 +10,7 @@ QuizResult _result({
   required int correct,
   required int total,
   List<int> wrong = const [],
-  String category = '',
+  String quizId = '',
 }) => QuizResult(
   id: 0,
   weekNumber: 1,
@@ -20,7 +20,7 @@ QuizResult _result({
   correct: correct,
   total: total,
   wrongWordIds: wrong,
-  category: category,
+  quizId: quizId,
 );
 
 void main() {
@@ -68,39 +68,39 @@ void main() {
       expect(stats.weakWords.first.id, id1);
     });
 
-    test('categoryGrades is leeg zonder categorietoetsen', () {
+    test('quizGrades is leeg zonder toets-id (historische data)', () {
       final history = [_result(grade: 8, correct: 8, total: 10)];
-      expect(computeStats(history, _course).categoryGrades, isEmpty);
+      expect(computeStats(history, _course).quizGrades, isEmpty);
     });
 
-    test('categoryGrades groepeert en middelt per categorie', () {
+    test('quizGrades groepeert en middelt per toets', () {
       final history = [
-        _result(grade: 6, correct: 6, total: 10, category: 'food'),
-        _result(grade: 8, correct: 8, total: 10, category: 'food'),
-        _result(grade: 10, correct: 10, total: 10, category: 'family'),
-        _result(grade: 5, correct: 5, total: 10), // algemeen, telt niet mee
+        _result(grade: 6, correct: 6, total: 10, quizId: 'food'),
+        _result(grade: 8, correct: 8, total: 10, quizId: 'food'),
+        _result(grade: 10, correct: 10, total: 10, quizId: kWordQuizId),
+        _result(grade: 5, correct: 5, total: 10), // historisch, telt niet mee
       ];
-      final grades = computeStats(history, _course).categoryGrades;
+      final grades = computeStats(history, _course).quizGrades;
       expect(grades, hasLength(2));
 
-      final food = grades.firstWhere((g) => g.categoryId == 'food');
+      final food = grades.firstWhere((g) => g.quizId == 'food');
       expect(food.averageGrade, 7.0);
       expect(food.count, 2);
 
-      final family = grades.firstWhere((g) => g.categoryId == 'family');
-      expect(family.averageGrade, 10.0);
-      expect(family.count, 1);
+      final word = grades.firstWhere((g) => g.quizId == kWordQuizId);
+      expect(word.averageGrade, 10.0);
+      expect(word.count, 1);
     });
 
-    test('categoryGrades sorteert op aantal toetsen aflopend', () {
+    test('quizGrades sorteert op aantal toetsen aflopend', () {
       final history = [
-        _result(grade: 8, correct: 8, total: 10, category: 'family'),
-        _result(grade: 8, correct: 8, total: 10, category: 'food'),
-        _result(grade: 8, correct: 8, total: 10, category: 'food'),
+        _result(grade: 8, correct: 8, total: 10, quizId: kConjugationQuizId),
+        _result(grade: 8, correct: 8, total: 10, quizId: 'food'),
+        _result(grade: 8, correct: 8, total: 10, quizId: 'food'),
       ];
-      final grades = computeStats(history, _course).categoryGrades;
-      expect(grades.first.categoryId, 'food'); // 2 toetsen
-      expect(grades.last.categoryId, 'family'); // 1 toets
+      final grades = computeStats(history, _course).quizGrades;
+      expect(grades.first.quizId, 'food'); // 2 toetsen
+      expect(grades.last.quizId, kConjugationQuizId); // 1 toets
     });
   });
 }

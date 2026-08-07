@@ -135,29 +135,28 @@ class StatisticsScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              if (stats.categoryGrades.isNotEmpty) ...[
+              if (stats.quizGrades.isNotEmpty) ...[
                 const SizedBox(height: 16),
                 AppCard(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        t.statsCategoryGrades,
+                        t.statsQuizGrades,
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                       const SizedBox(height: 8),
-                      for (final cg in stats.categoryGrades)
+                      for (final qg in stats.quizGrades)
                         Padding(
                           padding: const EdgeInsets.only(bottom: 6),
                           child: Row(
                             children: [
                               Expanded(
                                 child: Text(
-                                  course.categoryTitleFor(cg.categoryId, nl) ??
-                                      cg.categoryId,
+                                  quizLabel(t, course, qg.quizId, nl),
                                   style: TextStyle(
                                     fontSize: 13,
                                     color: palette.foreground,
@@ -165,11 +164,11 @@ class StatisticsScreen extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                cg.averageGrade.toStringAsFixed(1),
+                                qg.averageGrade.toStringAsFixed(1),
                                 style: TextStyle(
                                   fontSize: 13,
                                   fontWeight: FontWeight.bold,
-                                  color: gradeColor(cg.averageGrade),
+                                  color: gradeColor(qg.averageGrade),
                                 ),
                               ),
                             ],

@@ -82,31 +82,19 @@ class AppState extends ChangeNotifier {
 
   bool get paused => _streakState.paused;
 
-  /// Is deze week de **algemene** toets (Woordentoets/Vervoegingstoets) al
-  /// afgerond?
-  bool get quizDoneThisWeek {
-    final last = _streakState.lastQuizWeek;
+  /// Is de toets [quizId] (`kWordQuizId`, `kConjugationQuizId`, of een
+  /// thema-id) deze week al afgerond?
+  bool quizDoneThisWeek(String quizId) {
+    final last = _streakState.quizLastWeek[quizId];
     return last != null && last == _effectiveWeek();
   }
 
-  /// Mag de algemene toets nu gemaakt worden? Niet tijdens pauze, en
+  /// Mag de toets [quizId] nu gemaakt worden? Niet tijdens pauze, en
   /// hoogstens één keer per week: na een afgeronde toets is de volgende pas
-  /// bij de wekelijkse reset weer beschikbaar. Onafhankelijk van
-  /// categorietoetsen — die hebben hun eigen vergrendeling.
-  bool get quizAllowed => !_streakState.paused && !quizDoneThisWeek;
-
-  /// Is de toets voor [category] deze week al afgerond?
-  bool categoryQuizDoneThisWeek(String category) {
-    final last = _streakState.categoryLastQuizWeek[category];
-    return last != null && last == _effectiveWeek();
-  }
-
-  /// Mag de toets voor [category] nu gemaakt worden? Zelfde regel als de
-  /// algemene toets (niet tijdens pauze, hoogstens één keer per week), maar
-  /// volledig onafhankelijk vergrendeld van de algemene toets en van andere
-  /// categorieën.
-  bool categoryQuizAllowed(String category) =>
-      !_streakState.paused && !categoryQuizDoneThisWeek(category);
+  /// bij de wekelijkse reset weer beschikbaar. Elke toets — algemeen of
+  /// thema — is onafhankelijk vergrendeld van de andere.
+  bool quizAllowed(String quizId) =>
+      !_streakState.paused && !quizDoneThisWeek(quizId);
 
   void updateSettings(AppSettings settings) {
     _settings = settings;
@@ -135,24 +123,18 @@ class AppState extends ChangeNotifier {
   }
 
   /// Verwerkt een afgeronde toets: bewaart het resultaat en werkt de streak
-  /// bij. Bij een lege `result.category` geldt de vergrendeling van de
-  /// algemene toets (max. één per week); bij een categorietoets geldt de
-  /// eigen, onafhankelijke vergrendeling van die categorie. In beide
-  /// gevallen niet toegestaan tijdens pauze.
+  /// bij. Elke toets (`result.quizId`) heeft zijn eigen, onafhankelijke
+  /// wekelijkse vergrendeling; niet toegestaan tijdens pauze.
   void addResult(QuizResult result) {
-    final category = result.category;
-    final allowed = category.isEmpty
-        ? quizAllowed
-        : categoryQuizAllowed(category);
-    if (!allowed) return;
+    if (!quizAllowed(result.quizId)) return;
     _history.insert(0, result);
-    _updateStreakForCompletion(category: category.isEmpty ? null : category);
+    _updateStreakForCompletion(result.quizId);
     notifyListeners();
     _storage.saveHistory(_history);
     _storage.saveStreak(_streakState);
   }
 
-  void _updateStreakForCompletion({String? category}) {
+  void _updateStreakForCompletion(String quizId) {
     final w = _effectiveWeek();
     final last = _streakState.lastActivityWeek;
     final int newStreak;
@@ -165,17 +147,12 @@ class AppState extends ChangeNotifier {
     } else {
       newStreak = 1; // een week gemist
     }
-    final categoryLastQuizWeek = Map<String, int>.of(
-      _streakState.categoryLastQuizWeek,
-    );
-    if (category != null) categoryLastQuizWeek[category] = w;
+    final quizLastWeek = Map<String, int>.of(_streakState.quizLastWeek);
+    quizLastWeek[quizId] = w;
     _streakState = _streakState.copyWith(
       streak: newStreak,
       lastActivityWeek: w,
-      // Alleen de algemene toets (category == null) werkt lastQuizWeek bij —
-      // die vergrendelt uitsluitend de algemene toets, niet de categorieën.
-      lastQuizWeek: category == null ? w : _streakState.lastQuizWeek,
-      categoryLastQuizWeek: categoryLastQuizWeek,
+      quizLastWeek: quizLastWeek,
     );
   }
 }

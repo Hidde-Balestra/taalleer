@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
+import 'i18n.dart';
 import 'language_course.dart';
 import 'models.dart';
 
@@ -212,13 +213,23 @@ List<Word> weakWords(
   return [for (final id in sortedIds.take(limit)) ?course.wordById(id)];
 }
 
-/// Het meest recente resultaat voor [category] in [history] (al
-/// nieuwste-eerst), of `null` als die categorie nog nooit getoetst is.
-QuizResult? lastResultForCategory(List<QuizResult> history, String category) {
+/// Het meest recente resultaat voor toets [quizId] in [history] (al
+/// nieuwste-eerst), of `null` als die toets nog nooit gemaakt is.
+QuizResult? lastResultForQuiz(List<QuizResult> history, String quizId) {
   for (final r in history) {
-    if (r.category == category) return r;
+    if (r.quizId == quizId) return r;
   }
   return null;
+}
+
+/// Leesbare naam voor toets [quizId]: de algemene toetsen krijgen hun eigen
+/// label, een thema-id wordt via [LanguageCourse.categoryTitleFor]
+/// opgezocht, en historische data van vóór losse toets-id's (`''`) krijgt
+/// een generieke fallback.
+String quizLabel(Strings t, LanguageCourse course, String quizId, bool nl) {
+  if (quizId == kWordQuizId) return t.homeQuiz;
+  if (quizId == kConjugationQuizId) return t.homeConjQuiz;
+  return course.categoryTitleFor(quizId, nl) ?? t.historyGeneralQuiz;
 }
 
 /// Meerkeuzevragen: hergebruikt [buildPractice] (of [buildListeningPractice]

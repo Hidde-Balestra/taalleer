@@ -16,8 +16,7 @@ class Strings {
   final String homeConjQuiz, homeConjSub;
   final String homeQuizWeekend, homeLastGrade, homeNoResult;
   final String homeGreeting, homeSubGreeting;
-  final String homeQuizDone, homePaused, homePausedSub;
-  final String homeQuizNext, homeQuizOnce;
+  final String homePaused, homePausedSub;
   final String homeWeakWords, homeWeakWordsCount;
   // Reset van de week
   final String resetTitle, resetTomorrow, resetInDays;
@@ -35,9 +34,7 @@ class Strings {
   final String themesTitle,
       themesSubtitle,
       themesWordSingular,
-      themesWordPlural,
-      themesQuizButton,
-      themesQuizDoneThisWeek;
+      themesWordPlural;
   // Woordenlijst
   final String vocabTitle,
       vocabWeek,
@@ -79,6 +76,8 @@ class Strings {
   final String clozeTitle, clozeSub, clozeInstructionText;
   // Dagelijkse mini-sessie
   final String dailyMiniTitle, dailyMiniSub;
+  // Toetsen-overzicht
+  final String quizzesTitle, quizzesSubtitle;
   // Toets
   final String quizTitle, quizPlaceholder, quizSubmit;
   final String quizDyslexiaActive, quizNoHints, quizProgress;
@@ -92,6 +91,7 @@ class Strings {
   final String resultShare, shareResultText;
   // Historie
   final String historyTitle, historyWeek, historyNoResults;
+  final String historyGeneralQuiz;
   // Prestaties
   final String achievementsTitle, achievementsSubtitle, achievementsProgress;
   final String achievementsLocked;
@@ -99,7 +99,7 @@ class Strings {
   final String statsTitle, statsEmpty;
   final String statsTotalQuizzes, statsAverageGrade, statsBestGrade;
   final String statsWeakWords, statsWeakWordsEmpty;
-  final String statsCategoryGrades;
+  final String statsQuizGrades;
   // Instellingen
   final String settingsTitle, settingsLanguage, settingsDarkMode;
   final String settingsLight, settingsDark, settingsSystem;
@@ -149,11 +149,8 @@ class Strings {
     required this.homeNoResult,
     required this.homeGreeting,
     required this.homeSubGreeting,
-    required this.homeQuizDone,
     required this.homePaused,
     required this.homePausedSub,
-    required this.homeQuizNext,
-    required this.homeQuizOnce,
     required this.homeWeakWords,
     required this.homeWeakWordsCount,
     required this.resetTitle,
@@ -175,8 +172,6 @@ class Strings {
     required this.themesSubtitle,
     required this.themesWordSingular,
     required this.themesWordPlural,
-    required this.themesQuizButton,
-    required this.themesQuizDoneThisWeek,
     required this.vocabTitle,
     required this.vocabWeek,
     required this.vocabSearch,
@@ -225,6 +220,8 @@ class Strings {
     required this.clozeInstructionText,
     required this.dailyMiniTitle,
     required this.dailyMiniSub,
+    required this.quizzesTitle,
+    required this.quizzesSubtitle,
     required this.quizTitle,
     required this.quizPlaceholder,
     required this.quizSubmit,
@@ -245,6 +242,7 @@ class Strings {
     required this.historyTitle,
     required this.historyWeek,
     required this.historyNoResults,
+    required this.historyGeneralQuiz,
     required this.achievementsTitle,
     required this.achievementsSubtitle,
     required this.achievementsProgress,
@@ -256,7 +254,7 @@ class Strings {
     required this.statsBestGrade,
     required this.statsWeakWords,
     required this.statsWeakWordsEmpty,
-    required this.statsCategoryGrades,
+    required this.statsQuizGrades,
     required this.settingsTitle,
     required this.settingsLanguage,
     required this.settingsDarkMode,
@@ -318,11 +316,8 @@ class Strings {
     homeNoResult: 'Nog geen toets gemaakt',
     homeGreeting: 'Welkom terug! 👋',
     homeSubGreeting: 'Blijf oefenen, je bent goed bezig.',
-    homeQuizDone: 'Toets van deze week afgerond ✓',
     homePaused: 'Streak gepauzeerd',
     homePausedSub: 'Schakel de pauze uit om toetsen te maken',
-    homeQuizNext: 'Volgende toets',
-    homeQuizOnce: 'Je maakt één toets per week — kies er één.',
     homeWeakWords: 'Zwakke woorden oefenen',
     homeWeakWordsCount: '{n} woorden waar je vaker fout op zat',
     resetTitle: 'Nieuwe woorden en toets',
@@ -344,8 +339,6 @@ class Strings {
     themesSubtitle: 'Woorden per onderwerp doorbladeren',
     themesWordSingular: 'woord',
     themesWordPlural: 'woorden',
-    themesQuizButton: 'Toets maken',
-    themesQuizDoneThisWeek: 'Deze week al gedaan',
     vocabTitle: 'Woordenlijst',
     vocabWeek: 'Week',
     vocabSearch: 'Zoeken…',
@@ -394,6 +387,8 @@ class Strings {
     clozeInstructionText: 'Vervoeg "{verb}" in de juiste vorm',
     dailyMiniTitle: 'Dagelijkse mini-sessie',
     dailyMiniSub: '5 nieuwe woorden uit het hele boek',
+    quizzesTitle: 'Toetsen',
+    quizzesSubtitle: 'Elke toets is één keer per week beschikbaar',
     quizTitle: 'Weektoets',
     quizPlaceholder: 'Jouw antwoord…',
     quizSubmit: 'Bevestigen →',
@@ -415,6 +410,7 @@ class Strings {
     historyTitle: 'Resultaten',
     historyWeek: 'Week',
     historyNoResults: 'Nog geen resultaten beschikbaar.',
+    historyGeneralQuiz: 'Toets',
     achievementsTitle: 'Prestaties',
     achievementsSubtitle: 'Badges die je onderweg verdient',
     achievementsProgress: '{n} van {total} behaald',
@@ -426,7 +422,7 @@ class Strings {
     statsBestGrade: 'Beste cijfer',
     statsWeakWords: 'Vaakst foute woorden',
     statsWeakWordsEmpty: 'Nog geen woorden om te herhalen — goed bezig!',
-    statsCategoryGrades: 'Cijfer per categorie',
+    statsQuizGrades: 'Cijfer per toets',
     settingsTitle: 'Instellingen',
     settingsLanguage: 'App-taal',
     settingsDarkMode: 'Weergave',
@@ -492,11 +488,8 @@ class Strings {
     homeNoResult: 'No quiz taken yet',
     homeGreeting: 'Welcome back! 👋',
     homeSubGreeting: 'Keep practicing, you are doing great.',
-    homeQuizDone: 'This week\'s quiz completed ✓',
     homePaused: 'Streak paused',
     homePausedSub: 'Turn off pause to take quizzes',
-    homeQuizNext: 'Next quiz',
-    homeQuizOnce: 'You take one quiz per week — pick one.',
     homeWeakWords: 'Practice weak words',
     homeWeakWordsCount: '{n} words you often got wrong',
     resetTitle: 'New words and quiz',
@@ -518,8 +511,6 @@ class Strings {
     themesSubtitle: 'Browse words by topic',
     themesWordSingular: 'word',
     themesWordPlural: 'words',
-    themesQuizButton: 'Take quiz',
-    themesQuizDoneThisWeek: 'Already done this week',
     vocabTitle: 'Word List',
     vocabWeek: 'Week',
     vocabSearch: 'Search…',
@@ -568,6 +559,8 @@ class Strings {
     clozeInstructionText: 'Conjugate "{verb}" in the right form',
     dailyMiniTitle: 'Daily mini session',
     dailyMiniSub: '5 new words from the whole book',
+    quizzesTitle: 'Quizzes',
+    quizzesSubtitle: 'Each quiz is available once a week',
     quizTitle: 'Weekly Quiz',
     quizPlaceholder: 'Your answer…',
     quizSubmit: 'Submit →',
@@ -589,6 +582,7 @@ class Strings {
     historyTitle: 'Results',
     historyWeek: 'Week',
     historyNoResults: 'No results available yet.',
+    historyGeneralQuiz: 'Quiz',
     achievementsTitle: 'Achievements',
     achievementsSubtitle: 'Badges you earn along the way',
     achievementsProgress: '{n} of {total} unlocked',
@@ -600,7 +594,7 @@ class Strings {
     statsBestGrade: 'Best grade',
     statsWeakWords: 'Most often wrong',
     statsWeakWordsEmpty: 'No words to review yet — nice work!',
-    statsCategoryGrades: 'Grade per category',
+    statsQuizGrades: 'Grade per quiz',
     settingsTitle: 'Settings',
     settingsLanguage: 'App Language',
     settingsDarkMode: 'Appearance',

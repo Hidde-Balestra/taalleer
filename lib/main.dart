@@ -23,6 +23,7 @@ import 'screens/practice_hub_screen.dart';
 import 'screens/practice_screen.dart';
 import 'screens/quiz_result_screen.dart';
 import 'screens/quiz_screen.dart';
+import 'screens/quizzes_screen.dart';
 import 'screens/sentence_builder_screen.dart';
 import 'screens/sentence_translation_screen.dart';
 import 'screens/settings_screen.dart';
@@ -280,7 +281,7 @@ class _HomeShellState extends State<HomeShell> {
     AppSettings settings,
     LanguageCourse course,
     List<Word> words, {
-    String category = '',
+    required String quizId,
   }) {
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -290,7 +291,7 @@ class _HomeShellState extends State<HomeShell> {
           sourceLang: settings.sourceLang,
           weekNumber: currentWeekNumber(),
           words: words,
-          category: category,
+          quizId: quizId,
           onFinish: _finishQuiz(t, course),
         ),
       ),
@@ -300,7 +301,7 @@ class _HomeShellState extends State<HomeShell> {
   /// Bouwt de woordenlijst voor thema [categoryId] (cursusbreed, niet
   /// beperkt tot de woorden van deze week — thema's zijn dun bezet) en opent
   /// er een toets voor, met een eigen wekelijkse vergrendeling los van de
-  /// algemene toets.
+  /// andere toetsen.
   void _openCategoryQuiz(
     Strings t,
     AppSettings settings,
@@ -308,7 +309,7 @@ class _HomeShellState extends State<HomeShell> {
     String categoryId,
   ) {
     final words = course.words.where((w) => w.category == categoryId).toList();
-    _openQuiz(t, settings, course, words, category: categoryId);
+    _openQuiz(t, settings, course, words, quizId: categoryId);
   }
 
   void _openConjQuiz(Strings t, AppSettings settings, LanguageCourse course) {
@@ -320,6 +321,7 @@ class _HomeShellState extends State<HomeShell> {
           weekNumber: currentWeekNumber(),
           course: course,
           verbs: course.words,
+          quizId: kConjugationQuizId,
           onFinish: _finishQuiz(t, course),
         ),
       ),
@@ -362,24 +364,44 @@ class _HomeShellState extends State<HomeShell> {
   }
 
   void _openThemes() {
+    final settings = widget.appState.settings;
+    final t = Strings.of(settings.language);
     Navigator.of(context).push(
       MaterialPageRoute(
-        // Moet meeluisteren met live appState: na het maken van een
-        // categorietoets moet de vergrendelstatus/het laatste cijfer
-        // meteen bijwerken, net als bij Instellingen/Prestaties.
+        builder: (_) => ThemesScreen(
+          t: t,
+          lang: settings.language,
+          course: courseById(settings.courseId),
+        ),
+      ),
+    );
+  }
+
+  void _openQuizzes() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        // Moet meeluisteren met live appState: na het maken van een toets
+        // moet de vergrendelstatus/het laatste cijfer meteen bijwerken, net
+        // als bij Instellingen/Prestaties.
         builder: (_) => ListenableBuilder(
           listenable: widget.appState,
           builder: (context, _) {
             final settings = widget.appState.settings;
             final t = Strings.of(settings.language);
             final course = courseById(settings.courseId);
-            return ThemesScreen(
+            return QuizzesScreen(
               t: t,
               lang: settings.language,
               course: course,
               history: widget.appState.history,
-              categoryQuizAllowed: widget.appState.categoryQuizAllowed,
-              onStartQuiz: (categoryId) =>
+              paused: widget.appState.paused,
+              quizAllowed: widget.appState.quizAllowed,
+              onWordQuiz: () {
+                final weekWords = wordsForWeek(course, currentWeekSeed());
+                _openQuiz(t, settings, course, weekWords, quizId: kWordQuizId);
+              },
+              onConjugationQuiz: () => _openConjQuiz(t, settings, course),
+              onCategoryQuiz: (categoryId) =>
                   _openCategoryQuiz(t, settings, course, categoryId),
             );
           },
@@ -446,11 +468,9 @@ class _HomeShellState extends State<HomeShell> {
         wordCount: weekWords.length,
         history: widget.appState.history,
         paused: widget.appState.paused,
-        quizDoneThisWeek: widget.appState.quizDoneThisWeek,
         onPracticeHub: () =>
             _openPracticeHub(t, settings, course, weekWords, weak),
-        onQuiz: () => _openQuiz(t, settings, course, weekWords),
-        onConjQuiz: () => _openConjQuiz(t, settings, course),
+        onQuizzes: _openQuizzes,
       ),
       VocabularyScreen(
         t: t,

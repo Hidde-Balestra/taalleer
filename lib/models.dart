@@ -1,5 +1,12 @@
 // Datamodellen voor TaalLeer.
 
+/// Vaste id's voor de twee algemene toetsen (naast de per-thema
+/// categorietoetsen, waarvan het thema-id zelf als quiz-id dient) — elke
+/// toets, algemeen of thema, heeft zijn eigen onafhankelijke wekelijkse
+/// vergrendeling (zie `AppState.quizAllowed`).
+const String kWordQuizId = 'word';
+const String kConjugationQuizId = 'conjugation';
+
 enum Lang { nl, en }
 
 enum DarkModeSetting { light, dark, system }
@@ -161,9 +168,11 @@ class QuizResult {
   final int total;
   final List<int> wrongWordIds;
 
-  /// Id van het thema waarvoor deze toets is gemaakt (zie `kWordCategories`),
-  /// of `''` voor de algemene Woordentoets/Vervoegingstoets.
-  final String category;
+  /// Welke toets dit is: `kWordQuizId`, `kConjugationQuizId`, of een
+  /// thema-id (zie `kWordCategories`) voor een categorietoets. `''` komt
+  /// alleen nog voor bij historische data van vóór losse toets-id's — die
+  /// kon toen niet worden onderscheiden.
+  final String quizId;
 
   const QuizResult({
     required this.id,
@@ -174,7 +183,7 @@ class QuizResult {
     required this.correct,
     required this.total,
     required this.wrongWordIds,
-    this.category = '',
+    this.quizId = '',
   });
 
   Map<String, dynamic> toJson() => {
@@ -186,7 +195,9 @@ class QuizResult {
     'correct': correct,
     'total': total,
     'wrongWordIds': wrongWordIds,
-    'category': category,
+    // JSON-sleutel bewust 'category' gehouden (i.p.v. 'quizId') zodat al
+    // opgeslagen historie op het apparaat leesbaar blijft.
+    'category': quizId,
   };
 
   factory QuizResult.fromJson(Map<String, dynamic> json) => QuizResult(
@@ -198,7 +209,7 @@ class QuizResult {
     correct: json['correct'] as int,
     total: json['total'] as int,
     wrongWordIds: (json['wrongWordIds'] as List).cast<int>(),
-    category: json['category'] as String? ?? '',
+    quizId: json['category'] as String? ?? '',
   );
 }
 
@@ -289,19 +300,19 @@ class ConjugationQuestion {
 class StreakState {
   final int streak;
 
-  /// Laatste effectieve week waarin de **algemene** toets (Woordentoets of
-  /// Vervoegingstoets) is afgerond — bepaalt alleen de vergrendeling van die
-  /// algemene toets, niet meer de streak (zie [lastActivityWeek]).
+  /// Verouderd: vroegere gedeelde vergrendeling van de algemene toets, vóór
+  /// elke toets zijn eigen id kreeg. Alleen nog gelezen als migratiebron in
+  /// [fromJson] (zie [quizLastWeek]); de app schrijft er niet meer naar.
   final int? lastQuizWeek;
 
   /// Laatste effectieve week waarin *welke toets dan ook* is afgerond —
-  /// algemeen of een categorietoets. Drijft de streak.
+  /// welke dan ook. Drijft de streak.
   final int? lastActivityWeek;
 
-  /// Per categorie-id de laatste effectieve week waarin die categorie is
-  /// getoetst — elke categorie heeft zijn eigen, onafhankelijke
-  /// wekelijkse vergrendeling.
-  final Map<String, int> categoryLastQuizWeek;
+  /// Per toets-id (`kWordQuizId`, `kConjugationQuizId`, of een thema-id) de
+  /// laatste effectieve week waarin die toets is afgerond — elke toets
+  /// heeft zijn eigen, onafhankelijke wekelijkse vergrendeling.
+  final Map<String, int> quizLastWeek;
 
   final bool paused;
   final int pauseOffset;
@@ -315,7 +326,7 @@ class StreakState {
     this.streak = 0,
     this.lastQuizWeek,
     this.lastActivityWeek,
-    this.categoryLastQuizWeek = const {},
+    this.quizLastWeek = const {},
     this.paused = false,
     this.pauseOffset = 0,
     this.pauseSince,
@@ -327,7 +338,7 @@ class StreakState {
     int? lastQuizWeek,
     bool clearLastQuizWeek = false,
     int? lastActivityWeek,
-    Map<String, int>? categoryLastQuizWeek,
+    Map<String, int>? quizLastWeek,
     bool? paused,
     int? pauseOffset,
     int? pauseSince,
@@ -340,7 +351,7 @@ class StreakState {
           ? null
           : (lastQuizWeek ?? this.lastQuizWeek),
       lastActivityWeek: lastActivityWeek ?? this.lastActivityWeek,
-      categoryLastQuizWeek: categoryLastQuizWeek ?? this.categoryLastQuizWeek,
+      quizLastWeek: quizLastWeek ?? this.quizLastWeek,
       paused: paused ?? this.paused,
       pauseOffset: pauseOffset ?? this.pauseOffset,
       pauseSince: clearPauseSince ? null : (pauseSince ?? this.pauseSince),
@@ -352,29 +363,45 @@ class StreakState {
     'streak': streak,
     'lastQuizWeek': lastQuizWeek,
     'lastActivityWeek': lastActivityWeek,
-    'categoryLastQuizWeek': categoryLastQuizWeek,
+    // JSON-sleutel bewust 'categoryLastQuizWeek' gehouden (i.p.v.
+    // 'quizLastWeek') zodat al opgeslagen data leesbaar blijft.
+    'categoryLastQuizWeek': quizLastWeek,
     'paused': paused,
     'pauseOffset': pauseOffset,
     'pauseSince': pauseSince,
     'firstWeek': firstWeek,
   };
 
-  factory StreakState.fromJson(Map<String, dynamic> json) => StreakState(
-    streak: json['streak'] as int? ?? 0,
-    lastQuizWeek: json['lastQuizWeek'] as int?,
-    // Bestaande, al opgeslagen streaks hebben geen lastActivityWeek — zonder
-    // deze fallback op de oude lastQuizWeek zou hun lopende streak bij het
-    // inladen ineens verloren lijken.
-    lastActivityWeek:
-        json['lastActivityWeek'] as int? ?? json['lastQuizWeek'] as int?,
-    categoryLastQuizWeek:
+  factory StreakState.fromJson(Map<String, dynamic> json) {
+    final storedQuizLastWeek =
         (json['categoryLastQuizWeek'] as Map?)?.map(
           (k, v) => MapEntry(k as String, v as int),
         ) ??
-        const {},
-    paused: json['paused'] as bool? ?? false,
-    pauseOffset: json['pauseOffset'] as int? ?? 0,
-    pauseSince: json['pauseSince'] as int?,
-    firstWeek: json['firstWeek'] as int?,
-  );
+        const <String, int>{};
+    final legacyLastQuizWeek = json['lastQuizWeek'] as int?;
+    return StreakState(
+      streak: json['streak'] as int? ?? 0,
+      lastQuizWeek: legacyLastQuizWeek,
+      // Bestaande, al opgeslagen streaks hebben geen lastActivityWeek —
+      // zonder deze fallback op de oude lastQuizWeek zou hun lopende streak
+      // bij het inladen ineens verloren lijken.
+      lastActivityWeek: json['lastActivityWeek'] as int? ?? legacyLastQuizWeek,
+      // Draagt de oude gedeelde vergrendeling eenmalig over naar de twee
+      // algemene toetsen, zodat iemand die deze week al de gedeelde toets
+      // deed niet ineens allebei opnieuw mag maken in de overgangsweek.
+      quizLastWeek: {
+        ...storedQuizLastWeek,
+        if (legacyLastQuizWeek != null &&
+            !storedQuizLastWeek.containsKey(kWordQuizId))
+          kWordQuizId: legacyLastQuizWeek,
+        if (legacyLastQuizWeek != null &&
+            !storedQuizLastWeek.containsKey(kConjugationQuizId))
+          kConjugationQuizId: legacyLastQuizWeek,
+      },
+      paused: json['paused'] as bool? ?? false,
+      pauseOffset: json['pauseOffset'] as int? ?? 0,
+      pauseSince: json['pauseSince'] as int?,
+      firstWeek: json['firstWeek'] as int?,
+    );
+  }
 }

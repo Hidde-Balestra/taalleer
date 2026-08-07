@@ -16,6 +16,11 @@ class ConjugationQuizScreen extends StatefulWidget {
   final List<Word> verbs;
   final ValueChanged<QuizResult> onFinish;
 
+  /// Toets-id voor de wekelijkse vergrendeling — altijd `kConjugationQuizId`
+  /// in de praktijk, als parameter zodat dit scherm niet zelf de constante
+  /// hoeft te kennen.
+  final String quizId;
+
   const ConjugationQuizScreen({
     super.key,
     required this.t,
@@ -24,6 +29,7 @@ class ConjugationQuizScreen extends StatefulWidget {
     required this.course,
     required this.verbs,
     required this.onFinish,
+    required this.quizId,
   });
 
   @override
@@ -78,6 +84,7 @@ class _ConjugationQuizScreenState extends State<ConjugationQuizScreen> {
           correct: correctCount,
           total: _questions.length,
           wrongWordIds: wrongIds,
+          quizId: widget.quizId,
         ),
       );
     } else {

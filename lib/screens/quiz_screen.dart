@@ -14,9 +14,10 @@ class QuizScreen extends StatefulWidget {
   final List<Word> words;
   final ValueChanged<QuizResult> onFinish;
 
-  /// Id van het thema waarvoor deze toets is (zie `kWordCategories`), of
-  /// `''` voor de algemene Woordentoets.
-  final String category;
+  /// Welke toets dit is: `kWordQuizId` of een thema-id (zie
+  /// `kWordCategories`) — bepaalt de eigen, onafhankelijke wekelijkse
+  /// vergrendeling (zie `AppState.quizAllowed`).
+  final String quizId;
 
   const QuizScreen({
     super.key,
@@ -26,7 +27,7 @@ class QuizScreen extends StatefulWidget {
     required this.weekNumber,
     required this.words,
     required this.onFinish,
-    this.category = '',
+    required this.quizId,
   });
 
   @override
@@ -82,7 +83,7 @@ class _QuizScreenState extends State<QuizScreen> {
           correct: correctCount,
           total: _questions.length,
           wrongWordIds: wrongIds,
-          category: widget.category,
+          quizId: widget.quizId,
         ),
       );
     } else {

@@ -35,7 +35,9 @@ class Strings {
   final String themesTitle,
       themesSubtitle,
       themesWordSingular,
-      themesWordPlural;
+      themesWordPlural,
+      themesQuizButton,
+      themesQuizDoneThisWeek;
   // Woordenlijst
   final String vocabTitle,
       vocabWeek,
@@ -97,6 +99,7 @@ class Strings {
   final String statsTitle, statsEmpty;
   final String statsTotalQuizzes, statsAverageGrade, statsBestGrade;
   final String statsWeakWords, statsWeakWordsEmpty;
+  final String statsCategoryGrades;
   // Instellingen
   final String settingsTitle, settingsLanguage, settingsDarkMode;
   final String settingsLight, settingsDark, settingsSystem;
@@ -172,6 +175,8 @@ class Strings {
     required this.themesSubtitle,
     required this.themesWordSingular,
     required this.themesWordPlural,
+    required this.themesQuizButton,
+    required this.themesQuizDoneThisWeek,
     required this.vocabTitle,
     required this.vocabWeek,
     required this.vocabSearch,
@@ -251,6 +256,7 @@ class Strings {
     required this.statsBestGrade,
     required this.statsWeakWords,
     required this.statsWeakWordsEmpty,
+    required this.statsCategoryGrades,
     required this.settingsTitle,
     required this.settingsLanguage,
     required this.settingsDarkMode,
@@ -338,6 +344,8 @@ class Strings {
     themesSubtitle: 'Woorden per onderwerp doorbladeren',
     themesWordSingular: 'woord',
     themesWordPlural: 'woorden',
+    themesQuizButton: 'Toets maken',
+    themesQuizDoneThisWeek: 'Deze week al gedaan',
     vocabTitle: 'Woordenlijst',
     vocabWeek: 'Week',
     vocabSearch: 'Zoeken…',
@@ -418,6 +426,7 @@ class Strings {
     statsBestGrade: 'Beste cijfer',
     statsWeakWords: 'Vaakst foute woorden',
     statsWeakWordsEmpty: 'Nog geen woorden om te herhalen — goed bezig!',
+    statsCategoryGrades: 'Cijfer per categorie',
     settingsTitle: 'Instellingen',
     settingsLanguage: 'App-taal',
     settingsDarkMode: 'Weergave',
@@ -509,6 +518,8 @@ class Strings {
     themesSubtitle: 'Browse words by topic',
     themesWordSingular: 'word',
     themesWordPlural: 'words',
+    themesQuizButton: 'Take quiz',
+    themesQuizDoneThisWeek: 'Already done this week',
     vocabTitle: 'Word List',
     vocabWeek: 'Week',
     vocabSearch: 'Search…',
@@ -589,6 +600,7 @@ class Strings {
     statsBestGrade: 'Best grade',
     statsWeakWords: 'Most often wrong',
     statsWeakWordsEmpty: 'No words to review yet — nice work!',
+    statsCategoryGrades: 'Grade per category',
     settingsTitle: 'Settings',
     settingsLanguage: 'App Language',
     settingsDarkMode: 'Appearance',

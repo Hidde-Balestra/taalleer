@@ -161,6 +161,10 @@ class QuizResult {
   final int total;
   final List<int> wrongWordIds;
 
+  /// Id van het thema waarvoor deze toets is gemaakt (zie `kWordCategories`),
+  /// of `''` voor de algemene Woordentoets/Vervoegingstoets.
+  final String category;
+
   const QuizResult({
     required this.id,
     required this.weekNumber,
@@ -170,6 +174,7 @@ class QuizResult {
     required this.correct,
     required this.total,
     required this.wrongWordIds,
+    this.category = '',
   });
 
   Map<String, dynamic> toJson() => {
@@ -181,6 +186,7 @@ class QuizResult {
     'correct': correct,
     'total': total,
     'wrongWordIds': wrongWordIds,
+    'category': category,
   };
 
   factory QuizResult.fromJson(Map<String, dynamic> json) => QuizResult(
@@ -192,6 +198,7 @@ class QuizResult {
     correct: json['correct'] as int,
     total: json['total'] as int,
     wrongWordIds: (json['wrongWordIds'] as List).cast<int>(),
+    category: json['category'] as String? ?? '',
   );
 }
 
@@ -272,16 +279,30 @@ class ConjugationQuestion {
 }
 
 /// De wekelijkse streak-staat. De streak blijft in stand zolang er per week
-/// minstens één toets is afgerond. Met [paused] wordt de streak bevroren:
-/// er kunnen dan geen toetsen worden gemaakt en de streak kan niet omhoog of
-/// gereset worden.
+/// minstens één toets is afgerond — welke dan ook: de algemene toets of een
+/// categorietoets. Met [paused] wordt de streak bevroren: er kunnen dan geen
+/// toetsen worden gemaakt en de streak kan niet omhoog of gereset worden.
 ///
-/// [lastQuizWeek], [pauseSince] en [pauseOffset] worden uitgedrukt in
-/// "effectieve" weken (zie `AppState`): de echte weekteller minus de tijd die
-/// in pauze is doorgebracht.
+/// [lastQuizWeek], [lastActivityWeek], [pauseSince] en [pauseOffset] worden
+/// uitgedrukt in "effectieve" weken (zie `AppState`): de echte weekteller
+/// minus de tijd die in pauze is doorgebracht.
 class StreakState {
   final int streak;
+
+  /// Laatste effectieve week waarin de **algemene** toets (Woordentoets of
+  /// Vervoegingstoets) is afgerond — bepaalt alleen de vergrendeling van die
+  /// algemene toets, niet meer de streak (zie [lastActivityWeek]).
   final int? lastQuizWeek;
+
+  /// Laatste effectieve week waarin *welke toets dan ook* is afgerond —
+  /// algemeen of een categorietoets. Drijft de streak.
+  final int? lastActivityWeek;
+
+  /// Per categorie-id de laatste effectieve week waarin die categorie is
+  /// getoetst — elke categorie heeft zijn eigen, onafhankelijke
+  /// wekelijkse vergrendeling.
+  final Map<String, int> categoryLastQuizWeek;
+
   final bool paused;
   final int pauseOffset;
   final int? pauseSince;
@@ -293,6 +314,8 @@ class StreakState {
   const StreakState({
     this.streak = 0,
     this.lastQuizWeek,
+    this.lastActivityWeek,
+    this.categoryLastQuizWeek = const {},
     this.paused = false,
     this.pauseOffset = 0,
     this.pauseSince,
@@ -303,6 +326,8 @@ class StreakState {
     int? streak,
     int? lastQuizWeek,
     bool clearLastQuizWeek = false,
+    int? lastActivityWeek,
+    Map<String, int>? categoryLastQuizWeek,
     bool? paused,
     int? pauseOffset,
     int? pauseSince,
@@ -314,6 +339,8 @@ class StreakState {
       lastQuizWeek: clearLastQuizWeek
           ? null
           : (lastQuizWeek ?? this.lastQuizWeek),
+      lastActivityWeek: lastActivityWeek ?? this.lastActivityWeek,
+      categoryLastQuizWeek: categoryLastQuizWeek ?? this.categoryLastQuizWeek,
       paused: paused ?? this.paused,
       pauseOffset: pauseOffset ?? this.pauseOffset,
       pauseSince: clearPauseSince ? null : (pauseSince ?? this.pauseSince),
@@ -324,6 +351,8 @@ class StreakState {
   Map<String, dynamic> toJson() => {
     'streak': streak,
     'lastQuizWeek': lastQuizWeek,
+    'lastActivityWeek': lastActivityWeek,
+    'categoryLastQuizWeek': categoryLastQuizWeek,
     'paused': paused,
     'pauseOffset': pauseOffset,
     'pauseSince': pauseSince,
@@ -333,6 +362,16 @@ class StreakState {
   factory StreakState.fromJson(Map<String, dynamic> json) => StreakState(
     streak: json['streak'] as int? ?? 0,
     lastQuizWeek: json['lastQuizWeek'] as int?,
+    // Bestaande, al opgeslagen streaks hebben geen lastActivityWeek — zonder
+    // deze fallback op de oude lastQuizWeek zou hun lopende streak bij het
+    // inladen ineens verloren lijken.
+    lastActivityWeek:
+        json['lastActivityWeek'] as int? ?? json['lastQuizWeek'] as int?,
+    categoryLastQuizWeek:
+        (json['categoryLastQuizWeek'] as Map?)?.map(
+          (k, v) => MapEntry(k as String, v as int),
+        ) ??
+        const {},
     paused: json['paused'] as bool? ?? false,
     pauseOffset: json['pauseOffset'] as int? ?? 0,
     pauseSince: json['pauseSince'] as int?,

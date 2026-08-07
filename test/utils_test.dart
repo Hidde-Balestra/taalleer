@@ -189,6 +189,19 @@ void main() {
         expect(weekIds, contains(q.word.id));
       }
     });
+
+    test(
+      'weektoets crasht niet bij minder dan 10 woorden (bv. een kleine categorie)',
+      () {
+        final smallPool = weekWords.take(4).toList();
+        final qs = buildQuiz(smallPool, Lang.nl, random: Random(1));
+        expect(qs, hasLength(4));
+      },
+    );
+
+    test('weektoets geeft een lege lijst bij een lege woordenlijst', () {
+      expect(buildQuiz(const [], Lang.nl, random: Random(1)), isEmpty);
+    });
   });
 
   group('buildListeningPractice', () {
@@ -557,6 +570,34 @@ void main() {
         resultWith([-1, 999999]),
       ];
       expect(weakWords(history, _course), isEmpty);
+    });
+  });
+
+  group('lastResultForCategory', () {
+    QuizResult resultWith(int id, String category) => QuizResult(
+      id: id,
+      weekNumber: 1,
+      year: 2026,
+      date: 'x',
+      grade: 7,
+      correct: 7,
+      total: 10,
+      wrongWordIds: const [],
+      category: category,
+    );
+
+    test('geeft null als de categorie nog nooit getoetst is', () {
+      expect(lastResultForCategory([], 'food'), isNull);
+      expect(lastResultForCategory([resultWith(1, 'family')], 'food'), isNull);
+    });
+
+    test('geeft de meest recente match (historie is al nieuwste-eerst)', () {
+      final history = [
+        resultWith(3, 'food'), // nieuwste
+        resultWith(2, 'family'),
+        resultWith(1, 'food'),
+      ];
+      expect(lastResultForCategory(history, 'food')!.id, 3);
     });
   });
 

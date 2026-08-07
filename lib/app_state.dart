@@ -72,25 +72,41 @@ class AppState extends ChangeNotifier {
   }
 
   /// De huidige streak in weken. Als er een hele week is gemist (zonder
-  /// pauze), is de streak verlopen en is dit 0.
+  /// pauze), is de streak verlopen en is dit 0. Telt elke afgeronde toets
+  /// mee — algemeen of een categorietoets, welke dan ook.
   int get streak {
-    final last = _streakState.lastQuizWeek;
+    final last = _streakState.lastActivityWeek;
     if (last == null) return 0;
     return _effectiveWeek() <= last + 1 ? _streakState.streak : 0;
   }
 
   bool get paused => _streakState.paused;
 
-  /// Is deze week al een toets afgerond?
+  /// Is deze week de **algemene** toets (Woordentoets/Vervoegingstoets) al
+  /// afgerond?
   bool get quizDoneThisWeek {
     final last = _streakState.lastQuizWeek;
     return last != null && last == _effectiveWeek();
   }
 
-  /// Mag er nu een toets gemaakt worden? Niet tijdens pauze, en hoogstens
-  /// één keer per week: na een afgeronde toets is de volgende pas bij de
-  /// wekelijkse reset weer beschikbaar.
+  /// Mag de algemene toets nu gemaakt worden? Niet tijdens pauze, en
+  /// hoogstens één keer per week: na een afgeronde toets is de volgende pas
+  /// bij de wekelijkse reset weer beschikbaar. Onafhankelijk van
+  /// categorietoetsen — die hebben hun eigen vergrendeling.
   bool get quizAllowed => !_streakState.paused && !quizDoneThisWeek;
+
+  /// Is de toets voor [category] deze week al afgerond?
+  bool categoryQuizDoneThisWeek(String category) {
+    final last = _streakState.categoryLastQuizWeek[category];
+    return last != null && last == _effectiveWeek();
+  }
+
+  /// Mag de toets voor [category] nu gemaakt worden? Zelfde regel als de
+  /// algemene toets (niet tijdens pauze, hoogstens één keer per week), maar
+  /// volledig onafhankelijk vergrendeld van de algemene toets en van andere
+  /// categorieën.
+  bool categoryQuizAllowed(String category) =>
+      !_streakState.paused && !categoryQuizDoneThisWeek(category);
 
   void updateSettings(AppSettings settings) {
     _settings = settings;
@@ -119,30 +135,47 @@ class AppState extends ChangeNotifier {
   }
 
   /// Verwerkt een afgeronde toets: bewaart het resultaat en werkt de streak
-  /// bij. Wordt genegeerd tijdens pauze en als er deze week al een toets is
-  /// gemaakt (één toets per week).
+  /// bij. Bij een lege `result.category` geldt de vergrendeling van de
+  /// algemene toets (max. één per week); bij een categorietoets geldt de
+  /// eigen, onafhankelijke vergrendeling van die categorie. In beide
+  /// gevallen niet toegestaan tijdens pauze.
   void addResult(QuizResult result) {
-    if (!quizAllowed) return;
+    final category = result.category;
+    final allowed = category.isEmpty
+        ? quizAllowed
+        : categoryQuizAllowed(category);
+    if (!allowed) return;
     _history.insert(0, result);
-    _updateStreakForCompletion();
+    _updateStreakForCompletion(category: category.isEmpty ? null : category);
     notifyListeners();
     _storage.saveHistory(_history);
     _storage.saveStreak(_streakState);
   }
 
-  void _updateStreakForCompletion() {
+  void _updateStreakForCompletion({String? category}) {
     final w = _effectiveWeek();
-    final last = _streakState.lastQuizWeek;
+    final last = _streakState.lastActivityWeek;
     final int newStreak;
     if (last == null) {
       newStreak = 1;
     } else if (w == last) {
-      newStreak = _streakState.streak; // deze week al gedaan
+      newStreak = _streakState.streak; // deze week al activiteit gehad
     } else if (w == last + 1) {
       newStreak = _streakState.streak + 1; // opvolgende week
     } else {
       newStreak = 1; // een week gemist
     }
-    _streakState = _streakState.copyWith(streak: newStreak, lastQuizWeek: w);
+    final categoryLastQuizWeek = Map<String, int>.of(
+      _streakState.categoryLastQuizWeek,
+    );
+    if (category != null) categoryLastQuizWeek[category] = w;
+    _streakState = _streakState.copyWith(
+      streak: newStreak,
+      lastActivityWeek: w,
+      // Alleen de algemene toets (category == null) werkt lastQuizWeek bij —
+      // die vergrendelt uitsluitend de algemene toets, niet de categorieën.
+      lastQuizWeek: category == null ? w : _streakState.lastQuizWeek,
+      categoryLastQuizWeek: categoryLastQuizWeek,
+    );
   }
 }

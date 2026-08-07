@@ -300,4 +300,119 @@ void main() {
       },
     );
   });
+
+  group('Categorietoetsen', () {
+    var week = 500;
+    int nowWeek() => week;
+    setUp(() => week = 500);
+
+    QuizResult resultFor(int id, {String category = ''}) => QuizResult(
+      id: id,
+      weekNumber: 1,
+      year: 2026,
+      date: 'x',
+      grade: 8,
+      correct: 8,
+      total: 10,
+      wrongWordIds: const [],
+      category: category,
+    );
+
+    test('elke categorie is onafhankelijk vergrendeld', () async {
+      final state = await AppState.load(nowWeek: nowWeek);
+      expect(state.categoryQuizAllowed('food'), isTrue);
+      expect(state.categoryQuizAllowed('family'), isTrue);
+
+      state.addResult(resultFor(1, category: 'food'));
+      expect(state.categoryQuizAllowed('food'), isFalse);
+      expect(state.categoryQuizDoneThisWeek('food'), isTrue);
+      // Een andere categorie is nog gewoon beschikbaar.
+      expect(state.categoryQuizAllowed('family'), isTrue);
+
+      state.addResult(resultFor(2, category: 'family'));
+      expect(state.categoryQuizDoneThisWeek('family'), isTrue);
+      expect(state.history, hasLength(2));
+    });
+
+    test(
+      'een categorietoets blokkeert de algemene toets niet, en andersom',
+      () async {
+        final state = await AppState.load(nowWeek: nowWeek);
+        state.addResult(resultFor(1, category: 'food'));
+        expect(state.quizAllowed, isTrue); // algemene toets nog beschikbaar
+
+        state.addResult(resultFor(2)); // algemene toets
+        expect(state.quizDoneThisWeek, isTrue);
+        // De categorietoets blijft onaangeroerd vergrendeld/beschikbaar
+        // zoals hij al was — een 3e categorie is nog gewoon vrij.
+        expect(state.categoryQuizAllowed('travel'), isTrue);
+        expect(state.history, hasLength(2));
+      },
+    );
+
+    test(
+      'een herhaalde poging voor dezelfde categorie wordt genegeerd',
+      () async {
+        final state = await AppState.load(nowWeek: nowWeek);
+        state.addResult(resultFor(1, category: 'food'));
+        state.addResult(resultFor(2, category: 'food')); // genegeerd
+        expect(state.history, hasLength(1));
+      },
+    );
+
+    test(
+      'elke toets (algemeen of categorie) houdt de streak in stand',
+      () async {
+        final state = await AppState.load(nowWeek: nowWeek);
+        state.addResult(resultFor(1, category: 'food'));
+        expect(state.streak, 1);
+
+        week = 501;
+        state.addResult(resultFor(2, category: 'family')); // andere categorie
+        expect(state.streak, 2);
+
+        week = 502;
+        state.addResult(resultFor(3)); // algemene toets
+        expect(state.streak, 3);
+      },
+    );
+
+    test('tijdens pauze zijn categorietoetsen ook geblokkeerd', () async {
+      final state = await AppState.load(nowWeek: nowWeek);
+      state.setPaused(true);
+      expect(state.categoryQuizAllowed('food'), isFalse);
+      state.addResult(resultFor(1, category: 'food'));
+      expect(state.history, isEmpty);
+    });
+  });
+
+  group('StreakState-migratie', () {
+    test(
+      'lastActivityWeek valt terug op de oude lastQuizWeek zonder dataverlies',
+      () {
+        // Simuleert een vóór deze feature opgeslagen StreakState-JSON,
+        // zonder lastActivityWeek/categoryLastQuizWeek.
+        final migrated = StreakState.fromJson({
+          'streak': 5,
+          'lastQuizWeek': 42,
+          'paused': false,
+          'pauseOffset': 0,
+          'firstWeek': 10,
+        });
+        expect(migrated.lastActivityWeek, 42);
+        expect(migrated.categoryLastQuizWeek, isEmpty);
+      },
+    );
+
+    test('een nieuwere StreakState-JSON gebruikt lastActivityWeek direct', () {
+      final state = StreakState.fromJson({
+        'streak': 5,
+        'lastQuizWeek': 40,
+        'lastActivityWeek': 42,
+        'categoryLastQuizWeek': {'food': 42},
+      });
+      expect(state.lastActivityWeek, 42);
+      expect(state.categoryLastQuizWeek, {'food': 42});
+    });
+  });
 }

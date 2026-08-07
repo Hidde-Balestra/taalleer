@@ -279,8 +279,9 @@ class _HomeShellState extends State<HomeShell> {
     Strings t,
     AppSettings settings,
     LanguageCourse course,
-    List<Word> words,
-  ) {
+    List<Word> words, {
+    String category = '',
+  }) {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => QuizScreen(
@@ -289,10 +290,25 @@ class _HomeShellState extends State<HomeShell> {
           sourceLang: settings.sourceLang,
           weekNumber: currentWeekNumber(),
           words: words,
+          category: category,
           onFinish: _finishQuiz(t, course),
         ),
       ),
     );
+  }
+
+  /// Bouwt de woordenlijst voor thema [categoryId] (cursusbreed, niet
+  /// beperkt tot de woorden van deze week — thema's zijn dun bezet) en opent
+  /// er een toets voor, met een eigen wekelijkse vergrendeling los van de
+  /// algemene toets.
+  void _openCategoryQuiz(
+    Strings t,
+    AppSettings settings,
+    LanguageCourse course,
+    String categoryId,
+  ) {
+    final words = course.words.where((w) => w.category == categoryId).toList();
+    _openQuiz(t, settings, course, words, category: categoryId);
   }
 
   void _openConjQuiz(Strings t, AppSettings settings, LanguageCourse course) {
@@ -345,11 +361,29 @@ class _HomeShellState extends State<HomeShell> {
     );
   }
 
-  void _openThemes(Strings t, AppSettings settings, LanguageCourse course) {
+  void _openThemes() {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) =>
-            ThemesScreen(t: t, lang: settings.language, course: course),
+        // Moet meeluisteren met live appState: na het maken van een
+        // categorietoets moet de vergrendelstatus/het laatste cijfer
+        // meteen bijwerken, net als bij Instellingen/Prestaties.
+        builder: (_) => ListenableBuilder(
+          listenable: widget.appState,
+          builder: (context, _) {
+            final settings = widget.appState.settings;
+            final t = Strings.of(settings.language);
+            final course = courseById(settings.courseId);
+            return ThemesScreen(
+              t: t,
+              lang: settings.language,
+              course: course,
+              history: widget.appState.history,
+              categoryQuizAllowed: widget.appState.categoryQuizAllowed,
+              onStartQuiz: (categoryId) =>
+                  _openCategoryQuiz(t, settings, course, categoryId),
+            );
+          },
+        ),
       ),
     );
   }
@@ -425,11 +459,12 @@ class _HomeShellState extends State<HomeShell> {
         weekNumber: weekNumber,
         words: weekWords,
         onOpenPast: () => _openPastWords(t, settings, course),
-        onOpenThemes: () => _openThemes(t, settings, course),
+        onOpenThemes: _openThemes,
       ),
       GrammarScreen(t: t, lang: settings.language, course: course),
       HistoryScreen(
         t: t,
+        lang: settings.language,
         history: widget.appState.history,
         streak: widget.appState.streak,
         course: course,

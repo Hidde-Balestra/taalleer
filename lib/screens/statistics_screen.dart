@@ -11,12 +11,14 @@ import '../widgets.dart';
 /// Geaggregeerde blik op dezelfde data die het Resultaten-tabblad al toont.
 class StatisticsScreen extends StatelessWidget {
   final Strings t;
+  final Lang lang;
   final List<QuizResult> history;
   final LanguageCourse course;
 
   const StatisticsScreen({
     super.key,
     required this.t,
+    required this.lang,
     required this.history,
     required this.course,
   });
@@ -24,6 +26,7 @@ class StatisticsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final palette = AppPalette.of(context);
+    final nl = lang == Lang.nl;
     final stats = computeStats(history, course);
 
     return Scaffold(
@@ -132,6 +135,50 @@ class StatisticsScreen extends StatelessWidget {
                   ],
                 ),
               ),
+              if (stats.categoryGrades.isNotEmpty) ...[
+                const SizedBox(height: 16),
+                AppCard(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        t.statsCategoryGrades,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      for (final cg in stats.categoryGrades)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 6),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  course.categoryTitleFor(cg.categoryId, nl) ??
+                                      cg.categoryId,
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: palette.foreground,
+                                  ),
+                                ),
+                              ),
+                              Text(
+                                cg.averageGrade.toStringAsFixed(1),
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.bold,
+                                  color: gradeColor(cg.averageGrade),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ],
             ],
           ],
         ),

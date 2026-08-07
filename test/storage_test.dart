@@ -13,6 +13,7 @@ void main() {
     correct: 7,
     total: 10,
     wrongWordIds: [3, 14, 20],
+    category: 'food',
   );
 
   group('JSON-serialisatie', () {
@@ -26,6 +27,40 @@ void main() {
       expect(copy.correct, result.correct);
       expect(copy.total, result.total);
       expect(copy.wrongWordIds, result.wrongWordIds);
+      expect(copy.category, 'food');
+    });
+
+    test('QuizResult zonder category in de JSON valt terug op leeg', () {
+      final copy = QuizResult.fromJson({
+        'id': 1,
+        'weekNumber': 1,
+        'year': 2026,
+        'date': 'x',
+        'grade': 5.0,
+        'correct': 5,
+        'total': 10,
+        'wrongWordIds': <int>[],
+      });
+      expect(copy.category, '');
+    });
+
+    test('StreakState overleeft een toJson/fromJson-rondje', () {
+      const state = StreakState(
+        streak: 4,
+        lastQuizWeek: 100,
+        lastActivityWeek: 101,
+        categoryLastQuizWeek: {'food': 101, 'family': 99},
+        paused: false,
+        pauseOffset: 2,
+        firstWeek: 90,
+      );
+      final copy = StreakState.fromJson(state.toJson());
+      expect(copy.streak, 4);
+      expect(copy.lastQuizWeek, 100);
+      expect(copy.lastActivityWeek, 101);
+      expect(copy.categoryLastQuizWeek, {'food': 101, 'family': 99});
+      expect(copy.pauseOffset, 2);
+      expect(copy.firstWeek, 90);
     });
 
     test('AppSettings overleeft een toJson/fromJson-rondje', () {

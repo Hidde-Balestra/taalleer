@@ -145,15 +145,18 @@ List<Question> buildPractice(
       .toList();
 }
 
-/// Weektoets: 10 willekeurige woorden uit [words], afwisselende richting.
+/// Weektoets: tot 10 willekeurige woorden uit [words], afwisselende richting.
+/// Categorietoetsen putten uit een categorie die minder dan 10 woorden kan
+/// hebben — dan krijg je gewoon een kortere toets in plaats van een crash.
 List<Question> buildQuiz(List<Word> words, Lang sourceLang, {Random? random}) {
   final rng = random ?? Random();
   final types = sourceLang == Lang.nl
       ? [QuestionType.nlEs, QuestionType.esNl]
       : [QuestionType.enEs, QuestionType.esEn];
   final shuffled = [...words]..shuffle(rng);
+  final n = min(10, shuffled.length);
   return List.generate(
-    10,
+    n,
     (i) => Question(word: shuffled[i], type: types[i % 2]),
   );
 }
@@ -207,6 +210,15 @@ List<Word> weakWords(
   final sortedIds = counts.keys.toList()
     ..sort((a, b) => counts[b]!.compareTo(counts[a]!));
   return [for (final id in sortedIds.take(limit)) ?course.wordById(id)];
+}
+
+/// Het meest recente resultaat voor [category] in [history] (al
+/// nieuwste-eerst), of `null` als die categorie nog nooit getoetst is.
+QuizResult? lastResultForCategory(List<QuizResult> history, String category) {
+  for (final r in history) {
+    if (r.category == category) return r;
+  }
+  return null;
 }
 
 /// Meerkeuzevragen: hergebruikt [buildPractice] (of [buildListeningPractice]

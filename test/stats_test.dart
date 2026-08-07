@@ -10,6 +10,7 @@ QuizResult _result({
   required int correct,
   required int total,
   List<int> wrong = const [],
+  String category = '',
 }) => QuizResult(
   id: 0,
   weekNumber: 1,
@@ -19,6 +20,7 @@ QuizResult _result({
   correct: correct,
   total: total,
   wrongWordIds: wrong,
+  category: category,
 );
 
 void main() {
@@ -64,6 +66,41 @@ void main() {
       final stats = computeStats(history, _course);
       expect(stats.weakWords, isNotEmpty);
       expect(stats.weakWords.first.id, id1);
+    });
+
+    test('categoryGrades is leeg zonder categorietoetsen', () {
+      final history = [_result(grade: 8, correct: 8, total: 10)];
+      expect(computeStats(history, _course).categoryGrades, isEmpty);
+    });
+
+    test('categoryGrades groepeert en middelt per categorie', () {
+      final history = [
+        _result(grade: 6, correct: 6, total: 10, category: 'food'),
+        _result(grade: 8, correct: 8, total: 10, category: 'food'),
+        _result(grade: 10, correct: 10, total: 10, category: 'family'),
+        _result(grade: 5, correct: 5, total: 10), // algemeen, telt niet mee
+      ];
+      final grades = computeStats(history, _course).categoryGrades;
+      expect(grades, hasLength(2));
+
+      final food = grades.firstWhere((g) => g.categoryId == 'food');
+      expect(food.averageGrade, 7.0);
+      expect(food.count, 2);
+
+      final family = grades.firstWhere((g) => g.categoryId == 'family');
+      expect(family.averageGrade, 10.0);
+      expect(family.count, 1);
+    });
+
+    test('categoryGrades sorteert op aantal toetsen aflopend', () {
+      final history = [
+        _result(grade: 8, correct: 8, total: 10, category: 'family'),
+        _result(grade: 8, correct: 8, total: 10, category: 'food'),
+        _result(grade: 8, correct: 8, total: 10, category: 'food'),
+      ];
+      final grades = computeStats(history, _course).categoryGrades;
+      expect(grades.first.categoryId, 'food'); // 2 toetsen
+      expect(grades.last.categoryId, 'family'); // 1 toets
     });
   });
 }

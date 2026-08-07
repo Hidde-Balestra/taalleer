@@ -10,6 +10,7 @@ import 'statistics_screen.dart';
 
 class HistoryScreen extends StatelessWidget {
   final Strings t;
+  final Lang lang;
   final List<QuizResult> history;
   final int streak;
   final LanguageCourse course;
@@ -17,6 +18,7 @@ class HistoryScreen extends StatelessWidget {
   const HistoryScreen({
     super.key,
     required this.t,
+    required this.lang,
     required this.history,
     required this.streak,
     required this.course,
@@ -25,6 +27,7 @@ class HistoryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final palette = AppPalette.of(context);
+    final nl = lang == Lang.nl;
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
@@ -75,6 +78,7 @@ class HistoryScreen extends StatelessWidget {
                       MaterialPageRoute(
                         builder: (_) => StatisticsScreen(
                           t: t,
+                          lang: lang,
                           history: history,
                           course: course,
                         ),
@@ -141,7 +145,10 @@ class HistoryScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '${t.historyWeek} ${r.weekNumber}',
+                          r.category.isEmpty
+                              ? '${t.historyWeek} ${r.weekNumber}'
+                              : '${t.historyWeek} ${r.weekNumber} · '
+                                    '${course.categoryTitleFor(r.category, nl) ?? r.category}',
                           style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,

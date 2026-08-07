@@ -67,6 +67,14 @@ class SpanishCourse extends LanguageCourse {
   String? categoryFor(String word) => categoryOf(word);
 
   @override
+  String? categoryTitleFor(String categoryId, bool nl) {
+    for (final category in kWordCategories) {
+      if (category.id == categoryId) return category.title(nl);
+    }
+    return null;
+  }
+
+  @override
   (String, String)? exampleFor(String word) => kSpanishExamples[word];
 
   @override

@@ -51,6 +51,10 @@ abstract class LanguageCourse {
   /// niet in een van de gedefinieerde thema's valt.
   String? categoryFor(String word) => null;
 
+  /// Weergavenaam van een thema-id (bv. "eten" → "Eten & drinken"), of
+  /// `null` als deze taal dat thema niet kent.
+  String? categoryTitleFor(String categoryId, bool nl) => null;
+
   /// Voorbeeldzin voor een woord als `(doeltaal, Nederlands)`, of `null` als
   /// er geen voorbeeld beschikbaar is.
   (String, String)? exampleFor(String word) => null;

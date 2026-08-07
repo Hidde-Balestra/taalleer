@@ -64,5 +64,15 @@ void main() {
         }
       }
     });
+
+    test('categoryTitleFor geeft de titel van een bekende categorie', () {
+      final food = kWordCategories.firstWhere((c) => c.id == 'food');
+      expect(course.categoryTitleFor('food', true), food.titleNl);
+      expect(course.categoryTitleFor('food', false), food.titleEn);
+    });
+
+    test('categoryTitleFor geeft null voor een onbekende categorie', () {
+      expect(course.categoryTitleFor('does-not-exist', true), isNull);
+    });
   });
 }

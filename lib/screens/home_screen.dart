@@ -16,6 +16,7 @@ class HomeScreen extends StatelessWidget {
   final bool paused;
   final VoidCallback onPracticeHub;
   final VoidCallback onQuizzes;
+  final VoidCallback onStories;
 
   const HomeScreen({
     super.key,
@@ -28,6 +29,7 @@ class HomeScreen extends StatelessWidget {
     required this.paused,
     required this.onPracticeHub,
     required this.onQuizzes,
+    required this.onStories,
   });
 
   @override
@@ -71,6 +73,20 @@ class HomeScreen extends StatelessWidget {
           subtitle: t.quizzesSubtitle,
           trailing: const Icon(
             Icons.emoji_events_outlined,
+            color: Colors.white,
+            size: 20,
+          ),
+        ),
+        const SizedBox(height: 12),
+        _GradientActionButton(
+          onTap: onStories,
+          gradient: const LinearGradient(
+            colors: [AppColors.green, AppColors.indigo],
+          ),
+          title: t.homeStories,
+          subtitle: t.homeStoriesSub,
+          trailing: const Icon(
+            Icons.auto_stories_outlined,
             color: Colors.white,
             size: 20,
           ),

@@ -100,6 +100,10 @@ class AppSettings {
   /// Uur van de dag (0-23) waarop de herinnering afgaat.
   final int reminderHour;
 
+  /// Tekstgrootte-schaal voor het lezen van verhalen (1.0 = standaard),
+  /// aanpasbaar voor slechtziende gebruikers.
+  final double storyTextScale;
+
   const AppSettings({
     this.language = Lang.en,
     this.darkMode = DarkModeSetting.system,
@@ -109,6 +113,7 @@ class AppSettings {
     this.onboardingComplete = false,
     this.dailyReminder = false,
     this.reminderHour = 19,
+    this.storyTextScale = 1.0,
   });
 
   AppSettings copyWith({
@@ -120,6 +125,7 @@ class AppSettings {
     bool? onboardingComplete,
     bool? dailyReminder,
     int? reminderHour,
+    double? storyTextScale,
   }) {
     return AppSettings(
       language: language ?? this.language,
@@ -130,6 +136,7 @@ class AppSettings {
       onboardingComplete: onboardingComplete ?? this.onboardingComplete,
       dailyReminder: dailyReminder ?? this.dailyReminder,
       reminderHour: reminderHour ?? this.reminderHour,
+      storyTextScale: storyTextScale ?? this.storyTextScale,
     );
   }
 
@@ -142,6 +149,7 @@ class AppSettings {
     'onboardingComplete': onboardingComplete,
     'dailyReminder': dailyReminder,
     'reminderHour': reminderHour,
+    'storyTextScale': storyTextScale,
   };
 
   factory AppSettings.fromJson(Map<String, dynamic> json) => AppSettings(
@@ -155,6 +163,7 @@ class AppSettings {
     onboardingComplete: json['onboardingComplete'] as bool? ?? false,
     dailyReminder: json['dailyReminder'] as bool? ?? false,
     reminderHour: json['reminderHour'] as int? ?? 19,
+    storyTextScale: (json['storyTextScale'] as num?)?.toDouble() ?? 1.0,
   );
 }
 

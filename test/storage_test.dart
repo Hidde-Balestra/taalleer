@@ -85,6 +85,7 @@ void main() {
         onboardingComplete: true,
         dailyReminder: true,
         reminderHour: 21,
+        storyTextScale: 1.4,
       );
       final copy = AppSettings.fromJson(settings.toJson());
       expect(copy.language, Lang.en);
@@ -94,6 +95,7 @@ void main() {
       expect(copy.onboardingComplete, isTrue);
       expect(copy.dailyReminder, isTrue);
       expect(copy.reminderHour, 21);
+      expect(copy.storyTextScale, 1.4);
     });
 
     test('AppSettings valt terug op standaardwaarden bij onbekende JSON', () {
@@ -103,6 +105,7 @@ void main() {
       expect(copy.dyslexiaMode, isFalse);
       expect(copy.sourceLang, Lang.nl);
       expect(copy.onboardingComplete, isFalse);
+      expect(copy.storyTextScale, 1.0);
     });
   });
 

@@ -76,6 +76,11 @@ class Strings {
   final String clozeTitle, clozeSub, clozeInstructionText;
   // Dagelijkse mini-sessie
   final String dailyMiniTitle, dailyMiniSub;
+  // Verhalen
+  final String homeStories, homeStoriesSub;
+  final String storiesTitle, storiesSubtitle, storiesEmpty;
+  final String storyLevelBeginner, storyLevelIntermediate, storyLevelAdvanced;
+  final String storyShowTranslation, storyHideTranslation;
   // Toetsen-overzicht
   final String quizzesTitle, quizzesSubtitle;
   // Toets
@@ -220,6 +225,16 @@ class Strings {
     required this.clozeInstructionText,
     required this.dailyMiniTitle,
     required this.dailyMiniSub,
+    required this.homeStories,
+    required this.homeStoriesSub,
+    required this.storiesTitle,
+    required this.storiesSubtitle,
+    required this.storiesEmpty,
+    required this.storyLevelBeginner,
+    required this.storyLevelIntermediate,
+    required this.storyLevelAdvanced,
+    required this.storyShowTranslation,
+    required this.storyHideTranslation,
     required this.quizzesTitle,
     required this.quizzesSubtitle,
     required this.quizTitle,
@@ -387,6 +402,16 @@ class Strings {
     clozeInstructionText: 'Vervoeg "{verb}" in de juiste vorm',
     dailyMiniTitle: 'Dagelijkse mini-sessie',
     dailyMiniSub: '5 nieuwe woorden uit het hele boek',
+    homeStories: 'Verhalen',
+    homeStoriesSub: 'Oefen je leesvaardigheid',
+    storiesTitle: 'Verhalen',
+    storiesSubtitle: 'Lees korte verhalen, van makkelijk naar lastig',
+    storiesEmpty: 'Nog geen verhalen beschikbaar voor deze taal.',
+    storyLevelBeginner: 'Makkelijk',
+    storyLevelIntermediate: 'Gevorderd',
+    storyLevelAdvanced: 'Lastig',
+    storyShowTranslation: 'Toon vertaling',
+    storyHideTranslation: 'Verberg vertaling',
     quizzesTitle: 'Toetsen',
     quizzesSubtitle: 'Elke toets is één keer per week beschikbaar',
     quizTitle: 'Weektoets',
@@ -559,6 +584,16 @@ class Strings {
     clozeInstructionText: 'Conjugate "{verb}" in the right form',
     dailyMiniTitle: 'Daily mini session',
     dailyMiniSub: '5 new words from the whole book',
+    homeStories: 'Stories',
+    homeStoriesSub: 'Practice your reading skills',
+    storiesTitle: 'Stories',
+    storiesSubtitle: 'Read short stories, from easy to hard',
+    storiesEmpty: 'No stories available yet for this language.',
+    storyLevelBeginner: 'Easy',
+    storyLevelIntermediate: 'Intermediate',
+    storyLevelAdvanced: 'Hard',
+    storyShowTranslation: 'Show translation',
+    storyHideTranslation: 'Hide translation',
     quizzesTitle: 'Quizzes',
     quizzesSubtitle: 'Each quiz is available once a week',
     quizTitle: 'Weekly Quiz',

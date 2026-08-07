@@ -74,5 +74,9 @@ void main() {
     test('categoryTitleFor geeft null voor een onbekende categorie', () {
       expect(course.categoryTitleFor('does-not-exist', true), isNull);
     });
+
+    test('heeft leesverhalen', () {
+      expect(course.stories, isNotEmpty);
+    });
   });
 }

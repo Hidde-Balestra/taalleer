@@ -8,6 +8,7 @@ import 'es_examples.dart';
 import 'es_grammar.dart' as grammar;
 import 'es_grammar_content.dart';
 import 'es_pronounce.dart';
+import 'es_stories.dart';
 import 'es_words.dart';
 
 /// De Spaanse cursus: koppelt het woordenboek, de fonetiek en de
@@ -87,4 +88,7 @@ class SpanishCourse extends LanguageCourse {
 
   @override
   ClozeEntry? clozeFor(String word) => kSpanishCloze[word];
+
+  @override
+  List<Story> get stories => kSpanishStories;
 }

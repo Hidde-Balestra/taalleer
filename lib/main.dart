@@ -27,6 +27,7 @@ import 'screens/quizzes_screen.dart';
 import 'screens/sentence_builder_screen.dart';
 import 'screens/sentence_translation_screen.dart';
 import 'screens/settings_screen.dart';
+import 'screens/stories_screen.dart';
 import 'screens/themes_screen.dart';
 import 'screens/vocabulary_screen.dart';
 import 'theme.dart';
@@ -377,6 +378,28 @@ class _HomeShellState extends State<HomeShell> {
     );
   }
 
+  void _openStories() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        // Moet meeluisteren met live appState: de tekstgrootte wordt hier
+        // aangepast en meteen opgeslagen, net als bij Instellingen.
+        builder: (_) => ListenableBuilder(
+          listenable: widget.appState,
+          builder: (context, _) {
+            final settings = widget.appState.settings;
+            return StoriesScreen(
+              t: Strings.of(settings.language),
+              nl: settings.language == Lang.nl,
+              course: courseById(settings.courseId),
+              settings: settings,
+              onSettingsChanged: widget.appState.updateSettings,
+            );
+          },
+        ),
+      ),
+    );
+  }
+
   void _openQuizzes() {
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -471,6 +494,7 @@ class _HomeShellState extends State<HomeShell> {
         onPracticeHub: () =>
             _openPracticeHub(t, settings, course, weekWords, weak),
         onQuizzes: _openQuizzes,
+        onStories: _openStories,
       ),
       VocabularyScreen(
         t: t,

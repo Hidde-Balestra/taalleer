@@ -1,5 +1,6 @@
 import 'grammar_content.dart';
 import 'models.dart';
+import 'story_content.dart';
 
 /// Definieert alles wat nodig is om een taal in TaalLeer te kunnen leren: het
 /// woordenboek, de uitspraak, en — optioneel, want niet elke taal heeft ze —
@@ -75,6 +76,10 @@ abstract class LanguageCourse {
   List<String> get pronouns => const [];
 
   List<GrammarCategory> get grammarCategories => const [];
+
+  /// Leesverhalen voor de leesvaardigheid-oefening, leeg als deze taal er
+  /// geen heeft.
+  List<Story> get stories => const [];
 
   List<Word>? _words;
 

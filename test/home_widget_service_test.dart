@@ -6,12 +6,12 @@ import 'package:taalleer/models.dart';
 void main() {
   group('widgetDataFor', () {
     test('bevat de huidige streak', () {
-      // De streak-getter valt terug op 0 zonder een geldige lastQuizWeek
+      // De streak-getter valt terug op 0 zonder een geldige lastActivityWeek
       // (zie AppState.streak) — nowWeek vastzetten zodat "week 100" telt
-      // als de meest recente toetsweek.
+      // als de meest recente toets-activiteit.
       final state = AppState(
         nowWeek: () => 100,
-        streakState: const StreakState(streak: 7, lastQuizWeek: 100),
+        streakState: const StreakState(streak: 7, lastActivityWeek: 100),
       );
       final data = widgetDataFor(state);
       expect(data['streak'], '7');

@@ -93,3 +93,47 @@ jobs:
       - name: Sleutelbestanden opruimen
         if: always()
         run: rm -f android/key.properties "$RUNNER_TEMP/release.jks"
+
+  release-ios:
+    name: Ongesigneerde iOS-IPA bouwen en publiceren
+    runs-on: macos-latest
+    # Wacht op de Android-release zodat de GitHub Release al bestaat voordat
+    # deze job er de IPA aan toevoegt (voorkomt een race tussen twee jobs die
+    # tegelijk dezelfde release proberen aan te maken).
+    needs: release
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Flutter installeren
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.41.6
+          cache: true
+
+      - name: Dependencies ophalen
+        run: flutter pub get
+
+      # Geen Apple Developer-account/signing-secrets beschikbaar — dit bouwt
+      # een .app zonder handtekening. Bruikbaar om te hertekenen (bv. via
+      # AltStore/Sideloadly) of later alsnog met een echt certificaat te
+      # signen; niet direct installeerbaar op een fysiek toestel.
+      - name: iOS-app bouwen zonder signing
+        run: flutter build ios --release --no-codesign
+
+      - name: Ongesigneerde IPA verpakken
+        run: |
+          mkdir -p build/ios/ipa_unsigned/Payload dist
+          cp -r build/ios/iphoneos/Runner.app build/ios/ipa_unsigned/Payload/
+          (cd build/ios/ipa_unsigned && zip -qr "../../../dist/taalleer-${GITHUB_REF_NAME}-unsigned.ipa" Payload)
+          ls -la dist/
+
+      - name: GitHub Release aanvullen met de IPA
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/taalleer-${{ github.ref_name }}-unsigned.ipa
+          append_body: true
+          body: |
+
+            ⚠️ De iOS-build (`.ipa`) is **ongesigneerd** — er is geen Apple Developer-account gekoppeld. Hij is niet direct installeerbaar op een fysiek toestel; daarvoor is hertekenen nodig (bv. via AltStore/Sideloadly) of een eigen Apple-signing-stap.

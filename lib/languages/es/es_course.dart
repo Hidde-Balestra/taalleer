@@ -1,6 +1,7 @@
 import '../../grammar_content.dart';
 import '../../language_course.dart';
 import '../../models.dart';
+import '../../story_content.dart';
 import 'es_answer_variants.dart';
 import 'es_categories.dart';
 import 'es_cloze.dart';

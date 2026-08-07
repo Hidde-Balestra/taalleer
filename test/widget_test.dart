@@ -128,11 +128,11 @@ void main() {
     testWidgets('home-scherm toont begroeting en actieknoppen', (tester) async {
       await pumpApp(tester);
       expect(find.text('Welkom terug! 👋'), findsOneWidget);
-      expect(find.text('Oefenen'), findsOneWidget);
+      expect(find.text('Oefenvormen'), findsOneWidget);
 
-      // De lijst is inmiddels langer dan het testvenster (Luisteroefening
-      // erbij) — net als "Laatste cijfer" moeten deze knoppen dus eerst in
-      // beeld gescrold worden (de Sliver mount ze pas dan).
+      // De lijst is langer dan het testvenster — net als "Laatste cijfer"
+      // moeten deze knoppen dus eerst in beeld gescrold worden (de Sliver
+      // mount ze pas dan).
       await scrollHome(tester, find.text('Vervoegingstoets'));
       expect(find.text('Woordentoets'), findsOneWidget);
       expect(find.text('Vervoegingstoets'), findsOneWidget);
@@ -304,6 +304,8 @@ void main() {
       'fout antwoord toont het juiste antwoord, daarna volgende vraag',
       (tester) async {
         await pumpApp(tester);
+        await tester.tap(find.text('Oefenvormen'));
+        await tester.pumpAndSettle();
         await tester.tap(find.text('Oefenen'));
         await tester.pumpAndSettle();
 

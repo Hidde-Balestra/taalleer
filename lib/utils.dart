@@ -208,3 +208,123 @@ List<Word> weakWords(
     ..sort((a, b) => counts[b]!.compareTo(counts[a]!));
   return [for (final id in sortedIds.take(limit)) ?course.wordById(id)];
 }
+
+/// Meerkeuzevragen: hergebruikt [buildPractice] (of [buildListeningPractice]
+/// bij [listening]) voor de vraag zelf, en trekt per vraag 3 afleiders uit
+/// het volledige cursusboek (niet alleen [words] — meer variatie), zodat een
+/// afleider nooit toevallig gelijk is aan het juiste antwoord.
+List<MultipleChoiceQuestion> buildMultipleChoice(
+  List<Word> words,
+  LanguageCourse course,
+  Lang sourceLang, {
+  bool listening = false,
+  Random? random,
+}) {
+  final rng = random ?? Random();
+  final questions = listening
+      ? buildListeningPractice(words, sourceLang, random: rng)
+      : buildPractice(words, sourceLang, random: rng);
+  return [for (final q in questions) _withDistractors(q, course, rng)];
+}
+
+MultipleChoiceQuestion _withDistractors(
+  Question q,
+  LanguageCourse course,
+  Random rng,
+) {
+  final correct = correctAnswerOf(q);
+  final pool = course.words.where((w) => w.id != q.word.id).toList()
+    ..shuffle(rng);
+  final distractors = <String>{};
+  for (final w in pool) {
+    if (distractors.length >= 3) break;
+    final candidate = correctAnswerOf(Question(word: w, type: q.type));
+    if (candidate != correct) distractors.add(candidate);
+  }
+  final options = [correct, ...distractors]..shuffle(rng);
+  return MultipleChoiceQuestion(question: q, options: options);
+}
+
+/// Geheugenspel: [pairs] woorden, elk als twee tegels (doeltaal +
+/// vertaling), geschud.
+List<MemoryTile> buildMemoryGame(
+  List<Word> words,
+  Lang sourceLang, {
+  int pairs = 8,
+  Random? random,
+}) {
+  final rng = random ?? Random();
+  final chosen = ([...words]..shuffle(rng)).take(pairs);
+  final tiles = [
+    for (final w in chosen) ...[
+      MemoryTile(id: w.id, word: w, text: w.target, isTarget: true),
+      MemoryTile(
+        id: w.id,
+        word: w,
+        text: sourceLang == Lang.nl ? w.nl : w.en,
+        isTarget: false,
+      ),
+    ],
+  ];
+  tiles.shuffle(rng);
+  return tiles;
+}
+
+/// Vormen [a] en [b] samen een paar? Moet hetzelfde woord zijn, maar van
+/// verschillende kant (doeltaal + vertaling, niet twee keer dezelfde kant).
+bool tilesMatch(MemoryTile a, MemoryTile b) =>
+    a.word.id == b.word.id && a.isTarget != b.isTarget;
+
+/// Woorden met een curated voorbeeldzin (`kSpanishExamples`-achtig), de
+/// brondata voor "zinnen bouwen" en "zinsvertaling". Cursusbreed, niet
+/// beperkt tot de woorden van deze week — anders zou een willekeurige week
+/// weinig of geen bruikbare zinnen kunnen hebben.
+List<Word> sentenceWordPool(LanguageCourse course) =>
+    course.words.where((w) => w.exampleTarget.isNotEmpty).toList();
+
+/// "Zinnen bouwen": tokeniseert `exampleTarget` op spaties (leestekens
+/// blijven aan het token vast) en geeft zowel de juiste volgorde als een
+/// geschudde volgorde voor de tegels.
+List<SentenceBuildQuestion> buildSentenceBuilder(
+  LanguageCourse course, {
+  int count = 8,
+  Random? random,
+}) {
+  final rng = random ?? Random();
+  final pool = sentenceWordPool(course)..shuffle(rng);
+  return [
+    for (final w in pool.take(count))
+      SentenceBuildQuestion(
+        word: w,
+        correctTokens: w.exampleTarget.split(' '),
+        shuffledTokens: w.exampleTarget.split(' ')..shuffle(rng),
+      ),
+  ];
+}
+
+/// "Zinsvertaling": [count] woorden met een voorbeeldzin, om
+/// `exampleTarget` te laten vertalen naar `exampleNl`.
+List<Word> buildSentenceTranslation(
+  LanguageCourse course, {
+  int count = 8,
+  Random? random,
+}) {
+  final rng = random ?? Random();
+  return (sentenceWordPool(course)..shuffle(rng)).take(count).toList();
+}
+
+/// Invuloefening: werkwoorden uit [verbs] met een cloze-zin
+/// ([LanguageCourse.clozeFor]), gekoppeld aan hun `ClozeEntry`.
+List<(Word, ClozeEntry)> buildClozeExercise(
+  List<Word> verbs,
+  LanguageCourse course, {
+  int count = 8,
+  Random? random,
+}) {
+  final rng = random ?? Random();
+  final pool = [
+    for (final w in verbs)
+      if (course.clozeFor(w.target) case final entry?) (w, entry),
+  ]..shuffle(rng);
+  return pool.take(count).toList();
+}

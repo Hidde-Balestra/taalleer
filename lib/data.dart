@@ -57,3 +57,26 @@ int daysUntilWordReset([DateTime? now]) {
     nextWordReset(today),
   ).difference(_dateOnlyUtc(today)).inDays;
 }
+
+/// Aantal woorden in de dagelijkse mini-sessie.
+const int kDailyWordCount = 5;
+
+/// Een niet-herhalende dagteller sinds hetzelfde vaste beginpunt als
+/// [currentWeekSeed], voor de dagelijkse mini-sessie.
+int currentDaySeed([DateTime? now]) =>
+    _dateOnlyUtc(now ?? DateTime.now()).difference(_weekEpoch).inDays;
+
+/// De woorden van de dagelijkse mini-sessie: [kDailyWordCount] woorden uit
+/// het hele woordenboek van [course], deterministisch per [seed] (gebruik
+/// [currentDaySeed]). Cursusbreed i.p.v. beperkt tot de woorden van deze
+/// week — juist een kans om breder te oefenen dan de wekelijkse 20.
+List<Word> dailyWords(
+  LanguageCourse course,
+  int seed, {
+  int count = kDailyWordCount,
+}) {
+  final wordBook = course.words;
+  final order = List<int>.generate(wordBook.length, (i) => i)
+    ..shuffle(Random(seed));
+  return [for (final i in order.take(count)) wordBook[i]];
+}

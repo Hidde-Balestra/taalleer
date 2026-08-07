@@ -202,6 +202,63 @@ class Question {
   const Question({required this.word, required this.type});
 }
 
+/// Een meerkeuzevraag: [question] plus 4 opties (het juiste antwoord en 3
+/// afleiders), al geschud.
+class MultipleChoiceQuestion {
+  final Question question;
+  final List<String> options;
+
+  const MultipleChoiceQuestion({required this.question, required this.options});
+}
+
+/// Eén tegel in het geheugenspel: [isTarget] onderscheidt de doeltaal-kant
+/// (bv. Spaans) van de vertaal-kant van hetzelfde woord, zodat een paar
+/// altijd uit precies één van elk bestaat.
+class MemoryTile {
+  final int id;
+  final Word word;
+  final String text;
+  final bool isTarget;
+
+  const MemoryTile({
+    required this.id,
+    required this.word,
+    required this.text,
+    required this.isTarget,
+  });
+}
+
+/// Eén vraag in de "zinnen bouwen"-oefening: de tegels van [word.exampleTarget]
+/// door elkaar ([shuffledTokens]), plus de juiste volgorde om tegen te
+/// controleren ([correctTokens]).
+class SentenceBuildQuestion {
+  final Word word;
+  final List<String> correctTokens;
+  final List<String> shuffledTokens;
+
+  const SentenceBuildQuestion({
+    required this.word,
+    required this.correctTokens,
+    required this.shuffledTokens,
+  });
+}
+
+/// Eén zin voor de invuloefening: een sjabloon met een weggelaten vervoegde
+/// vorm van een werkwoord. Het verwachte antwoord wordt niet apart
+/// opgeslagen — dat is `word.present[person]`, al aanwezig via de bestaande
+/// vervoeging.
+class ClozeEntry {
+  final String sentenceTemplate;
+  final String translationNl;
+  final int person;
+
+  const ClozeEntry({
+    required this.sentenceTemplate,
+    required this.translationNl,
+    required this.person,
+  });
+}
+
 /// Een vraag in de vervoegingstoets: vervoeg [word] voor persoon [person]
 /// (0..5, zie `kPronouns`).
 class ConjugationQuestion {

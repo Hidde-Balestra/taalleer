@@ -559,4 +559,186 @@ void main() {
       expect(weakWords(history, _course), isEmpty);
     });
   });
+
+  group('dailyWords / currentDaySeed', () {
+    test('geeft kDailyWordCount unieke woorden', () {
+      final words = dailyWords(_course, 1);
+      expect(words, hasLength(kDailyWordCount));
+      expect(words.map((w) => w.id).toSet(), hasLength(kDailyWordCount));
+    });
+
+    test('deterministisch: dezelfde seed geeft dezelfde selectie', () {
+      expect(
+        dailyWords(_course, 42).map((w) => w.id),
+        dailyWords(_course, 42).map((w) => w.id),
+      );
+    });
+
+    test('andere seed geeft (meestal) een andere selectie', () {
+      final a = dailyWords(_course, 1).map((w) => w.id).toList();
+      final b = dailyWords(_course, 2).map((w) => w.id).toList();
+      expect(a, isNot(equals(b)));
+    });
+
+    test('currentDaySeed loopt per dag op', () {
+      final d1 = currentDaySeed(DateTime(2026, 7, 15));
+      final d2 = currentDaySeed(DateTime(2026, 7, 16));
+      expect(d2, d1 + 1);
+    });
+  });
+
+  group('buildMultipleChoice', () {
+    final weekWords = wordsForWeek(_course, 1);
+
+    test('elke vraag heeft 4 unieke opties met het juiste antwoord erbij', () {
+      final qs = buildMultipleChoice(
+        weekWords,
+        _course,
+        Lang.nl,
+        random: Random(1),
+      );
+      expect(qs, hasLength(10));
+      for (final mcq in qs) {
+        expect(mcq.options.toSet(), hasLength(4));
+        expect(mcq.options, contains(correctAnswerOf(mcq.question)));
+      }
+    });
+
+    test(
+      'listening: true gebruikt altijd esNl/esEn net als buildListeningPractice',
+      () {
+        final qs = buildMultipleChoice(
+          weekWords,
+          _course,
+          Lang.nl,
+          listening: true,
+          random: Random(1),
+        );
+        for (final mcq in qs) {
+          expect(mcq.question.type, QuestionType.esNl);
+        }
+      },
+    );
+  });
+
+  group('buildMemoryGame / tilesMatch', () {
+    final weekWords = wordsForWeek(_course, 1);
+
+    test('geeft 2*pairs tegels, exact 2 per woord-id', () {
+      final tiles = buildMemoryGame(
+        weekWords,
+        Lang.nl,
+        pairs: 6,
+        random: Random(1),
+      );
+      expect(tiles, hasLength(12));
+      final counts = <int, int>{};
+      for (final tile in tiles) {
+        counts[tile.word.id] = (counts[tile.word.id] ?? 0) + 1;
+      }
+      expect(counts.values, everyElement(2));
+    });
+
+    test('tilesMatch klopt voor een echt paar', () {
+      final tiles = buildMemoryGame(
+        weekWords,
+        Lang.nl,
+        pairs: 6,
+        random: Random(1),
+      );
+      final word = tiles.first.word;
+      final pair = tiles.where((t) => t.word.id == word.id).toList();
+      expect(tilesMatch(pair[0], pair[1]), isTrue);
+    });
+
+    test('tilesMatch geeft false bij twee tegels van dezelfde kant', () {
+      final a = MemoryTile(
+        id: 1,
+        word: weekWords.first,
+        text: weekWords.first.target,
+        isTarget: true,
+      );
+      final b = MemoryTile(
+        id: 1,
+        word: weekWords.first,
+        text: weekWords.first.target,
+        isTarget: true,
+      );
+      expect(tilesMatch(a, b), isFalse);
+    });
+
+    test('tilesMatch geeft false voor verschillende woorden', () {
+      final tiles = buildMemoryGame(
+        weekWords,
+        Lang.nl,
+        pairs: 6,
+        random: Random(1),
+      );
+      final a = tiles.firstWhere((t) => t.isTarget);
+      final b = tiles.firstWhere((t) => !t.isTarget && t.word.id != a.word.id);
+      expect(tilesMatch(a, b), isFalse);
+    });
+  });
+
+  group(
+    'sentenceWordPool / buildSentenceBuilder / buildSentenceTranslation',
+    () {
+      test('sentenceWordPool geeft alleen woorden met een voorbeeldzin', () {
+        final pool = sentenceWordPool(_course);
+        expect(pool, isNotEmpty);
+        for (final w in pool) {
+          expect(w.exampleTarget, isNotEmpty);
+        }
+      });
+
+      test('buildSentenceBuilder reconstrueert de originele zin', () {
+        final qs = buildSentenceBuilder(_course, count: 5, random: Random(1));
+        expect(qs, hasLength(5));
+        for (final q in qs) {
+          expect(q.correctTokens, q.word.exampleTarget.split(' '));
+          expect(
+            q.shuffledTokens.toList()..sort(),
+            q.correctTokens.toList()..sort(),
+          );
+        }
+      });
+
+      test(
+        'buildSentenceTranslation geeft unieke woorden met een voorbeeld',
+        () {
+          final words = buildSentenceTranslation(
+            _course,
+            count: 5,
+            random: Random(1),
+          );
+          expect(words, hasLength(5));
+          expect(words.map((w) => w.id).toSet(), hasLength(5));
+          for (final w in words) {
+            expect(w.exampleTarget, isNotEmpty);
+          }
+        },
+      );
+    },
+  );
+
+  group('buildClozeExercise', () {
+    test(
+      'geeft alleen werkwoorden met een cloze-zin, gekoppeld aan hun entry',
+      () {
+        final items = buildClozeExercise(
+          _course.words,
+          _course,
+          count: 5,
+          random: Random(1),
+        );
+        expect(items, hasLength(5));
+        for (final (word, entry) in items) {
+          expect(_course.clozeFor(word.target), isNotNull);
+          expect(word.present, hasLength(6));
+          expect(entry.person, inInclusiveRange(0, 5));
+          expect(entry.sentenceTemplate, contains('___'));
+        }
+      },
+    );
+  });
 }

@@ -1,7 +1,9 @@
 import '../../grammar_content.dart';
 import '../../language_course.dart';
+import '../../models.dart';
 import 'es_answer_variants.dart';
 import 'es_categories.dart';
+import 'es_cloze.dart';
 import 'es_examples.dart';
 import 'es_grammar.dart' as grammar;
 import 'es_grammar_content.dart';
@@ -74,4 +76,7 @@ class SpanishCourse extends LanguageCourse {
   @override
   List<String> enVariantsFor(String word) =>
       kEnAnswerVariants[word] ?? const [];
+
+  @override
+  ClozeEntry? clozeFor(String word) => kSpanishCloze[word];
 }

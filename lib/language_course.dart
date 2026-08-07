@@ -61,6 +61,11 @@ abstract class LanguageCourse {
   List<String> nlVariantsFor(String word) => const [];
   List<String> enVariantsFor(String word) => const [];
 
+  /// Invulzin (cloze) voor een werkwoord, voor de invuloefening, of `null`
+  /// als daar geen zin voor is. Niet gekoppeld aan [Word] — puur een
+  /// oefenvorm-lookup, geen algemeen woordveld.
+  ClozeEntry? clozeFor(String word) => null;
+
   /// Persoonsvormen voor de vervoegingstabel (bijv. yo/tú/él/…), leeg als
   /// deze taal geen vervoeging kent.
   List<String> get pronouns => const [];

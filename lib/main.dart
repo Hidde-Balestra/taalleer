@@ -9,16 +9,22 @@ import 'languages/registry.dart';
 import 'models.dart';
 import 'notifications.dart';
 import 'screens/achievements_screen.dart';
+import 'screens/cloze_screen.dart';
 import 'screens/conjugation_quiz_screen.dart';
 import 'screens/grammar_screen.dart';
 import 'screens/history_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/listening_practice_screen.dart';
+import 'screens/memory_game_screen.dart';
+import 'screens/multiple_choice_screen.dart';
 import 'screens/onboarding_screen.dart';
 import 'screens/past_words_screen.dart';
+import 'screens/practice_hub_screen.dart';
 import 'screens/practice_screen.dart';
 import 'screens/quiz_result_screen.dart';
 import 'screens/quiz_screen.dart';
+import 'screens/sentence_builder_screen.dart';
+import 'screens/sentence_translation_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/themes_screen.dart';
 import 'screens/vocabulary_screen.dart';
@@ -149,6 +155,121 @@ class _HomeShellState extends State<HomeShell> {
           sourceLang: settings.sourceLang,
           course: course,
           words: words,
+        ),
+      ),
+    );
+  }
+
+  void _openMultipleChoice(
+    Strings t,
+    AppSettings settings,
+    LanguageCourse course,
+    List<Word> words, {
+    required bool listening,
+  }) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => MultipleChoiceScreen(
+          t: t,
+          sourceLang: settings.sourceLang,
+          course: course,
+          words: words,
+          listening: listening,
+        ),
+      ),
+    );
+  }
+
+  void _openMemoryGame(Strings t, AppSettings settings, List<Word> words) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => MemoryGameScreen(
+          t: t,
+          sourceLang: settings.sourceLang,
+          words: words,
+        ),
+      ),
+    );
+  }
+
+  void _openSentenceBuilder(Strings t, LanguageCourse course) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => SentenceBuilderScreen(t: t, course: course),
+      ),
+    );
+  }
+
+  void _openSentenceTranslation(
+    Strings t,
+    AppSettings settings,
+    LanguageCourse course,
+  ) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => SentenceTranslationScreen(
+          t: t,
+          dyslexia: settings.dyslexiaMode,
+          course: course,
+        ),
+      ),
+    );
+  }
+
+  void _openCloze(Strings t, AppSettings settings, LanguageCourse course) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => ClozeScreen(
+          t: t,
+          dyslexia: settings.dyslexiaMode,
+          course: course,
+          verbs: course.words,
+        ),
+      ),
+    );
+  }
+
+  void _openPracticeHub(
+    Strings t,
+    AppSettings settings,
+    LanguageCourse course,
+    List<Word> weekWords,
+    List<Word> weak,
+  ) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => PracticeHubScreen(
+          t: t,
+          weakWordCount: weak.length,
+          onPractice: () => _openPractice(t, settings, course, weekWords),
+          onListeningPractice: () =>
+              _openListeningPractice(t, settings, course, weekWords),
+          onSentenceBuilder: () => _openSentenceBuilder(t, course),
+          onSentenceTranslation: () =>
+              _openSentenceTranslation(t, settings, course),
+          onMultipleChoice: () => _openMultipleChoice(
+            t,
+            settings,
+            course,
+            weekWords,
+            listening: false,
+          ),
+          onListeningChoice: () => _openMultipleChoice(
+            t,
+            settings,
+            course,
+            weekWords,
+            listening: true,
+          ),
+          onMemoryGame: () => _openMemoryGame(t, settings, weekWords),
+          onCloze: () => _openCloze(t, settings, course),
+          onDailyMini: () => _openPractice(
+            t,
+            settings,
+            course,
+            dailyWords(course, currentDaySeed()),
+          ),
+          onPracticeWeakWords: () => _openPractice(t, settings, course, weak),
         ),
       ),
     );
@@ -292,13 +413,10 @@ class _HomeShellState extends State<HomeShell> {
         history: widget.appState.history,
         paused: widget.appState.paused,
         quizDoneThisWeek: widget.appState.quizDoneThisWeek,
-        weakWordCount: weak.length,
-        onPractice: () => _openPractice(t, settings, course, weekWords),
+        onPracticeHub: () =>
+            _openPracticeHub(t, settings, course, weekWords, weak),
         onQuiz: () => _openQuiz(t, settings, course, weekWords),
         onConjQuiz: () => _openConjQuiz(t, settings, course),
-        onPracticeWeakWords: () => _openPractice(t, settings, course, weak),
-        onListeningPractice: () =>
-            _openListeningPractice(t, settings, course, weekWords),
       ),
       VocabularyScreen(
         t: t,

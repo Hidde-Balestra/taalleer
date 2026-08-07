@@ -55,6 +55,28 @@ class Strings {
   // Luisteroefening
   final String listeningPracticeTitle, listeningPracticeInstruction;
   final String homeListeningPractice, homeListeningPracticeSub;
+  // Oefenvormen-overzicht
+  final String practiceHubTitle, practiceHubSubtitle;
+  // Zinnen bouwen
+  final String sentenceBuilderTitle,
+      sentenceBuilderSub,
+      sentenceBuilderInstruction;
+  // Zinsvertaling
+  final String sentenceTranslationTitle,
+      sentenceTranslationSub,
+      sentenceTranslationInstruction;
+  // Meerkeuze / luister-en-kies
+  final String multipleChoiceTitle, multipleChoiceSub;
+  final String listeningChoiceTitle, listeningChoiceSub;
+  // Geheugenspel
+  final String memoryGameTitle,
+      memoryGameSub,
+      memoryGameWin,
+      memoryGameTriesCount;
+  // Invuloefening
+  final String clozeTitle, clozeSub, clozeInstructionText;
+  // Dagelijkse mini-sessie
+  final String dailyMiniTitle, dailyMiniSub;
   // Toets
   final String quizTitle, quizPlaceholder, quizSubmit;
   final String quizDyslexiaActive, quizNoHints, quizProgress;
@@ -177,6 +199,27 @@ class Strings {
     required this.listeningPracticeInstruction,
     required this.homeListeningPractice,
     required this.homeListeningPracticeSub,
+    required this.practiceHubTitle,
+    required this.practiceHubSubtitle,
+    required this.sentenceBuilderTitle,
+    required this.sentenceBuilderSub,
+    required this.sentenceBuilderInstruction,
+    required this.sentenceTranslationTitle,
+    required this.sentenceTranslationSub,
+    required this.sentenceTranslationInstruction,
+    required this.multipleChoiceTitle,
+    required this.multipleChoiceSub,
+    required this.listeningChoiceTitle,
+    required this.listeningChoiceSub,
+    required this.memoryGameTitle,
+    required this.memoryGameSub,
+    required this.memoryGameWin,
+    required this.memoryGameTriesCount,
+    required this.clozeTitle,
+    required this.clozeSub,
+    required this.clozeInstructionText,
+    required this.dailyMiniTitle,
+    required this.dailyMiniSub,
     required this.quizTitle,
     required this.quizPlaceholder,
     required this.quizSubmit,
@@ -322,6 +365,27 @@ class Strings {
     listeningPracticeInstruction: 'Luister en typ de vertaling',
     homeListeningPractice: 'Luisteroefening',
     homeListeningPracticeSub: 'Hoor het woord, typ de vertaling',
+    practiceHubTitle: 'Oefenvormen',
+    practiceHubSubtitle: 'Kies hoe je wilt oefenen',
+    sentenceBuilderTitle: 'Zinnen bouwen',
+    sentenceBuilderSub: 'Leg de woorden in de juiste volgorde',
+    sentenceBuilderInstruction: 'Bouw de zin die hoort bij:',
+    sentenceTranslationTitle: 'Zinsvertaling',
+    sentenceTranslationSub: 'Vertaal een hele zin naar het Nederlands',
+    sentenceTranslationInstruction: 'Vertaal deze zin naar het Nederlands',
+    multipleChoiceTitle: 'Meerkeuze',
+    multipleChoiceSub: 'Kies het juiste antwoord uit 4 opties',
+    listeningChoiceTitle: 'Luister-en-kies',
+    listeningChoiceSub: 'Hoor het woord, kies de juiste vertaling',
+    memoryGameTitle: 'Geheugenspel',
+    memoryGameSub: 'Zoek de bijpassende paren',
+    memoryGameWin: 'Alle paren gevonden! 🎉',
+    memoryGameTriesCount: '{n} beurten',
+    clozeTitle: 'Invuloefening',
+    clozeSub: 'Vul het werkwoord in de juiste vorm in',
+    clozeInstructionText: 'Vervoeg "{verb}" in de juiste vorm',
+    dailyMiniTitle: 'Dagelijkse mini-sessie',
+    dailyMiniSub: '5 nieuwe woorden uit het hele boek',
     quizTitle: 'Weektoets',
     quizPlaceholder: 'Jouw antwoord…',
     quizSubmit: 'Bevestigen →',
@@ -472,6 +536,27 @@ class Strings {
     listeningPracticeInstruction: 'Listen and type the translation',
     homeListeningPractice: 'Listening practice',
     homeListeningPracticeSub: 'Hear the word, type the translation',
+    practiceHubTitle: 'Practice modes',
+    practiceHubSubtitle: 'Choose how you want to practice',
+    sentenceBuilderTitle: 'Sentence builder',
+    sentenceBuilderSub: 'Put the words in the right order',
+    sentenceBuilderInstruction: 'Build the sentence for:',
+    sentenceTranslationTitle: 'Sentence translation',
+    sentenceTranslationSub: 'Translate a whole sentence into Dutch',
+    sentenceTranslationInstruction: 'Translate this sentence into Dutch',
+    multipleChoiceTitle: 'Multiple choice',
+    multipleChoiceSub: 'Pick the right answer from 4 options',
+    listeningChoiceTitle: 'Listen and choose',
+    listeningChoiceSub: 'Hear the word, choose the right translation',
+    memoryGameTitle: 'Memory game',
+    memoryGameSub: 'Find the matching pairs',
+    memoryGameWin: 'All pairs found! 🎉',
+    memoryGameTriesCount: '{n} tries',
+    clozeTitle: 'Fill in the blank',
+    clozeSub: 'Fill in the verb in the right form',
+    clozeInstructionText: 'Conjugate "{verb}" in the right form',
+    dailyMiniTitle: 'Daily mini session',
+    dailyMiniSub: '5 new words from the whole book',
     quizTitle: 'Weekly Quiz',
     quizPlaceholder: 'Your answer…',
     quizSubmit: 'Submit →',
@@ -557,6 +642,14 @@ class Strings {
   /// "12 woorden waar je vaker fout op zat".
   String homeWeakWordsSub(int n) =>
       homeWeakWordsCount.replaceFirst('{n}', '$n');
+
+  /// "7 beurten".
+  String memoryGameTries(int n) =>
+      memoryGameTriesCount.replaceFirst('{n}', '$n');
+
+  /// 'Vervoeg "comer" in de juiste vorm'.
+  String clozeInstruction(String verb) =>
+      clozeInstructionText.replaceFirst('{verb}', verb);
 
   /// "3 van 8 behaald".
   String achievementsProgressLabel(int unlocked, int total) =>

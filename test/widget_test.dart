@@ -491,6 +491,7 @@ void main() {
       // Terug naar het (nooit-verlaten) home-tabblad erachter.
       await closeSettings(tester);
 
+      await scrollHome(tester, find.text('Streak gepauzeerd'));
       expect(find.text('Streak gepauzeerd'), findsOneWidget);
 
       // Op het Toetsen-scherm staat ook een pauze-banner (naast die op Home
